@@ -7,8 +7,11 @@
     "test": "jest"
   },
   "dependencies": {
+    "babyparse": "^0.4.6",
     "react": "15.3.2",
-    "react-native": "0.36.0"
+    "react-native": "0.36.0",
+    "react-native-button": "^1.7.1",
+    "react-native-fs": "^2.0.1-rc.2"
   },
   "jest": {
     "preset": "jest-react-native"

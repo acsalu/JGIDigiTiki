@@ -8,25 +8,53 @@ import React, { Component } from 'react';
 import {
   AppRegistry,
   StyleSheet,
-  Text,
+  TextInput,
+  Navigator,
   View
 } from 'react-native';
+
+import FollowListScreen from './components/FollowListScreen';
+import FollowScreen from './components/FollowScreen';
+import MenuScreen from './components/MenuScreen';
+import NewFollowScreen from './components/NewFollowScreen';
+
+import chimps from './data/chimp-list.json';
+import times from './data/time-list.json';
 
 export default class JGIDigiTiki extends Component {
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.android.js
-        </Text>
-        <Text style={styles.instructions}>
-          Double tap R on your keyboard to reload,{'\n'}
-          Shake or press menu button for dev menu
-        </Text>
-      </View>
+      <Navigator initialRoute={{id: 'MenuScreen', name: 'Index'}}
+        renderScene={(route, navigator) => {
+          const routeId = route.id;
+          switch (routeId) {
+            case 'MenuScreen':
+              return (
+                <MenuScreen navigator={navigator} />
+              );
+            case 'NewFollowScreen':
+              return (
+                <NewFollowScreen navigator={navigator} chimps={chimps} times={times} />
+              );
+            case 'FollowScreen':
+              return (
+                <FollowScreen navigator={navigator} chimps={chimps} />
+              );
+            case 'FollowListScreen':
+              return (
+                <FollowListScreen navigator={navigator} />
+              );
+            default:
+              break;
+          }
+        }}
+        configureScene={(route) => {
+          if (route.sceneConfig) {
+            return route.sceneConfig;
+          }
+          return Navigator.SceneConfigs.PushFromRight;
+        }}
+      />
     );
   }
 }
