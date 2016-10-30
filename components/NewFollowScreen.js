@@ -13,14 +13,16 @@ import {
   View
 } from 'react-native';
 import Button from 'react-native-button';
+import Realm from 'realm';
+import Follow from '../models/Follow';
 
 export default class NewFollowScreen extends Component {
 
   state = {
     beginTime: null,
-    chimp: null,
     chimpPickerItems: [],
     community: null,
+    focalChimpId: null,
     hasSetDate: false,
     date: new Date(),
     researcher: ''
@@ -131,8 +133,8 @@ export default class NewFollowScreen extends Component {
         </Picker>
 
         <Picker enabled={this.state.community !== null }
-          selectedValue={this.state.chimp}
-          onValueChange={(c) => this.setState({chimp: c})}>
+          selectedValue={this.state.focalChimpId}
+          onValueChange={(c) => this.setState({focalChimpId: c})}>
           {this.state.chimpPickerItems}
         </Picker>
 
@@ -151,10 +153,10 @@ export default class NewFollowScreen extends Component {
             const hasSetDate = this.state.hasSetDate;
             const hasSetBeginTime = this.state.beginTime !== null;
             const hasSetCommunity = this.state.community != null;
-            const hasSetChimp = this.state.chimp != null;
+            const hasSetFocalChimpId = this.state.focalChimpId != null;
             const hasSetResearcher = this.state.researcher != null
 
-            if ([hasSetDate, hasSetBeginTime, hasSetCommunity, hasSetChimp, hasSetResearcher].some(e => !e)) {
+            if ([hasSetDate, hasSetBeginTime, hasSetCommunity, hasSetFocalChimpId, hasSetResearcher].some(e => !e)) {
               Alert.alert(
                 'Invalid Input',
                 'My Alert Msg',
@@ -163,11 +165,22 @@ export default class NewFollowScreen extends Component {
                 ]
               );
             } else {
-              console.log('date: ' + this.state.date.toString());
-              console.log('beginTime: ' + this.state.beginTime);
-              console.log('community: ' + this.state.community);
-              console.log('chimp: ' + this.state.chimp);
-              console.log('researcher: ' + this.state.researcher);
+              const realm = new Realm({schema: [Follow]});
+              const year = this.state.date.getYear() + 1900;
+              const month = this.state.date.getMonth() + 1;
+              const day = this.state.date.getDate();
+              realm.write(() => {
+                const newFollow = realm.create(Follow.className, {
+                   FOL_date: this.state.date,
+                   FOL_B_AnimID: this.state.focalChimpId,
+                   FOL_CL_community_id: this.state.community,
+                   FOL_time_begin: this.state.beginTime,
+                   FOL_am_observer1: this.state.researcher,
+                   FOL_day: day,
+                   FOL_month: month,
+                   FOL_year: year
+                });
+              });
 
               this.props.navigator.push({
                 id: 'FollowScreen'
