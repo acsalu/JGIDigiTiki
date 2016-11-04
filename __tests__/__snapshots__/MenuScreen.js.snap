@@ -1,0 +1,130 @@
+exports[`test renders correctly 1`] = `
+<View>
+  <Text
+    accessible={true}
+    allowFontScaling={true}
+    ellipsizeMode="tail">
+    Fuata
+  </Text>
+  <View
+    accessibilityComponentType="button"
+    accessibilityLabel={undefined}
+    accessibilityTraits="button"
+    accessible={true}
+    hitSlop={undefined}
+    onLayout={undefined}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      Object {
+        "opacity": 1,
+      }
+    }
+    testID={undefined}>
+    <Text
+      accessible={true}
+      allowFontScaling={true}
+      ellipsizeMode="tail"
+      style={
+        Array [
+          Object {
+            "color": "#007aff",
+            "fontFamily": "HelveticaNeue-Medium",
+            "fontSize": 17,
+            "fontWeight": "bold",
+            "textAlign": "center",
+          },
+          null,
+          undefined,
+          null,
+        ]
+      }>
+      Anza ufuataji
+    </Text>
+  </View>
+  <View
+    accessibilityComponentType="button"
+    accessibilityLabel={undefined}
+    accessibilityTraits="button"
+    accessible={true}
+    hitSlop={undefined}
+    onLayout={undefined}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      Object {
+        "opacity": 1,
+      }
+    }
+    testID={undefined}>
+    <Text
+      accessible={true}
+      allowFontScaling={true}
+      ellipsizeMode="tail"
+      style={
+        Array [
+          Object {
+            "color": "#007aff",
+            "fontFamily": "HelveticaNeue-Medium",
+            "fontSize": 17,
+            "fontWeight": "bold",
+            "textAlign": "center",
+          },
+          null,
+          undefined,
+          null,
+        ]
+      }>
+      Endelea kufuata
+    </Text>
+  </View>
+  <View
+    accessibilityComponentType="button"
+    accessibilityLabel={undefined}
+    accessibilityTraits="button"
+    accessible={true}
+    hitSlop={undefined}
+    onLayout={undefined}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      Object {
+        "opacity": 1,
+      }
+    }
+    testID={undefined}>
+    <Text
+      accessible={true}
+      allowFontScaling={true}
+      ellipsizeMode="tail"
+      style={
+        Array [
+          Object {
+            "color": "#007aff",
+            "fontFamily": "HelveticaNeue-Medium",
+            "fontSize": 17,
+            "fontWeight": "bold",
+            "textAlign": "center",
+          },
+          null,
+          undefined,
+          null,
+        ]
+      }>
+      Endelea na ufuataji ulipoachia
+    </Text>
+  </View>
+</View>
+`;
