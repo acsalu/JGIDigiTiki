@@ -91,18 +91,24 @@ export default class NewFollowScreen extends Component {
       return [];
     }
 
-    return this.props.chimps
+    const defaultPickerItem = (<Picker.Item key='Target' label='Target' value={null} />);
+
+    const chimpPickerItems = this.props.chimps
       .filter((c) => c.community === community)
       .map((c, i) => {
         return (<Picker.Item key={c.name} label={c.name} value={c.name} />);
       });
+    return [defaultPickerItem].concat(chimpPickerItems);
   }
 
   getDateString = (date) => {
     if (!this.state.hasSetDate) {
       return "Tarehe ya ufuataji"
     }
-    return date.toString();
+    const year = this.state.date.getYear() + 1900;
+    const month = this.state.date.getMonth() + 1;
+    const day = this.state.date.getDate();
+    return month + '/' + day + '/' + year;
   }
 
   render() {
@@ -118,75 +124,89 @@ export default class NewFollowScreen extends Component {
     });
 
     return(
-      <View>
-        <Text>New Follow</Text>
+      <View style={styles.container}>
+        <Text style={styles.description}>Fuata</Text>
 
-        <TouchableHighlight onPress={this.showDatePicker.bind(this, '', {date: this.state.date})}>
-          <Text>
+        <TouchableHighlight
+            style={styles.inputField}
+            onPress={this.showDatePicker.bind(this, '', {date: this.state.date})}>
+          <Text style={styles.datePickerText}>
             {this.getDateString(this.state.date)}
           </Text>
         </TouchableHighlight>
 
-        <Picker selectedValue={this.state.community}
-          onValueChange={(c) => this.setState({community: c, chimpPickerItems: this.getChimpPickerItems(c)})}>
+        <Picker
+            style={styles.inputField}
+            selectedValue={this.state.community}
+            onValueChange={(c) => this.setState({community: c, chimpPickerItems: this.getChimpPickerItems(c)})}>
           {communityPickerItems}
         </Picker>
 
-        <Picker enabled={this.state.community !== null }
-          selectedValue={this.state.focalChimpId}
-          onValueChange={(c) => this.setState({focalChimpId: c})}>
+        <Picker
+            style={styles.inputField}
+            enabled={this.state.community !== null }
+            selectedValue={this.state.focalChimpId}
+            onValueChange={(c) => this.setState({focalChimpId: c})}>
           {this.state.chimpPickerItems}
         </Picker>
 
-        <Picker selectedValue={this.state.beginTime}
-          onValueChange={(t) => this.setState({beginTime: t})}>
+        <Picker
+            style={styles.inputField}
+            selectedValue={this.state.beginTime}
+            onValueChange={(t) => this.setState({beginTime: t})}>
           {beginTimePickerItems}
         </Picker>
         
         <TextInput
-          onChangeText={(text) => this.setState({researcher: text})}
-          value={this.state.researcher}
-          placeholder="Jina la mtafiti"
+            style={[styles.inputField, styles.researcherNameTextInput]}
+            onChangeText={(text) => this.setState({researcher: text})}
+            value={this.state.researcher}
+            placeholder="Jina la mtafiti"
         />
 
-        <Button onPress={() => {
-            const hasSetDate = this.state.hasSetDate;
-            const hasSetBeginTime = this.state.beginTime !== null;
-            const hasSetCommunity = this.state.community != null;
-            const hasSetFocalChimpId = this.state.focalChimpId != null;
-            const hasSetResearcher = this.state.researcher != null
+        <Button
+            style={[styles.btn, styles.btnPositive]}
+            onPress={() => {
+              const hasSetDate = this.state.hasSetDate;
+              const hasSetBeginTime = this.state.beginTime !== null;
+              const hasSetCommunity = this.state.community != null;
+              const hasSetFocalChimpId = this.state.focalChimpId != null;
+              const hasSetResearcher = this.state.researcher != null
 
-            if ([hasSetDate, hasSetBeginTime, hasSetCommunity, hasSetFocalChimpId, hasSetResearcher].some(e => !e)) {
-              Alert.alert(
-                'Invalid Input',
-                'My Alert Msg',
-                [
-                  {text: 'OK', onPress: () => console.log('OK Pressed')},
-                ]
-              );
-            } else {
-              const realm = new Realm({schema: [Follow]});
-              const year = this.state.date.getYear() + 1900;
-              const month = this.state.date.getMonth() + 1;
-              const day = this.state.date.getDate();
-              realm.write(() => {
-                const newFollow = realm.create(Follow.className, {
-                   FOL_date: this.state.date,
-                   FOL_B_AnimID: this.state.focalChimpId,
-                   FOL_CL_community_id: this.state.community,
-                   FOL_time_begin: this.state.beginTime,
-                   FOL_am_observer1: this.state.researcher,
-                   FOL_day: day,
-                   FOL_month: month,
-                   FOL_year: year
+              if ([hasSetDate, hasSetBeginTime, hasSetCommunity, hasSetFocalChimpId, hasSetResearcher].some(e => !e)) {
+                Alert.alert(
+                  'Invalid Input',
+                  'My Alert Msg',
+                  [
+                    {text: 'OK', onPress: () => console.log('OK Pressed')},
+                  ]
+                );
+              } else {
+                const realm = new Realm({schema: [Follow]});
+                const year = this.state.date.getYear() + 1900;
+                const month = this.state.date.getMonth() + 1;
+                const day = this.state.date.getDate();
+                realm.write(() => {
+                  const newFollow = realm.create(Follow.className, {
+                     FOL_date: this.state.date,
+                     FOL_B_AnimID: this.state.focalChimpId,
+                     FOL_CL_community_id: this.state.community,
+                     FOL_time_begin: this.state.beginTime,
+                     FOL_am_observer1: this.state.researcher,
+                     FOL_day: day,
+                     FOL_month: month,
+                     FOL_year: year
+                  });
                 });
-              });
 
-              this.props.navigator.push({
-                id: 'FollowScreen'
-              });
-            }
-          }}
+                const follow = realm.objects('Follow').slice(-1).pop();
+
+                this.props.navigator.push({
+                  id: 'FollowScreen',
+                  follow: follow
+                });
+              }
+            }}
         >
           Anza
         </Button>
@@ -195,3 +215,49 @@ export default class NewFollowScreen extends Component {
     );
   }
 }
+
+
+var styles = {
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+    backgroundColor:'white',
+    alignItems: 'center'
+  },
+  description: {
+    alignSelf: "stretch",
+    marginTop: 30,
+    marginBottom: 50,
+    fontSize: 44,
+    textAlign: 'center',
+    lineHeight: 40,
+    color: 'black'
+  },
+  btn: {
+    width: 500,
+    marginTop: 20,
+    marginBottom: 20,
+    paddingTop: 8,
+    paddingBottom: 8,
+    paddingLeft: 15,
+    paddingRight: 15,
+    fontSize: 14,
+    color: '#fff'
+  },
+  btnPositive: {
+    backgroundColor: '#9c0'
+  },
+  inputField: {
+    width: 500,
+  },
+  datePickerText: {
+    fontSize: 16,
+    paddingLeft: 6,
+    paddingBottom: 10,
+    borderBottomWidth: 1
+  },
+  researcherNameTextInput: {
+    paddingLeft: 6,
+    fontSize: 16
+  }
+};
