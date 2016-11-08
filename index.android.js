@@ -39,7 +39,13 @@ export default class JGIDigiTiki extends Component {
             case 'FollowScreen':
               const chimpsInCommunity = chimps.filter((c) => c.community === route.follow.FOL_CL_community_id);
               return (
-                <FollowScreen navigator={navigator} chimps={chimpsInCommunity} follow={route.follow} />
+                <FollowScreen
+                  navigator={navigator}
+                  chimps={chimpsInCommunity}
+                  follow={route.follow}
+                  followTime={route.followTime}
+                  times={times}
+                />
               );
             case 'FollowListScreen':
               return (

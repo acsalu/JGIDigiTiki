@@ -203,7 +203,8 @@ export default class NewFollowScreen extends Component {
 
                 this.props.navigator.push({
                   id: 'FollowScreen',
-                  follow: follow
+                  follow: follow,
+                  followTime: this.state.beginTime
                 });
               }
             }}

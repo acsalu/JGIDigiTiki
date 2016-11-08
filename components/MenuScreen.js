@@ -67,7 +67,7 @@ var styles = {
     color: 'black'
   },
   description: {
-    alignSelf: "stretch",
+    alignSelf: 'stretch',
     marginTop: 100,
     marginBottom: 30,
     fontSize: 44,
