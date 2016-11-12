@@ -7,8 +7,10 @@ import {
   StyleSheet,
   Text,
   TouchableHighlight,
+  TouchableOpacity,
   View
 } from 'react-native';
+import Button from 'react-native-button';
 
 const infoButtonImages = {
   'time-empty': require('../img/time-empty.png'),
@@ -23,15 +25,21 @@ const infoButtonImages = {
 
 class FollowArrivalTableRow extends Component {
   render() {
-    const focalMarker = this.props.isFocal ? "*" : "";
+    const chimp = this.props.chimp;
+    const chimpButtonStyles = this.props.isSelected ? chimpButtonStylesSelected : (this.props.isFocal ? chimpButtonStylesFocal : chimpButtonStylesNonFocal);
     return (
-      <TouchableHighlight onPress={() => {
-       console.log(this.props.chimp.name + " clicked");
-       this.props.onPress();
-      }}
-        style={{backgroundColor: 'red'}}>
-        <Text>{this.props.chimp.name} [{this.props.chimp.sex}] {focalMarker}</Text>
-      </TouchableHighlight>
+      <TouchableOpacity
+          onPress={this.props.onPress}
+      >
+        <View style={styles.item}>
+            <Button style={chimpButtonStyles} onPress={this.props.onPress}>{chimp.name}</Button>
+            <Image />
+            <Button style={styles.followArrivalTableBtn} onPress={this.props.onPress}>.</Button>
+            <Button style={styles.followArrivalTableBtn} onPress={this.props.onPress}>.00</Button>
+            <Button style={styles.followArrivalTableBtn} onPress={this.props.onPress}>X</Button>
+            <Button style={styles.followArrivalTableBtn} onPress={this.props.onPress}>N</Button>
+        </View>
+      </TouchableOpacity>
     )
   }
 }
@@ -64,37 +72,57 @@ export default class FollowArrivalTable extends Component {
 
   constructor(props) {
     super(props);
-
-    const ds = new ListView.DataSource({
-      rowHasChanged: (r1, r2) => r1 != r2
-    });
-
-
     this.state = {
-      isInfoPanelHidden: true
+      selectedChimp: null,
+      arrival: {}
     };
   }
 
-  onRowPressed = () => {
-    console.log("Row Pressed!")
-    this.setState({isInfoPanelHidden: false});
+  _onRowPress = (c) => {
+    var newArrival = this.state.arrival;
+    newArrival[c.name] = true;
+    this.setState({selectedChimp: c.name, arrival: newArrival});
   }
 
   createChimpRow = (c, i) => {
-    //return chimps.map((c, i) => (<FollowArrivalTableRow
-    //    onPress={this.onRowPressed}
-    //    key={c.name} chimp={c}
-    //    isFocal={c.name === focalChimpId}
-    //    style={{marginTop: 10, width: 100}}
-    ///>));
+    const isSelected = this.state.selectedChimp === c.name;
+    const isFocal = c.name === this.props.focalChimpId;
+    const chimpButtonStyles = isSelected ? chimpButtonStylesSelected : (isFocal ? chimpButtonStylesFocal : chimpButtonStylesNonFocal);
+
+    const hasRecorded = c.name in this.state.arrival;
+
     return (
-      <Text
-          style={styles.item}
-          key={c.name}
-      >
-        {c.name + (this.props.focalChimpId === c.name ? '*' : '')}
-      </Text>
+        <TouchableOpacity
+            key={c.name}
+            onPress={()=>{this._onRowPress(c)}}
+        >
+          <View style={styles.item}>
+            <Button style={chimpButtonStyles} onPress={()=>{this._onRowPress(c)}}>{c.name}</Button>
+            <Image />
+            <Button style={[styles.followArrivalTableBtn, {opacity: hasRecorded ? 1.0 : 0.0}]} onPress={()=>{this._onRowPress(c)}}>.</Button>
+            <Button style={[styles.followArrivalTableBtn, {opacity: hasRecorded ? 1.0 : 0.0}]} onPress={()=>{this._onRowPress(c)}}>.00</Button>
+            <Button style={[styles.followArrivalTableBtn, {opacity: hasRecorded ? 1.0 : 0.0}]} onPress={()=>{this._onRowPress(c)}}>X</Button>
+            <Button style={[styles.followArrivalTableBtn, {opacity: hasRecorded ? 1.0 : 0.0}]} onPress={()=>{this._onRowPress(c)}}>N</Button>
+          </View>
+        </TouchableOpacity>
     );
+
+
+    //return (<FollowArrivalTableRow
+    //    onPress={this.onRowPressed(c)}
+    //    chimp={c}
+    //    key={c.name}
+    //    isFocal={c.name === this.props.focalChimpId}
+    //    isSelected={this.state.selectedChimp === c.name}
+    ///>);
+    //return (
+    //  <Text
+    //      style={styles.item}
+    //      key={c.name}
+    //  >
+    //    {c.name + (this.props.focalChimpId === c.name ? '*' : '')}
+    //  </Text>
+    //);
   }
 
   render() {
@@ -104,7 +132,6 @@ export default class FollowArrivalTable extends Component {
 
     const femaleChimpRows = femaleChimps.map(this.createChimpRow);
     const maleChimpRows = maleChimps.map(this.createChimpRow);
-
 
     return (
         <View>
@@ -138,10 +165,10 @@ var styles = StyleSheet.create({
 
   },
   item: {
-    fontSize: 16,
     width: (Dimensions.get('window').width - 20) / 2,
+    height: 30,
     padding: 3,
-    flex: 1
+    flexDirection: 'row'
   },
   borderBottom: {
     borderBottomColor: 'black',
@@ -153,5 +180,29 @@ var styles = StyleSheet.create({
     justifyContent: 'center',
     flexWrap: 'wrap',
     flex: 1
+  },
+  followArrivalTableBtn: {
+    width: 40,
+    backgroundColor: '#ececec',
+    fontSize: 14,
+    paddingTop: 2,
+    paddingBottom: 2,
+    paddingLeft: 5,
+    paddingRight: 5,
+    marginLeft: 2,
+    marginRight: 2,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    flex: 1
+  },
+  followArrivalTableBtnFocal: {
+    backgroundColor: '#33b5e5',
+  },
+  followArrivalTableBtnSelected: {
+    backgroundColor: '#9c0',
   }
 });
+
+var chimpButtonStylesNonFocal = styles.followArrivalTableBtn;
+var chimpButtonStylesFocal = [styles.followArrivalTableBtn, styles.followArrivalTableBtnFocal];
+var chimpButtonStylesSelected = [styles.followArrivalTableBtn, styles.followArrivalTableBtnSelected];
