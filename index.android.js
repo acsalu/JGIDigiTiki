@@ -37,8 +37,15 @@ export default class JGIDigiTiki extends Component {
                 <NewFollowScreen navigator={navigator} chimps={chimps} times={times} />
               );
             case 'FollowScreen':
+              const chimpsInCommunity = chimps.filter((c) => c.community === route.follow.FOL_CL_community_id);
               return (
-                <FollowScreen navigator={navigator} chimps={chimps} />
+                <FollowScreen
+                  navigator={navigator}
+                  chimps={chimpsInCommunity}
+                  follow={route.follow}
+                  followTime={route.followTime}
+                  times={times}
+                />
               );
             case 'FollowListScreen':
               return (
@@ -52,7 +59,7 @@ export default class JGIDigiTiki extends Component {
           if (route.sceneConfig) {
             return route.sceneConfig;
           }
-          return Navigator.SceneConfigs.PushFromRight;
+          return Navigator.SceneConfigs.FadeAndroid;
         }}
       />
     );
