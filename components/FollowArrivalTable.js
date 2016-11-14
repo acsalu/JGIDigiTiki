@@ -23,53 +23,6 @@ const infoButtonImages = {
   'time-continues': require('../img/time-continues.png'),
 };
 
-class FollowArrivalTableRow extends Component {
-  render() {
-    const chimp = this.props.chimp;
-    const chimpButtonStyles = this.props.isSelected ? chimpButtonStylesSelected : (this.props.isFocal ? chimpButtonStylesFocal : chimpButtonStylesNonFocal);
-    return (
-      <TouchableOpacity
-          onPress={this.props.onPress}
-      >
-        <View style={styles.item}>
-            <Button style={chimpButtonStyles} onPress={this.props.onPress}>{chimp.name}</Button>
-            <Image />
-            <Button style={styles.followArrivalTableBtn} onPress={this.props.onPress}>.</Button>
-            <Button style={styles.followArrivalTableBtn} onPress={this.props.onPress}>.00</Button>
-            <Button style={styles.followArrivalTableBtn} onPress={this.props.onPress}>X</Button>
-            <Button style={styles.followArrivalTableBtn} onPress={this.props.onPress}>N</Button>
-        </View>
-      </TouchableOpacity>
-    )
-  }
-}
-
-class FollowArrivalTableInfoPanelButton extends Component {
-  render() {
-    return (
-        <TouchableOpacity
-            style={{width: 50, height: 50}}
-            onPress={this.props.onPress(this.props.name)}
-        >
-          <Image style={{width: 30, height: 30}} source={infoButtonImages[this.props.name]} />
-        </TouchableOpacity>
-    )
-  }
-}
-
-class FollowArrivalTableInfoPanel extends Component {
-  render() {
-    const infoPanelButtons = ['time-empty', 'time-arrive-first', 'time-arrive-second', 'time-arrive-third',
-      'time-depart-first', 'time-depart-second', 'time-depart-third', 'time-continues']
-        .map((n, i) => (<FollowArrivalTableInfoPanelButton key={n} name={n} onPress={this.props.onPanelButtonPress} />));
-    return (
-        <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', height: 80}}>
-          {infoPanelButtons}
-        </View>
-    )
-
-  }
-}
 
 export default class FollowArrivalTable extends Component {
 
@@ -96,9 +49,13 @@ export default class FollowArrivalTable extends Component {
     if (selectedChimp !== null) {
       let newArrival = this.state.arrival;
       if (!(selectedChimp in newArrival)) {
-        newArrival[selectedChimp] = this._createDefultFollowArrival(b);
+        if (b !== 'time-empty') { newArrival[selectedChimp] = this._createDefultFollowArrival(b); }
       } else {
-        newArrival[selectedChimp]['time'] = b;
+        if (b !== 'time-empty') {
+          newArrival[selectedChimp]['time'] = b;
+        } else {
+          delete newArrival[selectedChimp];
+        }
       }
       this.setState({arrival: newArrival});
     }
@@ -152,7 +109,7 @@ export default class FollowArrivalTable extends Component {
             <Button style={chimpButtonStyles} onPress={()=> {
               this._onRowPress(c)
             }}>{c.name}</Button>
-            <Image source={hasRecorded ? infoButtonImages[followArrival['time']] : ""}/>
+            <Image source={infoButtonImages[followArrival['time']]} />
             <Button style={[styles.followArrivalTableBtn]} onPress={()=> {
               this._onRowPress(c)
             }}>{followArrival.certainty}</Button>
@@ -255,3 +212,53 @@ var styles = StyleSheet.create({
 var chimpButtonStylesNonFocal = styles.followArrivalTableBtn;
 var chimpButtonStylesFocal = [styles.followArrivalTableBtn, styles.followArrivalTableBtnFocal];
 var chimpButtonStylesSelected = [styles.followArrivalTableBtn, styles.followArrivalTableBtnSelected];
+
+/*
+class FollowArrivalTableRow extends Component {
+  render() {
+    const chimp = this.props.chimp;
+    const chimpButtonStyles = this.props.isSelected ? chimpButtonStylesSelected : (this.props.isFocal ? chimpButtonStylesFocal : chimpButtonStylesNonFocal);
+    return (
+        <TouchableOpacity
+            onPress={this.props.onPress}
+        >
+          <View style={styles.item}>
+            <Button style={chimpButtonStyles} onPress={this.props.onPress}>{chimp.name}</Button>
+            <Image />
+            <Button style={styles.followArrivalTableBtn} onPress={this.props.onPress}>.</Button>
+            <Button style={styles.followArrivalTableBtn} onPress={this.props.onPress}>.00</Button>
+            <Button style={styles.followArrivalTableBtn} onPress={this.props.onPress}>X</Button>
+            <Button style={styles.followArrivalTableBtn} onPress={this.props.onPress}>N</Button>
+          </View>
+        </TouchableOpacity>
+    )
+  }
+}
+
+class FollowArrivalTableInfoPanelButton extends Component {
+  render() {
+    return (
+        <TouchableOpacity
+            style={{width: 50, height: 50}}
+            onPress={this.props.onPress(this.props.name)}
+        >
+          <Image style={{width: 30, height: 30}} source={infoButtonImages[this.props.name]} />
+        </TouchableOpacity>
+    )
+  }
+}
+
+class FollowArrivalTableInfoPanel extends Component {
+  render() {
+    const infoPanelButtons = ['time-empty', 'time-arrive-first', 'time-arrive-second', 'time-arrive-third',
+      'time-depart-first', 'time-depart-second', 'time-depart-third', 'time-continues']
+        .map((n, i) => (<FollowArrivalTableInfoPanelButton key={n} name={n} onPress={this.props.onPanelButtonPress} />));
+    return (
+        <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', height: 80}}>
+          {infoPanelButtons}
+        </View>
+    )
+
+  }
+}
+*/
