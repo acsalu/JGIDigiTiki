@@ -47,9 +47,12 @@ class FollowArrivalTableRow extends Component {
 class FollowArrivalTableInfoPanelButton extends Component {
   render() {
     return (
-        <TouchableHighlight style={{width: 50, height: 50}}>
+        <TouchableOpacity
+            style={{width: 50, height: 50}}
+            onPress={this.props.onPress(this.props.name)}
+        >
           <Image style={{width: 30, height: 30}} source={infoButtonImages[this.props.name]} />
-        </TouchableHighlight>
+        </TouchableOpacity>
     )
   }
 }
@@ -58,7 +61,7 @@ class FollowArrivalTableInfoPanel extends Component {
   render() {
     const infoPanelButtons = ['time-empty', 'time-arrive-first', 'time-arrive-second', 'time-arrive-third',
       'time-depart-first', 'time-depart-second', 'time-depart-third', 'time-continues']
-        .map((n, i) => (<FollowArrivalTableInfoPanelButton key={n} name={n} />));
+        .map((n, i) => (<FollowArrivalTableInfoPanelButton key={n} name={n} onPress={this.props.onPanelButtonPress} />));
     return (
         <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', height: 80}}>
           {infoPanelButtons}
@@ -78,10 +81,43 @@ export default class FollowArrivalTable extends Component {
     };
   }
 
+  _createDefultFollowArrival(time) {
+    return {
+      time: time,
+      certainty: 0,
+      estrousState: 0.0,
+      isWithIn5m: false,
+      isNearestNeighbor: false
+    }
+  }
+
+  _onPanelButtonPress = (b) => {
+    const selectedChimp = this.state.selectedChimp;
+    if (selectedChimp !== null) {
+      let newArrival = this.state.arrival;
+      if (!(selectedChimp in newArrival)) {
+        newArrival[selectedChimp] = this._createDefultFollowArrival(b);
+      } else {
+        newArrival[selectedChimp]['time'] = b;
+      }
+      this.setState({arrival: newArrival});
+    }
+  }
+
   _onRowPress = (c) => {
-    var newArrival = this.state.arrival;
-    newArrival[c.name] = true;
-    this.setState({selectedChimp: c.name, arrival: newArrival});
+    this.setState({selectedChimp: c.name});
+  }
+
+  createInfoPanelButton = (n, i) => {
+    return (
+      <TouchableOpacity
+          key={n}
+          style={{width: 50, height: 50}}
+          onPress={() => {this._onPanelButtonPress(n)}}
+      >
+        <Image style={{width: 30, height: 30}} source={infoButtonImages[n]} />
+      </TouchableOpacity>
+    );
   }
 
   createChimpRow = (c, i) => {
@@ -91,38 +127,47 @@ export default class FollowArrivalTable extends Component {
 
     const hasRecorded = c.name in this.state.arrival;
 
+    if (!hasRecorded) {
+      return (
+          <TouchableOpacity
+              key={c.name}
+              onPress={()=> {this._onRowPress(c)}}
+          >
+            <View style={styles.item}>
+              <Button style={chimpButtonStyles} onPress={()=> {this._onRowPress(c)}}>{c.name}</Button>
+            </View>
+          </TouchableOpacity>
+      );
+    }
+
+    const followArrival = this.state.arrival[c.name];
     return (
         <TouchableOpacity
             key={c.name}
-            onPress={()=>{this._onRowPress(c)}}
+            onPress={()=> {
+              this._onRowPress(c)
+            }}
         >
           <View style={styles.item}>
-            <Button style={chimpButtonStyles} onPress={()=>{this._onRowPress(c)}}>{c.name}</Button>
-            <Image />
-            <Button style={[styles.followArrivalTableBtn, {opacity: hasRecorded ? 1.0 : 0.0}]} onPress={()=>{this._onRowPress(c)}}>.</Button>
-            <Button style={[styles.followArrivalTableBtn, {opacity: hasRecorded ? 1.0 : 0.0}]} onPress={()=>{this._onRowPress(c)}}>.00</Button>
-            <Button style={[styles.followArrivalTableBtn, {opacity: hasRecorded ? 1.0 : 0.0}]} onPress={()=>{this._onRowPress(c)}}>X</Button>
-            <Button style={[styles.followArrivalTableBtn, {opacity: hasRecorded ? 1.0 : 0.0}]} onPress={()=>{this._onRowPress(c)}}>N</Button>
+            <Button style={chimpButtonStyles} onPress={()=> {
+              this._onRowPress(c)
+            }}>{c.name}</Button>
+            <Image source={hasRecorded ? infoButtonImages[followArrival['time']] : ""}/>
+            <Button style={[styles.followArrivalTableBtn]} onPress={()=> {
+              this._onRowPress(c)
+            }}>{followArrival.certainty}</Button>
+            <Button style={[styles.followArrivalTableBtn]} onPress={()=> {
+              this._onRowPress(c)
+            }}>{followArrival.estrousState}</Button>
+            <Button style={[styles.followArrivalTableBtn]} onPress={()=> {
+              this._onRowPress(c)
+            }}>{followArrival.isWithIn5m ? "Y" : "N"}</Button>
+            <Button style={[styles.followArrivalTableBtn]} onPress={()=> {
+              this._onRowPress(c)
+            }}>{followArrival.isNearestNeighbor ? "Y" : "N"}</Button>
           </View>
         </TouchableOpacity>
     );
-
-
-    //return (<FollowArrivalTableRow
-    //    onPress={this.onRowPressed(c)}
-    //    chimp={c}
-    //    key={c.name}
-    //    isFocal={c.name === this.props.focalChimpId}
-    //    isSelected={this.state.selectedChimp === c.name}
-    ///>);
-    //return (
-    //  <Text
-    //      style={styles.item}
-    //      key={c.name}
-    //  >
-    //    {c.name + (this.props.focalChimpId === c.name ? '*' : '')}
-    //  </Text>
-    //);
   }
 
   render() {
@@ -133,11 +178,15 @@ export default class FollowArrivalTable extends Component {
     const femaleChimpRows = femaleChimps.map(this.createChimpRow);
     const maleChimpRows = maleChimps.map(this.createChimpRow);
 
+    const infoPanelButtons = ['time-empty', 'time-arrive-first', 'time-arrive-second', 'time-arrive-third',
+      'time-depart-first', 'time-depart-second', 'time-depart-third', 'time-continues'].map(this.createInfoPanelButton);
+
     return (
         <View>
-          <FollowArrivalTableInfoPanel style={[
-           {height: 150, marginBottom: 80}
-          ]}/>
+          <View
+              style={{flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', height: 50, marginBottom: 80}}>
+              {infoPanelButtons}
+          </View>
           <ScrollView
               style={{paddingLeft: 10, paddingRight: 10}}
               contentContainerStyle={styles.list}
