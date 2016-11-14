@@ -24,21 +24,92 @@ const infoButtonImages = {
 };
 
 
+const PanelType = Object.freeze({'time': 1, 'certainty': 2, 'estrousState': 3, 'isWithIn5m': 4, 'isNearestNeighbor': 5});
+
+class Panel extends Component {
+  render() {
+    const optionButtons = this.props.options.map((o, i) => {
+      return (<Button
+          key={o}
+          onPress={()=> {
+            this.props.onValueChange(this.props.values[i]);
+          }}
+          style={styles.panelOptionButton}
+      >
+        {o}
+      </Button>);
+    });
+    return (
+        <View style={{flexDirection: 'row'}}>
+          <Text>{this.props.title}</Text>
+          {optionButtons}
+        </View>
+    );
+  }
+}
+
+
 export default class FollowArrivalTable extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
       selectedChimp: null,
+      panelType: PanelType.time,
       arrival: {}
     };
+
+    this.panels = {};
+    this.panels[PanelType.time] = ['time-empty', 'time-arrive-first', 'time-arrive-second', 'time-arrive-third',
+      'time-depart-first', 'time-depart-second', 'time-depart-third', 'time-continues'].map(this.createInfoPanelButton);
+    this.panels[PanelType.certainty] =
+        (<Panel
+            title={"Certainty:"}
+            options={['✓', '*', 'K✓', 'K*']}
+            values={['✓', '*', 'K✓', 'K*']}
+            onValueChange={(v) => {this._updateSelectedArrival('certainty', v)}}
+        />);
+    this.panels[PanelType.estrousState] =
+        (<Panel
+            title={"Uvimbe:"}
+            options={['.00', '.25', '.50', '.75', '1.0']}
+            values={['.00', '.25', '.50', '.75', '1.0']}
+            onValueChange={(v) => {this._updateSelectedArrival('estrousState', v)}}
+        />);
+    this.panels[PanelType.isWithIn5m] =
+        (<Panel
+            title={"Ndani ya 5m:"}
+            options={['✗', '✓']}
+            values={[false, true]}
+            onValueChange={(v) => {this._updateSelectedArrival('isWithIn5m', v)}}
+        />);
+    this.panels[PanelType.isNearestNeighbor] =
+        (<Panel
+            title={"Jirani wa karibu:"}
+            options={['N', 'Y']}
+            values={[false, true]}
+            onValueChange={(v) => {this._updateSelectedArrival('isNearestNeighbor', v)}}
+        />);
+
+  }
+
+  _updateArrival(chimp, field, newValue) {
+    let newArrival = this.state.arrival;
+    newArrival[chimp][field] = newValue;
+    this.setState(newArrival);
+  }
+
+  _updateSelectedArrival(field, newValue) {
+    if (this.state.selectedChimp !== null) {
+      this._updateArrival(this.state.selectedChimp, field, newValue);
+    }
   }
 
   _createDefultFollowArrival(time) {
     return {
       time: time,
-      certainty: 0,
-      estrousState: 0.0,
+      certainty: '✓',
+      estrousState: '.00',
       isWithIn5m: false,
       isNearestNeighbor: false
     }
@@ -103,24 +174,30 @@ export default class FollowArrivalTable extends Component {
             key={c.name}
             onPress={()=> {
               this._onRowPress(c)
+              this.setState({panelType: PanelType.time});
             }}
         >
           <View style={styles.item}>
             <Button style={chimpButtonStyles} onPress={()=> {
               this._onRowPress(c)
+              this.setState({panelType: PanelType.time});
             }}>{c.name}</Button>
             <Image source={infoButtonImages[followArrival['time']]} />
             <Button style={[styles.followArrivalTableBtn]} onPress={()=> {
               this._onRowPress(c)
+              this.setState({panelType: PanelType.certainty});
             }}>{followArrival.certainty}</Button>
             <Button style={[styles.followArrivalTableBtn]} onPress={()=> {
               this._onRowPress(c)
+              this.setState({panelType: PanelType.estrousState});
             }}>{followArrival.estrousState}</Button>
             <Button style={[styles.followArrivalTableBtn]} onPress={()=> {
               this._onRowPress(c)
-            }}>{followArrival.isWithIn5m ? "Y" : "N"}</Button>
+              this.setState({panelType: PanelType.isWithIn5m});
+            }}>{followArrival.isWithIn5m ? "✓" : "✗"}</Button>
             <Button style={[styles.followArrivalTableBtn]} onPress={()=> {
               this._onRowPress(c)
+              this.setState({panelType: PanelType.isNearestNeighbor});
             }}>{followArrival.isNearestNeighbor ? "Y" : "N"}</Button>
           </View>
         </TouchableOpacity>
@@ -135,14 +212,13 @@ export default class FollowArrivalTable extends Component {
     const femaleChimpRows = femaleChimps.map(this.createChimpRow);
     const maleChimpRows = maleChimps.map(this.createChimpRow);
 
-    const infoPanelButtons = ['time-empty', 'time-arrive-first', 'time-arrive-second', 'time-arrive-third',
-      'time-depart-first', 'time-depart-second', 'time-depart-third', 'time-continues'].map(this.createInfoPanelButton);
+    let panelContent = this.panels[this.state.panelType];
 
     return (
         <View>
           <View
-              style={{flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', height: 50, marginBottom: 80}}>
-              {infoPanelButtons}
+              style={styles.infoPanel}>
+              {panelContent}
           </View>
           <ScrollView
               style={{paddingLeft: 10, paddingRight: 10}}
@@ -167,8 +243,17 @@ var styles = StyleSheet.create({
   show: {
     opacity: 1.0
   },
-  list: {
-
+  infoPanel: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 50,
+    marginBottom: 80,
+    borderWidth: 1,
+    paddingTop: 20,
+    marginLeft: 10,
+    marginRight: 10
   },
   item: {
     width: (Dimensions.get('window').width - 20) / 2,
@@ -190,6 +275,7 @@ var styles = StyleSheet.create({
   followArrivalTableBtn: {
     width: 40,
     backgroundColor: '#ececec',
+    color: 'black',
     fontSize: 14,
     paddingTop: 2,
     paddingBottom: 2,
@@ -206,6 +292,20 @@ var styles = StyleSheet.create({
   },
   followArrivalTableBtnSelected: {
     backgroundColor: '#9c0',
+  },
+  panelOptionButton: {
+    width: 40,
+    backgroundColor: '#ececec',
+    color: 'black',
+    fontSize: 14,
+    paddingTop: 2,
+    paddingBottom: 2,
+    paddingLeft: 5,
+    paddingRight: 5,
+    marginLeft: 2,
+    marginRight: 2,
+    borderColor: '#ddd',
+    borderWidth: 1,
   }
 });
 
