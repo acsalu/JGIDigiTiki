@@ -11,6 +11,8 @@ import {
   View
 } from 'react-native';
 import Button from 'react-native-button';
+import Util from './util';
+import realm from '../models/realm';
 
 const infoButtonImages = {
   'time-empty': require('../img/time-empty.png'),
@@ -24,7 +26,7 @@ const infoButtonImages = {
 };
 
 
-const PanelType = Object.freeze({'time': 1, 'certainty': 2, 'estrousState': 3, 'isWithIn5m': 4, 'isNearestNeighbor': 5});
+const PanelType = Object.freeze({'time': 1, 'certainty': 2, 'estrus': 3, 'isWithIn5m': 4, 'isNearestNeighbor': 5});
 
 class Panel extends Component {
   render() {
@@ -62,19 +64,28 @@ export default class FollowArrivalTable extends Component {
     this.panels = {};
     this.panels[PanelType.time] = ['time-empty', 'time-arrive-first', 'time-arrive-second', 'time-arrive-third',
       'time-depart-first', 'time-depart-second', 'time-depart-third', 'time-continues'].map(this.createInfoPanelButton);
+
+    const certaintyOrder = ['certain', 'uncertain', 'nestCertain', 'nestUncertain'];
+    const certaintyOptions = certaintyOrder.map((c, i) => Util.certaintyLabelsUser[c]);
+    const certaintyValues = certaintyOrder.map((c, i) => Util.certaintyLabels[c]);
+
+    const estrusOrder = ['a', 'b', 'c', 'd', 'e'];
+    const estrusOptions = estrusOrder.map((e, i) => Util.estrusLabelsUser[e]);
+    const estrusValues = estrusOrder.map((e, i) => Util.estrusLabels[e]);
+
     this.panels[PanelType.certainty] =
         (<Panel
             title={"Certainty:"}
-            options={['✓', '*', 'K✓', 'K*']}
-            values={['✓', '*', 'K✓', 'K*']}
-            onValueChange={(v) => {this._updateSelectedArrival('certainty', v)}}
+            options={certaintyOptions}
+            values={certaintyValues}
+            onValueChange={(v) => {this._updateSelectedArrival('certainty', v);}}
         />);
-    this.panels[PanelType.estrousState] =
+    this.panels[PanelType.estrus] =
         (<Panel
             title={"Uvimbe:"}
-            options={['.00', '.25', '.50', '.75', '1.0']}
-            values={['.00', '.25', '.50', '.75', '1.0']}
-            onValueChange={(v) => {this._updateSelectedArrival('estrousState', v)}}
+            options={estrusOptions}
+            values={estrusValues}
+            onValueChange={(v) => {this._updateSelectedArrival('estros', v)}}
         />);
     this.panels[PanelType.isWithIn5m] =
         (<Panel
@@ -93,10 +104,26 @@ export default class FollowArrivalTable extends Component {
 
   }
 
-  _updateArrival(chimp, field, newValue) {
+  _updateArrival(chimpId, field, newValue) {
     let newArrival = this.state.arrival;
-    newArrival[chimp][field] = newValue;
+    newArrival[chimpId][field] = newValue;
     this.setState(newArrival);
+    realm.write(() => {
+      const fa = this.state.arrival[chimpId];
+
+      const newFollowArrival = realm.create('FollowArrival', {
+        FA_FOL_date: this.props.followDate,
+        FA_FOL_B_focal_AnimID: this.props.focalChimpId,
+        FA_B_arr_AnimID: chimpId,
+        FA_type_of_certainty: parseInt(fa.certainty),
+        FA_type_of_cycle: parseInt(fa.estrus),
+        FA_closest_to_focal: fa.isNearestNeighbor,
+        FA_within_five_meters: fa.isWithIn5m
+      });
+    });
+
+    console.log(realm.objects('FollowArrival').length, " FollowArrivals in DB.");
+    console.log(this.state.arrival);
   }
 
   _updateSelectedArrival(field, newValue) {
@@ -108,8 +135,8 @@ export default class FollowArrivalTable extends Component {
   _createDefultFollowArrival(time) {
     return {
       time: time,
-      certainty: '✓',
-      estrousState: '.00',
+      certainty: Util.certaintyLabels.certain,
+      estrus: Util.estrusLabels.a,
       isWithIn5m: false,
       isNearestNeighbor: false
     }
@@ -169,6 +196,8 @@ export default class FollowArrivalTable extends Component {
     }
 
     const followArrival = this.state.arrival[c.name];
+    const certaintyLabel = Util.certaintyLabelsDb2UserMap[followArrival.certainty];
+    const estrusLabel = Util.estrusLabelsDb2UserMap[followArrival.estrus];
     return (
         <TouchableOpacity
             key={c.name}
@@ -182,19 +211,24 @@ export default class FollowArrivalTable extends Component {
               this._onRowPress(c)
               this.setState({panelType: PanelType.time});
             }}>{c.name}</Button>
+
             <Image source={infoButtonImages[followArrival['time']]} />
+
             <Button style={[styles.followArrivalTableBtn]} onPress={()=> {
               this._onRowPress(c)
               this.setState({panelType: PanelType.certainty});
-            }}>{followArrival.certainty}</Button>
+            }}>{certaintyLabel}</Button>
+
             <Button style={[styles.followArrivalTableBtn]} onPress={()=> {
               this._onRowPress(c)
-              this.setState({panelType: PanelType.estrousState});
-            }}>{followArrival.estrousState}</Button>
+              this.setState({panelType: PanelType.estrus});
+            }}>{estrusLabel}</Button>
+
             <Button style={[styles.followArrivalTableBtn]} onPress={()=> {
               this._onRowPress(c)
               this.setState({panelType: PanelType.isWithIn5m});
             }}>{followArrival.isWithIn5m ? "✓" : "✗"}</Button>
+
             <Button style={[styles.followArrivalTableBtn]} onPress={()=> {
               this._onRowPress(c)
               this.setState({panelType: PanelType.isNearestNeighbor});

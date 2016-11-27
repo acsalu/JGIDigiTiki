@@ -13,8 +13,7 @@ import {
   View
 } from 'react-native';
 import Button from 'react-native-button';
-import Realm from 'realm';
-import Follow from '../models/Follow';
+import realm from '../models/realm';
 
 export default class NewFollowScreen extends Component {
 
@@ -182,12 +181,11 @@ export default class NewFollowScreen extends Component {
                   ]
                 );
               } else {
-                const realm = new Realm({schema: [Follow]});
                 const year = this.state.date.getYear() + 1900;
                 const month = this.state.date.getMonth() + 1;
                 const day = this.state.date.getDate();
                 realm.write(() => {
-                  const newFollow = realm.create(Follow.className, {
+                  const newFollow = realm.create('Follow', {
                      FOL_date: this.state.date,
                      FOL_B_AnimID: this.state.focalChimpId,
                      FOL_CL_community_id: this.state.community,

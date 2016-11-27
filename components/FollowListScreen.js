@@ -9,15 +9,12 @@ import {
     Navigator,
     View
 } from 'react-native';
-import Button from 'react-native-button';
-import Realm from 'realm';
-import Follow from '../models/Follow';
+import realm from '../models/realm';
 
 export default class FollowListScreen extends Component {
 
   render() {
-    const realm = new Realm({schema: [Follow]});
-    const follows = realm.objects(Follow.className);
+    const follows = realm.objects('Follow');
     const rows = follows.map((f, i) => {
       // TODO: Show arrivals
       return (

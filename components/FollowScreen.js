@@ -43,7 +43,9 @@ export default class FollowScreen extends Component {
             }}
         />
         <FollowArrivalTable
-            chimps={this.props.chimps} focalChimpId={this.props.follow.FOL_B_AnimID} />
+            chimps={this.props.chimps}
+            focalChimpId={this.props.follow.FOL_B_AnimID}
+            followDate={this.props.follow.FOL_date} />
       </View>
     );
   }
