@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import Button from 'react-native-button';
 import realm from '../models/realm';
+import Util from './util';
 
 export default class NewFollowScreen extends Component {
 
@@ -35,12 +36,9 @@ export default class NewFollowScreen extends Component {
 
   getAllTimesForUser = () => {
     return this.props.times.map((val, i) => {
-      // We expect something like 01-12:00J, so find the first - and take
-      // everything after that.
-      const dashIndex = val.indexOf('-');
       return {
         dbTime: val,
-        userTime: val.substring(dashIndex + 1)
+        userTime: Util.dbTime2UserTime(val)
       };
     });
   };
