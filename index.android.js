@@ -20,6 +20,10 @@ import NewFollowScreen from './components/NewFollowScreen';
 
 import chimps from './data/chimp-list.json';
 import times from './data/time-list.json';
+import food from './data/food-list.json';
+import foodParts from './data/food-part-list.json';
+import species from './data/species-list.json';
+import speciesNumbers from './data/species-number-list.json';
 
 export default class JGIDigiTiki extends Component {
   render() {
@@ -42,6 +46,10 @@ export default class JGIDigiTiki extends Component {
                 <FollowScreen
                   navigator={navigator}
                   chimps={chimpsInCommunity}
+                  food={food}
+                  foodParts={foodParts}
+                  species={species}
+                  speciesNumbers={speciesNumbers}
                   follow={route.follow}
                   followTime={route.followTime}
                   times={times}

@@ -1,3 +1,9 @@
+Number.prototype.pad = function(size) {
+  var s = String(this);
+  while (s.length < (size || 2)) {s = "0" + s;}
+  return s;
+}
+
 export default class Util {
   static certaintyLabels = {
     certain: '1',
@@ -42,5 +48,22 @@ export default class Util {
     '50': '.50',
     '75': '.75',
     '100': '1.0'
+  }
+
+  static dbTime2UserTime = (dbTime) => {
+    // We expect something like 01-12:00J, so find the first - and take
+    // everything after that.
+    const dashIndex = dbTime.indexOf('-');
+    return dbTime.substring(dashIndex + 1);
+  }
+
+  static getTrackerTimes = (time) => {
+    const columnIndex = time.indexOf(':');
+    const startMinute = parseInt(time.substring(columnIndex + 1, columnIndex + 3));
+    let minutes = [];
+    for (let i = 0; i < 15; ++i) { minutes.push(startMinute + i); }
+    const hourString = time.substring(0, columnIndex + 1);
+    const lastCharacter = time.slice(-1);
+    return minutes.map((m, i) => { return hourString + m.pad(2) + lastCharacter });
   }
 }

@@ -44,4 +44,32 @@ FollowArrival.schema = {
   }
 };
 
-export default new Realm({schema: [Follow, FollowArrival]});
+class Species {}
+Species.className = 'Species';
+Species.schema = {
+  name: Species.className,
+  properties: {
+    date: 'date', // date
+    startTime: 'string', // startTime
+    endTime: 'string', // endTime
+    focalId: 'string', // focalId
+    speciesName: 'string', // speciesName
+    speciesCount: 'int', // speciesCount
+  }
+};
+
+class Food {}
+Food.className = 'Food';
+Food.schema = {
+  name: Food.className,
+  properties: {
+    date: 'date',
+    startTime: 'string',
+    endTime: 'string',
+    focalId: 'string',
+    foodName: 'string',
+    foodPart: 'string',
+  }
+};
+
+export default new Realm({schema: [Follow, FollowArrival, Species, Food]});
