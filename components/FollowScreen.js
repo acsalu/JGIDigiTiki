@@ -13,7 +13,16 @@ import {
 } from 'react-native';
 import Button from 'react-native-button';
 import FollowArrivalTable from './FollowArrivalTable';
+import ItemTrackerModal from './ItemTrackerModal';
+
 import util from './util';
+import realm from '../models/realm';
+
+const ModalType = Object.freeze({
+  none: 0,
+  food: 1,
+  species: 2
+});
 
 export default class FollowScreen extends Component {
 
@@ -27,10 +36,32 @@ export default class FollowScreen extends Component {
     selectedFoodPart: null,
     modalMainList: [],
     modalSubList: [],
+    modalType: ModalType.none
   };
 
   setModalVisible(visible) {
     this.setState({modalVisible: visible});
+  }
+
+  setModalType(type) {
+    switch (type) {
+      case ModalType.food:
+        this.setState({
+          modalMainList: this.props.food,
+          modalSubList: this.props.foodParts,
+        });
+        break;
+      case ModalType.species:
+        this.setState({
+          modalMainList: this.props.species,
+          modalSubList: this.props.speciesNumbers
+        });
+        break;
+    }
+
+    this.setState({
+      modalType: type
+    });
   }
 
   render() {
@@ -40,67 +71,40 @@ export default class FollowScreen extends Component {
     const previousFollowTime = followTimeIndex !== beginFollowTimeIndex ? this.props.times[followTimeIndex - 1] : null;
     const nextFollowTime = followTimeIndex !== this.props.times.length - 1 ? this.props.times[followTimeIndex + 1] : null;
 
-    const modalMainPickerItems = this.state.modalMainList.map((e, i) => {
-      return (<Picker.Item key={i} label={e[1]} value={e[0]} />);
-    });
-
-    const modalSubPickerItems = this.state.modalSubList.map((e, i) => {
-      return (<Picker.Item key={i} label={e[1]} value={e[0]} />);
-    });
-
-    const timePickerItems = util.getTrackerTimes(
-        util.dbTime2UserTime(beginFollowTime)).map((e, i) => {
-      return (<Picker.Item key={i} label={e} value={e} />);
-    });
-
     return(
       <View>
-        <Modal
-            animationType={"slide"}
-            transparent={false}
+
+        <ItemTrackerModal
+            title={this.state.modalMainList == this.props.food ? "Food" : "Species"}
             visible={this.state.modalVisible}
-            onRequestClose={() => {alert("Modal has been closed.")}}
-        >
-          <View style={{marginTop: 22}}>
-              <View style={styles.followScreenHeaderInfoRow}>
-                <Button
-                    style={styles.btn}
-                    onPress={() => {
-                  this.setModalVisible(!this.state.modalVisible)
-                }}>
-                  Kubari (Save)
-                </Button>
-
-                <Text style={styles.followScreenHeaderMainText}>
-                  {this.state.modalMainList == this.props.food ? "Food" : "Species"}
-                </Text>
-
-                <Button
-                    style={styles.btn}
-                    onPress={() => {
-                  this.setModalVisible(!this.state.modalVisible)
-                }}>
-                  Hapana (Cancel)
-                </Button>
-              </View>
-
-              <Picker>{timePickerItems}</Picker>
-              <Text>hadi</Text>
-              <Picker>{timePickerItems}</Picker>
-
-              <Picker
-                  selectedValue={this.state.selectedFood}
-                  onValueChange={(v)=>{this.setState({selectedFood: v})}}>
-                {modalMainPickerItems}
-              </Picker>
-
-              <Picker
-                  selectedValue={this.state.selectedFoodPart}
-                  onValueChange={(v)=>{this.setState({selectedFoodPart: v})}}>
-                {modalSubPickerItems}
-              </Picker>
-          </View>
-        </Modal>
+            mainList={this.state.modalMainList}
+            secondaryList={this.state.modalSubList}
+            beginFollowTime={beginFollowTime}
+            onDismiss={()=>{this.setModalVisible(false)}}
+            onSave={(data)=>{
+              realm.write(() => {
+                if (this.state.modalType === ModalType.food) {
+                  const newFood = realm.create('Food', {
+                    date: this.props.follow.FOL_date,
+                    focalId: this.props.follow.FOL_B_AnimID,
+                    foodName: data.mainSelection,
+                    foodPart: data.secondarySelection,
+                    startTime: data.beginTime,
+                    endTime: data.endTime
+                  });
+                } else if (this.state.modalType === ModalType.species) {
+                  const newSpecies = realm.create('Species', {
+                    date: this.props.follow.FOL_date,
+                    focalId: this.props.follow.FOL_B_AnimID,
+                    foodName: data.mainSelection,
+                    foodPart: data.secondarySelection,
+                    startTime: data.beginTime,
+                    endTime: data.endTime
+                  });
+                }
+              });
+            }}
+        />
 
         <FollowScreenHeader
             follow={this.props.follow}
@@ -120,21 +124,16 @@ export default class FollowScreen extends Component {
                 });
             }}
             onFoodTrackerSelected={()=>{
-              this.setState({
-                modalMainList: this.props.food,
-                modalSubList: this.props.foodParts
-              });
+              this.setModalType(ModalType.food);
               this.setModalVisible(true);
             }}
 
             onSpeciesTrackerSelected={()=>{
-              this.setState({
-                modalMainList: this.props.species,
-                modalSubList: this.props.speciesNumbers
-              });
+              this.setModalType(ModalType.species);
               this.setModalVisible(true);
             }}
         />
+
         <FollowArrivalTable
             chimps={this.props.chimps}
             focalChimpId={this.props.follow.FOL_B_AnimID}
@@ -199,13 +198,13 @@ class ItemTracker extends Component {
     return (
         <View style={styles.headerRow}>
           <Button
-              style={styles.btn}
+              style={[styles.btn, styles.btnInGroup]}
               onPress={()=>{this.props.onTrigger();}}>{this.props.title}</Button>
           <Button
-              style={styles.btn}
+              style={[styles.btn, styles.btnInGroup]}
           >{this.props.activeListTitle}</Button>
           <Button
-              style={styles.btn}
+              style={[styles.btn, styles.btnInGroup]}
           >{this.props.finishedListTitle}</Button>
         </View>
     )
@@ -241,7 +240,7 @@ const styles = {
     height: 50,
   },
   followScreenHeaderMainText: {
-    fontSize: 20,
+    fontSize: 34,
     color: '#000'
   },
   btn: {
@@ -254,4 +253,7 @@ const styles = {
     backgroundColor: '#33b5e5',
     borderRadius: 3
   },
+  btnInGroup: {
+    marginRight: 8
+  }
 };
