@@ -187,6 +187,7 @@ export default class FollowArrivalTable extends Component {
           <TouchableOpacity
               key={c.name}
               onPress={()=> {this._onRowPress(c)}}
+              style={{marginBottom: 10}}
           >
             <View style={styles.item}>
               <Button style={chimpButtonStyles} onPress={()=> {this._onRowPress(c)}}>{c.name}</Button>
@@ -201,6 +202,7 @@ export default class FollowArrivalTable extends Component {
     return (
         <TouchableOpacity
             key={c.name}
+            style={{marginBottom: 10}}
             onPress={()=> {
               this._onRowPress(c)
               this.setState({panelType: PanelType.time});
@@ -283,7 +285,7 @@ var styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     height: 50,
-    marginBottom: 80,
+    marginBottom: 10,
     borderWidth: 1,
     paddingTop: 20,
     marginLeft: 10,
@@ -291,7 +293,6 @@ var styles = StyleSheet.create({
   },
   item: {
     width: (Dimensions.get('window').width - 20) / 2,
-    height: 30,
     padding: 3,
     flexDirection: 'row'
   },
@@ -307,19 +308,19 @@ var styles = StyleSheet.create({
     flex: 1
   },
   followArrivalTableBtn: {
-    width: 40,
+    width: 50,
     backgroundColor: '#ececec',
     color: 'black',
-    fontSize: 14,
-    paddingTop: 2,
-    paddingBottom: 2,
-    paddingLeft: 5,
-    paddingRight: 5,
+    paddingTop: 10,
+    paddingBottom: 10,
+    paddingLeft: 3,
+    paddingRight: 3,
     marginLeft: 2,
     marginRight: 2,
     borderColor: '#ddd',
     borderWidth: 1,
-    flex: 1
+    flex: 1,
+    fontSize: 14,
   },
   followArrivalTableBtnFocal: {
     backgroundColor: '#33b5e5',
