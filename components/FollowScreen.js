@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import Button from 'react-native-button';
 import FollowArrivalTable from './FollowArrivalTable';
+import ItemTracker from './ItemTracker';
 import ItemTrackerModal from './ItemTrackerModal';
 
 import util from './util';
@@ -36,11 +37,16 @@ export default class FollowScreen extends Component {
     selectedFoodPart: null,
     modalMainList: [],
     modalSubList: [],
-    modalType: ModalType.none
+    modalType: ModalType.none,
+    itemTrackerData: null
   };
 
   setModalVisible(visible) {
     this.setState({modalVisible: visible});
+  }
+
+  setItemTrackerData(data) {
+    this.setState({itemTrackerData: data});
   }
 
   setModalType(type) {
@@ -64,12 +70,28 @@ export default class FollowScreen extends Component {
     });
   }
 
+  editFood(foodName, foodPart) {
+    const food = this.state.activeFood.filter((f) => f.foodName === foodName && f.foodPart === foodPart)[0];
+    this.setItemTrackerData(food);
+    this.setModalVisible(true);
+  }
+
+  editSpecies(speciesName) {
+    const species = this.state.activeSpecies.filter((s) => s.speciesName === speciesName)[0];
+    this.setItemTrackerData(species);
+    this.setModalVisible(true);
+  }
+
   render() {
     const beginFollowTime = this.props.follow.FOL_time_begin;
     const beginFollowTimeIndex = this.props.times.indexOf(beginFollowTime);
     const followTimeIndex = this.props.times.indexOf(this.props.followTime);
     const previousFollowTime = followTimeIndex !== beginFollowTimeIndex ? this.props.times[followTimeIndex - 1] : null;
     const nextFollowTime = followTimeIndex !== this.props.times.length - 1 ? this.props.times[followTimeIndex + 1] : null;
+
+    console.log(this.state.itemTrackerData);
+    console.log(this.state.activeFood);
+    console.log(this.state.finishedFood);
 
     return(
       <View>
@@ -80,6 +102,17 @@ export default class FollowScreen extends Component {
             mainList={this.state.modalMainList}
             secondaryList={this.state.modalSubList}
             beginFollowTime={beginFollowTime}
+            data={this.state.itemTrackerData}
+            startTime={this.state.itemTrackerData !== null ? this.state.itemTrackerData.startTime : null}
+            endTime={this.state.itemTrackerData !== null ? this.state.itemTrackerData.endTime : null}
+            mainSelection={
+              this.state.itemTrackerData !== null && this.state.modalType !== ModalType.none ?
+                (this.state.modalType !== ModalType.food ? this.state.itemTrackerData.foodName : this.state.itemTrackerData.speciesName) : null
+            }
+            secondarySelection={
+              this.state.itemTrackerData !== null && this.state.modalType !== ModalType.none ?
+                  (this.state.modalType !== ModalType.food ? this.state.itemTrackerData.foodPart : this.state.itemTrackerData.speciesCount) : null
+            }
             onDismiss={()=>{this.setModalVisible(false)}}
             onSave={(data)=>{
               realm.write(() => {
@@ -89,16 +122,26 @@ export default class FollowScreen extends Component {
                     focalId: this.props.follow.FOL_B_AnimID,
                     foodName: data.mainSelection,
                     foodPart: data.secondarySelection,
-                    startTime: data.beginTime,
+                    startTime: data.startTime,
                     endTime: data.endTime
                   });
+
+                  if (data.endTime === 'ongoing') {
+                    let newActiveFood = this.state.activeFood;
+                    newActiveFood.push(newFood);
+                    this.setState({activeFood: newActiveFood});
+                  } else {
+                    let newFinishedFood = this.state.finishedFood;
+                    newFinishedFood.push(newFood);
+                    this.setState({finishedFood: newFinishedFood});
+                  }
                 } else if (this.state.modalType === ModalType.species) {
                   const newSpecies = realm.create('Species', {
                     date: this.props.follow.FOL_date,
                     focalId: this.props.follow.FOL_B_AnimID,
-                    foodName: data.mainSelection,
-                    foodPart: data.secondarySelection,
-                    startTime: data.beginTime,
+                    speciesName: data.mainSelection,
+                    speciesCount: data.secondarySelection,
+                    startTime: data.startTime,
                     endTime: data.endTime
                   });
                 }
@@ -109,6 +152,10 @@ export default class FollowScreen extends Component {
         <FollowScreenHeader
             follow={this.props.follow}
             followTime={this.props.followTime}
+            activeFood={this.state.activeFood.map((f, i) => f.foodName + ' ' + f.foodPart)}
+            finishedFood={this.state.finishedFood.map((f, i) => f.foodName + ' ' + f.foodPart)}
+            activeSpecies={this.state.activeSpecies.map((s, i) => s.speciesName)}
+            finishedSpecies={this.state.finishedSpecies.map((s, i) => s.speciesName)}
             onPreviousPress={()=> {
               this.props.navigator.replace({
                   id: 'FollowScreen',
@@ -125,12 +172,31 @@ export default class FollowScreen extends Component {
             }}
             onFoodTrackerSelected={()=>{
               this.setModalType(ModalType.food);
+              this.setItemTrackerData(null);
               this.setModalVisible(true);
             }}
 
             onSpeciesTrackerSelected={()=>{
               this.setModalType(ModalType.species);
+              this.setItemTrackerData(null);
               this.setModalVisible(true);
+            }}
+
+            onSelectActiveFood={(f) => {
+              const spaceIndex = f.indexOf(' ');
+              const foodName = f.substring(0, spaceIndex);
+              const foodPart = f.substring(spaceIndex + 1);
+              this.editFood(foodName, foodPart);
+            }}
+
+            onSelectFinishedFood={(f) => {
+            }}
+
+            onSelectActiveSpecies={(s) => {
+              this.editSpecies(s);
+            }}
+
+            onSelectFinishedSpecies={(s) => {
             }}
         />
 
@@ -138,10 +204,6 @@ export default class FollowScreen extends Component {
             chimps={this.props.chimps}
             focalChimpId={this.props.follow.FOL_B_AnimID}
             followDate={this.props.follow.FOL_date}
-            activeFood={this.state.activeFood}
-            finishedFood={this.state.finishedFood}
-            activeSpecies={this.state.activeSpecies}
-            finishedSpecies={this.state.finishedSpecies}
         />
       </View>
     );
@@ -174,40 +236,26 @@ class FollowScreenHeader extends Component {
           </View>
           <ItemTracker
               title='Food'
-              activeListTitle='Active Food'
-              finishedListTitle='Finished Food'
+              activeListTitle='Active'
+              finishedListTitle='Finished'
               activeItems={this.props.activeFood}
               finishedItems={this.props.finishedFood}
               onTrigger={this.props.onFoodTrackerSelected}
+              onSelectActiveItem={this.props.onSelectActiveFood}
+              onSelectFinishedItem={this.props.onSelectFinishedFood}
           />
           <ItemTracker
               title='Species'
-              activeListTitle='Active Species'
-              finishedListTitle='Finished Species'
+              activeListTitle='Active'
+              finishedListTitle='Finished'
               activeItems={this.props.activeSpecies}
               finishedItems={this.props.finishedSpecies}
               onTrigger={this.props.onSpeciesTrackerSelected}
+              onSelectActiveItem={this.props.onSelectActiveSpecies}
+              onSelectFinishedItem={this.props.onSelectFinishedSpecies}
           />
         </View>
     );
-  }
-}
-
-class ItemTracker extends Component {
-  render() {
-    return (
-        <View style={styles.headerRow}>
-          <Button
-              style={[styles.btn, styles.btnInGroup]}
-              onPress={()=>{this.props.onTrigger();}}>{this.props.title}</Button>
-          <Button
-              style={[styles.btn, styles.btnInGroup]}
-          >{this.props.activeListTitle}</Button>
-          <Button
-              style={[styles.btn, styles.btnInGroup]}
-          >{this.props.finishedListTitle}</Button>
-        </View>
-    )
   }
 }
 

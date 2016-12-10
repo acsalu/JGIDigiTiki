@@ -13,11 +13,24 @@ import util from './util';
 export default class ItemTrackerModal extends Component {
 
   state = {
-    beginTime: null,
-    endTime: null,
-    mainSelection: null,
-    secondarySelection: null
+    startTime: this.props.startTime,
+    endTime: this.props.endTime,
+    mainSelection: this.props.mainSelection,
+    secondarySelection: this.props.secondarySelection,
   };
+
+  componentWillReceiveProps(nextProps) {
+    // You don't have to do this check first, but it can help prevent an unneeded render
+    // if (nextProps.startTime !== this.state.startTime) {
+    //   this.setState({ startTime: nextProps.startTime });
+    // }
+    this.setState({
+      startTime: this.props.startTime,
+      endTime: this.props.endTime,
+      mainSelection: this.props.mainSelection,
+      secondarySelection: this.props.secondarySelection,
+    });
+  }
 
   render() {
 
@@ -33,7 +46,7 @@ export default class ItemTrackerModal extends Component {
         .map((e, i) => {
           return (<Picker.Item key={i} label={e} value={e} />);
         });
-    timePickerItems.unshift((<Picker.Item key={-1} label="s:dk" value={null} />));
+    timePickerItems.unshift((<Picker.Item key={-1} label="s:dk" value='ongoing' />));
 
     return (
         <Modal
@@ -48,14 +61,14 @@ export default class ItemTrackerModal extends Component {
                   style={styles.btn}
                   styleDisabled={{opacity: 0.5}}
                   disabled={
-                    [this.state.mainSelection, this.state.secondarySelection, this.state.beginTime]
+                    [this.state.mainSelection, this.state.secondarySelection, this.state.startTime]
                         .some(x => x === null)
                   }
                   onPress={() => {
                     const data = {
                       mainSelection: this.state.mainSelection,
                       secondarySelection: this.state.secondarySelection,
-                      beginTime: this.state.beginTime,
+                      startTime: this.state.startTime,
                       endTime: this.state.endTime !== null ? this.state.endTime : 'ongoing'
                     };
                     this.props.onSave(data);
@@ -79,8 +92,8 @@ export default class ItemTrackerModal extends Component {
 
             <View>
               <Picker
-                  selectedValue={this.state.beginTime}
-                  onValueChange={(v)=>{this.setState({beginTime: v})}}
+                  selectedValue={this.state.startTime}
+                  onValueChange={(v)=>{this.setState({startTime: v})}}
                   style={{}}
               >
                 {timePickerItems}
