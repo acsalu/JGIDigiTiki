@@ -85,7 +85,7 @@ export default class FollowArrivalTable extends Component {
             title={"Uvimbe:"}
             options={estrusOptions}
             values={estrusValues}
-            onValueChange={(v) => {this._updateSelectedArrival('estros', v)}}
+            onValueChange={(v) => {this._updateSelectedArrival('estrus', v)}}
         />);
     this.panels[PanelType.isWithIn5m] =
         (<Panel
@@ -186,11 +186,17 @@ export default class FollowArrivalTable extends Component {
       return (
           <TouchableOpacity
               key={c.name}
-              onPress={()=> {this._onRowPress(c)}}
+              onPress={()=> {
+                this._onRowPress(c);
+                this.setState({panelType: PanelType.time});
+              }}
               style={{marginBottom: 10}}
           >
             <View style={styles.item}>
-              <Button style={chimpButtonStyles} onPress={()=> {this._onRowPress(c)}}>{c.name}</Button>
+              <Button style={chimpButtonStyles} onPress={()=> {
+                this._onRowPress(c);
+                this.setState({panelType: PanelType.time});
+              }}>{c.name}</Button>
             </View>
           </TouchableOpacity>
       );
@@ -248,6 +254,7 @@ export default class FollowArrivalTable extends Component {
     const femaleChimpRows = femaleChimps.map(this.createChimpRow);
     const maleChimpRows = maleChimps.map(this.createChimpRow);
 
+    console.log("render " + this.state.panelType);
     let panelContent = this.panels[this.state.panelType];
 
     return (
