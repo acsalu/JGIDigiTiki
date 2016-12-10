@@ -11,13 +11,11 @@ import {
   Picker,
   View
 } from 'react-native';
-import Button from 'react-native-button';
-import FollowArrivalTable from './FollowArrivalTable';
-import ItemTracker from './ItemTracker';
-import ItemTrackerModal from './ItemTrackerModal';
+import FollowArrivalTable from '../FollowArrivalTable';
+import ItemTrackerModal from '../ItemTrackerModal';
+import FollowScreenHeader from './FollowScreenHeader';
 
-import util from './util';
-import realm from '../models/realm';
+import realm from '../../models/realm';
 
 const ModalType = Object.freeze({
   none: 0,
@@ -206,55 +204,6 @@ export default class FollowScreen extends Component {
             followDate={this.props.follow.FOL_date}
         />
       </View>
-    );
-  }
-}
-
-class FollowScreenHeader extends Component {
-  render() {
-    const isFirstFollow = this.props.followTime === this.props.follow.FOL_time_begin;
-
-    return (
-        <View style={styles.followScreenHeader}>
-          <View style={styles.followScreenHeaderInfoRow}>
-            <Button
-                style={[{opacity: (isFirstFollow ? 0.0 : 1.0)}, styles.btn]}
-                onPress={this.props.onPreviousPress}
-                disabled={isFirstFollow}
-            >
-              Iliyopita
-            </Button>
-            <Text style={styles.followScreenHeaderMainText}>
-              {util.dbTime2UserTime(this.props.followTime)}
-            </Text>
-            <Button
-                style={styles.btn}
-                onPress={this.props.onNextPress}
-            >
-              Inayofuata
-            </Button>
-          </View>
-          <ItemTracker
-              title='Food'
-              activeListTitle='Active'
-              finishedListTitle='Finished'
-              activeItems={this.props.activeFood}
-              finishedItems={this.props.finishedFood}
-              onTrigger={this.props.onFoodTrackerSelected}
-              onSelectActiveItem={this.props.onSelectActiveFood}
-              onSelectFinishedItem={this.props.onSelectFinishedFood}
-          />
-          <ItemTracker
-              title='Species'
-              activeListTitle='Active'
-              finishedListTitle='Finished'
-              activeItems={this.props.activeSpecies}
-              finishedItems={this.props.finishedSpecies}
-              onTrigger={this.props.onSpeciesTrackerSelected}
-              onSelectActiveItem={this.props.onSelectActiveSpecies}
-              onSelectFinishedItem={this.props.onSelectFinishedSpecies}
-          />
-        </View>
     );
   }
 }
