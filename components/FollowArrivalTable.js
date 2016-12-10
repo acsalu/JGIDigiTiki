@@ -85,7 +85,7 @@ export default class FollowArrivalTable extends Component {
             title={"Uvimbe:"}
             options={estrusOptions}
             values={estrusValues}
-            onValueChange={(v) => {this._updateSelectedArrival('estros', v)}}
+            onValueChange={(v) => {this._updateSelectedArrival('estrus', v)}}
         />);
     this.panels[PanelType.isWithIn5m] =
         (<Panel
