@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 
 import FollowListScreen from './components/FollowListScreen';
-import FollowScreen from './components/FollowScreen';
+import FollowScreen from './components/FollowScreen/FollowScreen';
 import MenuScreen from './components/MenuScreen';
 import NewFollowScreen from './components/NewFollowScreen';
 
