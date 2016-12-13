@@ -77,8 +77,6 @@ export default class FollowScreen extends Component {
     };
   };
 
-
-
   setModalVisible(visible) {
     this.setState({modalVisible: visible});
   }
@@ -143,46 +141,56 @@ export default class FollowScreen extends Component {
             initialMainSelection={this.state.itemTrackerInitialMainSelection}
             initialSecondarySelection={this.state.itemTrackerInitialSecondarySelection}
             onDismiss={()=>{this.setModalVisible(false)}}
-            onSave={(data)=>{
-              // TODO: Only update old data
+            onSave={(data, isEditing)=>{
+              const className = this.state.modalType === ModalType.food ? 'Food' : 'Species';
+              const mainFieldName = this.state.modalType === ModalType.food ? 'foodName' : 'speciesName';
+              const secondaryFieldName = this.state.modalType === ModalType.food ? 'foodPart' : 'speciesCount';
+              let newActiveList = this.state.modalType === ModalType.food ? this.state.activeFood : this.state.activeSpecies;
+              let newFinishedList = this.state.modalType === ModalType.food ? this.state.finishedFood : this.state.finishedSpecies;
+
               realm.write(() => {
-                if (this.state.modalType === ModalType.food) {
-                  const newFood = realm.create('Food', {
+                if (!isEditing) {
+                  let objectDict = {
                     date: this.props.follow.FOL_date,
                     focalId: this.props.follow.FOL_B_AnimID,
-                    foodName: data.mainSelection,
-                    foodPart: data.secondarySelection,
                     startTime: data.startTime,
                     endTime: data.endTime
-                  });
+                  };
+                  objectDict[mainFieldName] = data.mainSelection;
+                  objectDict[secondaryFieldName] = data.secondarySelection;
+
+                  const newObject = realm.create(className, objectDict);
 
                   if (data.endTime === 'ongoing') {
-                    let newActiveFood = this.state.activeFood;
-                    newActiveFood.push(newFood);
-                    this.setState({activeFood: newActiveFood});
+                    newActiveList.push(newObject);
+                    if (this.state.modalType === ModalType.food) {
+                      this.setState({activeFood: newActiveList});
+                    } else {
+                      this.setState({activeSpecies: newActiveList});
+                    }
                   } else {
-                    let newFinishedFood = this.state.finishedFood;
-                    newFinishedFood.push(newFood);
-                    this.setState({finishedFood: newFinishedFood});
+                    newFinishedList.push(newObject);
+                    if (this.state.modalType === ModalType.food) {
+                      this.setState({finishedFood: newFinishedList});
+                    } else {
+                      this.setState({finishedSpecies: newFinishedList});
+                    }
                   }
-                } else if (this.state.modalType === ModalType.species) {
-                  const newSpecies = realm.create('Species', {
-                    date: this.props.follow.FOL_date,
-                    focalId: this.props.follow.FOL_B_AnimID,
-                    speciesName: data.mainSelection,
-                    speciesCount: parseInt(data.secondarySelection),
-                    startTime: data.startTime,
-                    endTime: data.endTime
-                  });
+                } else {
 
-                  if (data.endTime === 'ongoing') {
-                    let newActiveSpecies = this.state.activeSpecies;
-                    newActiveSpecies.push(newSpecies);
-                    this.setState({activeSpecies: newActiveSpecies});
-                  } else {
-                    let newFinishedSpecies = this.state.finishedSpecies;
-                    newFinishedSpecies.push(newSpecies);
-                    this.setState({finishedSpecies: newFinishedSpecies});
+                  let object = newActiveList.filter((o) => o[mainFieldName] === data.mainSelection && o[secondaryFieldName] === data.secondarySelection)[0];
+                  object.startTime = data.startTime;
+                  object.endTime = data.endTime;
+
+                  if (data.endTime !== 'ongoing') {
+                    const index = newActiveList.indexOf(object);
+                    newActiveList.splice(index, 1);
+                    newFinishedList.push(object);
+                    if (this.state.modalType === ModalType.food) {
+                      this.setState({activeFood: newActiveList, finishedFood: newFinishedList});
+                    } else {
+                      this.setState({activeSpecies: newActiveList, finishedSpecies: newFinishedList});
+                    }
                   }
                 }
               });

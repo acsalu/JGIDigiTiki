@@ -17,6 +17,7 @@ export default class ItemTrackerModal extends Component {
     endTime: this.props.endTime,
     mainSelection: this.props.mainSelection,
     secondarySelection: this.props.secondarySelection,
+    isEditing: this.props.startTime !== null
   };
 
   componentWillReceiveProps(nextProps) {
@@ -29,6 +30,7 @@ export default class ItemTrackerModal extends Component {
       endTime: nextProps.initialEndTime,
       mainSelection: nextProps.initialMainSelection,
       secondarySelection: nextProps.initialSecondarySelection,
+      isEditing: nextProps.initialStartTime !== null
     });
   }
 
@@ -71,7 +73,7 @@ export default class ItemTrackerModal extends Component {
                       startTime: this.state.startTime,
                       endTime: this.state.endTime !== null ? this.state.endTime : 'ongoing'
                     };
-                    this.props.onSave(data);
+                    this.props.onSave(data, this.state.isEditing);
                     this.props.onDismiss();
                   }}>
                 Kubari (Save)
