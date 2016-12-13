@@ -32,7 +32,7 @@ export default class ItemTracker extends Component {
               style={styles.btn}
               onPress={()=>{this.props.onTrigger();}}>{this.props.title}</Button>
 
-          <Picker style={styles.picker}
+          <Picker style={[styles.picker, activePickerItems.length === 1 ? styles.hidden : {}]}
                   onValueChange={(v) => {
                     if (v !== null) {
                       this.props.onSelectActiveItem(v);
@@ -43,7 +43,7 @@ export default class ItemTracker extends Component {
             {activePickerItems}
           </Picker>
 
-          <Picker style={styles.picker}
+          <Picker style={[styles.picker, finishedPickerItems.length === 1 ? styles.hidden : {}]}
                   onValueChange={(v) => {this.props.onSelectFinishedItem(v);}}
                   selectedValue={this.state.dummyFinishedItem}
           >
@@ -78,5 +78,10 @@ const styles = {
     backgroundColor: '#33b5e5',
     borderRadius: 3,
     marginRight: 8
+  },
+  hidden: {
+    height: 0,
+    width: 0,
+    opacity: 0
   }
 };
