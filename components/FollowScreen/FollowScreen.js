@@ -25,58 +25,100 @@ const ModalType = Object.freeze({
 
 export default class FollowScreen extends Component {
 
-  state = {
-    modalVisible: false,
-    activeFood: [],
-    finishedFood: [],
-    activeSpecies: [],
-    finishedSpecies: [],
-    selectedFood: null,
-    selectedFoodPart: null,
-    modalMainList: [],
-    modalSubList: [],
-    modalType: ModalType.none,
-    itemTrackerData: null
+  constructor(props) {
+    super(props);
+
+    const focalId = this.props.follow.FOL_B_AnimID;
+    const date = this.props.follow.FOL_date;
+
+    // Populate food in db
+    const allFood = realm.objects('Food').filtered('focalId = $0 AND date = $1', focalId, date);
+
+    let activeFood = [];
+    let finishedFood = [];
+
+    for (let i = 0; i < allFood.length; i++) {
+      const food = allFood[i];
+      if (food.endTime === 'ongoing') {
+        activeFood.push(food);
+      } else {
+        finishedFood.push(food);
+      }
+    }
+
+    // Populate species in db
+    const allSpecies = realm.objects('Species').filtered('focalId = $0 AND date = $1', focalId, date);
+
+    let activeSpecies = [];
+    let finishedSpecies = [];
+
+    for (let i = 0; i < allSpecies.length; i++) {
+      const species = allSpecies[i];
+      if (species.endTime === 'ongoing') {
+        activeSpecies.push(species);
+      } else {
+        finishedSpecies.push(species);
+      }
+    }
+
+    this.state = {
+      modalVisible: false,
+      activeFood: activeFood,
+      finishedFood: finishedFood,
+      activeSpecies: activeSpecies,
+      finishedSpecies: finishedSpecies,
+      modalMainList: [],
+      modalSubList: [],
+      modalType: ModalType.none,
+      itemTrackerInitialStartTime: null,
+      itemTrackerInitialEndTime: null,
+      itemTrackerInitialMainSelection: null,
+      itemTrackerInitialSecondarySelection: null
+    };
   };
+
+
 
   setModalVisible(visible) {
     this.setState({modalVisible: visible});
   }
 
-  setItemTrackerData(data) {
-    this.setState({itemTrackerData: data});
-  }
-
-  setModalType(type) {
+  updateItemTrackerData(type, data) {
     switch (type) {
       case ModalType.food:
         this.setState({
+          modalType: ModalType.food,
           modalMainList: this.props.food,
           modalSubList: this.props.foodParts,
+          itemTrackerInitialStartTime: data ? data.startTime : null,
+          itemTrackerInitialEndTime: data ? data.endTime : null,
+          itemTrackerInitialMainSelection: data ? data.foodName : null,
+          itemTrackerInitialSecondarySelection: data ? data.foodPart : null,
         });
         break;
       case ModalType.species:
         this.setState({
+          modalType: ModalType.species,
           modalMainList: this.props.species,
-          modalSubList: this.props.speciesNumbers
+          modalSubList: this.props.speciesNumbers,
+          itemTrackerInitialStartTime: data ? data.startTime : null,
+          itemTrackerInitialEndTime: data ? data.endTime : null,
+          itemTrackerInitialMainSelection: data ? data.speciesName : null,
+          itemTrackerInitialSecondarySelection: data ? data.speciesCount : null,
         });
         break;
     }
-
-    this.setState({
-      modalType: type
-    });
   }
 
   editFood(foodName, foodPart) {
     const food = this.state.activeFood.filter((f) => f.foodName === foodName && f.foodPart === foodPart)[0];
-    this.setItemTrackerData(food);
+    this.updateItemTrackerData(ModalType.food, food);
     this.setModalVisible(true);
   }
 
   editSpecies(speciesName) {
     const species = this.state.activeSpecies.filter((s) => s.speciesName === speciesName)[0];
-    this.setItemTrackerData(species);
+    this.updateItemTrackerData(ModalType.species, species);
     this.setModalVisible(true);
   }
 
@@ -87,10 +129,6 @@ export default class FollowScreen extends Component {
     const previousFollowTime = followTimeIndex !== beginFollowTimeIndex ? this.props.times[followTimeIndex - 1] : null;
     const nextFollowTime = followTimeIndex !== this.props.times.length - 1 ? this.props.times[followTimeIndex + 1] : null;
 
-    console.log(this.state.itemTrackerData);
-    console.log(this.state.activeFood);
-    console.log(this.state.finishedFood);
-
     return(
       <View>
 
@@ -100,19 +138,13 @@ export default class FollowScreen extends Component {
             mainList={this.state.modalMainList}
             secondaryList={this.state.modalSubList}
             beginFollowTime={beginFollowTime}
-            data={this.state.itemTrackerData}
-            startTime={this.state.itemTrackerData !== null ? this.state.itemTrackerData.startTime : null}
-            endTime={this.state.itemTrackerData !== null ? this.state.itemTrackerData.endTime : null}
-            mainSelection={
-              this.state.itemTrackerData !== null && this.state.modalType !== ModalType.none ?
-                (this.state.modalType !== ModalType.food ? this.state.itemTrackerData.foodName : this.state.itemTrackerData.speciesName) : null
-            }
-            secondarySelection={
-              this.state.itemTrackerData !== null && this.state.modalType !== ModalType.none ?
-                  (this.state.modalType !== ModalType.food ? this.state.itemTrackerData.foodPart : this.state.itemTrackerData.speciesCount) : null
-            }
+            initialStartTime={this.state.itemTrackerInitialStartTime}
+            initialEndTime={this.state.itemTrackerInitialEndTime}
+            initialMainSelection={this.state.itemTrackerInitialMainSelection}
+            initialSecondarySelection={this.state.itemTrackerInitialSecondarySelection}
             onDismiss={()=>{this.setModalVisible(false)}}
             onSave={(data)=>{
+              // TODO: Only update old data
               realm.write(() => {
                 if (this.state.modalType === ModalType.food) {
                   const newFood = realm.create('Food', {
@@ -138,10 +170,20 @@ export default class FollowScreen extends Component {
                     date: this.props.follow.FOL_date,
                     focalId: this.props.follow.FOL_B_AnimID,
                     speciesName: data.mainSelection,
-                    speciesCount: data.secondarySelection,
+                    speciesCount: parseInt(data.secondarySelection),
                     startTime: data.startTime,
                     endTime: data.endTime
                   });
+
+                  if (data.endTime === 'ongoing') {
+                    let newActiveSpecies = this.state.activeSpecies;
+                    newActiveSpecies.push(newSpecies);
+                    this.setState({activeSpecies: newActiveSpecies});
+                  } else {
+                    let newFinishedSpecies = this.state.finishedSpecies;
+                    newFinishedSpecies.push(newSpecies);
+                    this.setState({finishedSpecies: newFinishedSpecies});
+                  }
                 }
               });
             }}
@@ -169,14 +211,12 @@ export default class FollowScreen extends Component {
                 });
             }}
             onFoodTrackerSelected={()=>{
-              this.setModalType(ModalType.food);
-              this.setItemTrackerData(null);
+              this.updateItemTrackerData(ModalType.food, null);
               this.setModalVisible(true);
             }}
 
             onSpeciesTrackerSelected={()=>{
-              this.setModalType(ModalType.species);
-              this.setItemTrackerData(null);
+              this.updateItemTrackerData(ModalType.species, null);
               this.setModalVisible(true);
             }}
 
@@ -198,7 +238,7 @@ export default class FollowScreen extends Component {
             }}
         />
 
-        <FollowArrivalTable
+         <FollowArrivalTable
             chimps={this.props.chimps}
             focalChimpId={this.props.follow.FOL_B_AnimID}
             followDate={this.props.follow.FOL_date}

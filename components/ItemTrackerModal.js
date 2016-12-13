@@ -23,12 +23,12 @@ export default class ItemTrackerModal extends Component {
     // You don't have to do this check first, but it can help prevent an unneeded render
     // if (nextProps.startTime !== this.state.startTime) {
     //   this.setState({ startTime: nextProps.startTime });
-    // }
+    //
     this.setState({
-      startTime: this.props.startTime,
-      endTime: this.props.endTime,
-      mainSelection: this.props.mainSelection,
-      secondarySelection: this.props.secondarySelection,
+      startTime: nextProps.initialStartTime,
+      endTime: nextProps.initialEndTime,
+      mainSelection: nextProps.initialMainSelection,
+      secondarySelection: nextProps.initialSecondarySelection,
     });
   }
 
