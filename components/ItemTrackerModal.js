@@ -64,7 +64,7 @@ export default class ItemTrackerModal extends Component {
                   styleDisabled={{opacity: 0.5}}
                   disabled={
                     [this.state.mainSelection, this.state.secondarySelection, this.state.startTime]
-                        .some(x => x === null)
+                        .some(x => x === null) || (this.state.endTime !== 'ongoing' && this.state.endTime < this.state.startTime)
                   }
                   onPress={() => {
                     const data = {
