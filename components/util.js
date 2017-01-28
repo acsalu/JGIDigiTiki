@@ -5,11 +5,22 @@ Number.prototype.pad = function(size) {
 }
 
 export default class Util {
+  static timeLabels = {
+    absent: '0',
+    continuing: '1',
+    arriveFirst: '5',
+    arriveSecond: '10',
+    arriveThird: '15',
+    departFirst: '-5',
+    departSecond: '-10',
+    departThird: '-15'
+  };
+
   static certaintyLabels = {
-    certain: '1',
-    uncertain: '2',
-    nestCertain: '3',
-    nestUncertain: '4'
+    certain: 1,
+    uncertain: 2,
+    nestCertain: 3,
+    nestUncertain: 4
   };
 
   static certaintyLabelsUser = {
@@ -27,11 +38,11 @@ export default class Util {
   }
 
   static estrusLabels = {
-    a: '0',
-    b: '25',
-    c: '50',
-    d: '75',
-    e: '100'
+    a: 0,
+    b: 25,
+    c: 50,
+    d: 75,
+    e: 100
   };
 
   static estrusLabelsUser = {

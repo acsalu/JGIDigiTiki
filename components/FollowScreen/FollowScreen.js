@@ -14,6 +14,7 @@ import {
 import FollowArrivalTable from '../FollowArrivalTable';
 import ItemTrackerModal from '../ItemTrackerModal';
 import FollowScreenHeader from './FollowScreenHeader';
+import Util from '../util';
 
 import realm from '../../models/realm';
 
@@ -31,8 +32,18 @@ export default class FollowScreen extends Component {
     const focalId = this.props.follow.FOL_B_AnimID;
     const date = this.props.follow.FOL_date;
 
+    // Populate followArrival in db
+    const allFollowArrival = realm.objects('FollowArrival')
+        .filtered('focalId = $0 AND date = $1 AND followStartTime = $2', focalId, date, this.props.followTime);
+    let followArrivals = {};
+    for (let i = 0; i < allFollowArrival.length; i++) {
+      const arrival = allFollowArrival[i];
+      followArrivals[arrival.chimpId] = arrival;
+    }
+
     // Populate food in db
-    const allFood = realm.objects('Food').filtered('focalId = $0 AND date = $1', focalId, date);
+    const allFood = realm.objects('Food')
+        .filtered('focalId = $0 AND date = $1', focalId, date);
 
     let activeFood = [];
     let finishedFood = [];
@@ -47,7 +58,8 @@ export default class FollowScreen extends Component {
     }
 
     // Populate species in db
-    const allSpecies = realm.objects('Species').filtered('focalId = $0 AND date = $1', focalId, date);
+    const allSpecies = realm.objects('Species')
+        .filtered('focalId = $0 AND date = $1', focalId, date);
 
     let activeSpecies = [];
     let finishedSpecies = [];
@@ -73,7 +85,9 @@ export default class FollowScreen extends Component {
       itemTrackerInitialStartTime: null,
       itemTrackerInitialEndTime: null,
       itemTrackerInitialMainSelection: null,
-      itemTrackerInitialSecondarySelection: null
+      itemTrackerInitialSecondarySelection: null,
+      followArrivals: followArrivals,
+      selectedChimp: null
     };
   };
 
@@ -250,6 +264,41 @@ export default class FollowScreen extends Component {
             chimps={this.props.chimps}
             focalChimpId={this.props.follow.FOL_B_AnimID}
             followDate={this.props.follow.FOL_date}
+            followArrivals={this.state.followArrivals}
+            selectedChimp={this.state.selectedChimp}
+            onSelectChimp={(c) => {this.setState({selectedChimp: c});}}
+            createNewArrival={(chimpId, time) => {
+              realm.write(() => {
+                const newArrival = realm.create('FollowArrival', {
+                  date: this.props.follow.FOL_date,
+                  followStartTime: this.props.followTime,
+                  focalId: this.props.follow.FOL_B_AnimID,
+                  chimpId: chimpId,
+                  time: time,
+                  certainty: parseInt(Util.certaintyLabels.certain),
+                  estrus: parseInt(Util.estrusLabels.a),
+                  isWithin5m: false,
+                  isNearestNeighbor: false
+                });
+                let newFollowArrivals = this.state.followArrivals;
+                newFollowArrivals[chimpId] = newArrival;
+                this.setState({followArrivals: newFollowArrivals});
+              });
+            }}
+            updateArrival={(field, value) => {
+              const chimpId = this.state.selectedChimp;
+              if (chimpId !== null) {
+                console.log("update arrival", chimpId, field, value);
+                let arrival = this.state.followArrivals[chimpId];
+                realm.write(() => {
+                  arrival[field] = value;
+                  let newFollowArrivals = this.state.followArrivals;
+                  newFollowArrivals[chimpId] = arrival;
+                  this.setState({followArrivals: newFollowArrivals});
+                  console.log(this.state.followArrivals[chimpId]);
+                });
+              }
+            }}
         />
       </View>
     );

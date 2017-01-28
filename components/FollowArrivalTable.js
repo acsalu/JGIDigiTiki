@@ -12,17 +12,16 @@ import {
 } from 'react-native';
 import Button from 'react-native-button';
 import Util from './util';
-import realm from '../models/realm';
 
 const infoButtonImages = {
-  'time-empty': require('../img/time-empty.png'),
-  'time-arrive-first': require('../img/time-arrive-first.png'),
-  'time-arrive-second': require('../img/time-arrive-second.png'),
-  'time-arrive-third': require('../img/time-arrive-third.png'),
-  'time-depart-first': require('../img/time-depart-first.png'),
-  'time-depart-second': require('../img/time-depart-second.png'),
-  'time-depart-third': require('../img/time-depart-third.png'),
-  'time-continues': require('../img/time-continues.png'),
+  'absent': require('../img/time-empty.png'),
+  'arriveFirst': require('../img/time-arrive-first.png'),
+  'arriveSecond': require('../img/time-arrive-second.png'),
+  'arriveThird': require('../img/time-arrive-third.png'),
+  'departFirst': require('../img/time-depart-first.png'),
+  'departSecond': require('../img/time-depart-second.png'),
+  'departThird': require('../img/time-depart-third.png'),
+  'continuing': require('../img/time-full.png'),
 };
 
 
@@ -42,7 +41,7 @@ class Panel extends Component {
       </Button>);
     });
     return (
-        <View style={{flexDirection: 'row'}}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Text>{this.props.title}</Text>
           {optionButtons}
         </View>
@@ -58,12 +57,12 @@ export default class FollowArrivalTable extends Component {
     this.state = {
       selectedChimp: null,
       panelType: PanelType.time,
-      arrival: {}
+      arrival: this.props.followArrivals
     };
 
     this.panels = {};
-    this.panels[PanelType.time] = ['time-empty', 'time-arrive-first', 'time-arrive-second', 'time-arrive-third',
-      'time-depart-first', 'time-depart-second', 'time-depart-third', 'time-continues'].map(this.createInfoPanelButton);
+    this.panels[PanelType.time] = ['empty', 'arriveFirst', 'arriveSecond', 'arriveThird',
+      'departFirst', 'departSecond', 'departThird', 'continuing'].map(this.createInfoPanelButton);
 
     const certaintyOrder = ['certain', 'uncertain', 'nestCertain', 'nestUncertain'];
     const certaintyOptions = certaintyOrder.map((c, i) => Util.certaintyLabelsUser[c]);
@@ -78,111 +77,68 @@ export default class FollowArrivalTable extends Component {
             title={"Certainty:"}
             options={certaintyOptions}
             values={certaintyValues}
-            onValueChange={(v) => {this._updateSelectedArrival('certainty', v);}}
+            onValueChange={(v) => {this.props.updateArrival('certainty', v);}}
         />);
     this.panels[PanelType.estrus] =
         (<Panel
             title={"Uvimbe:"}
             options={estrusOptions}
             values={estrusValues}
-            onValueChange={(v) => {this._updateSelectedArrival('estrus', v)}}
+            onValueChange={(v) => {this.props.updateArrival('estrus', v)}}
         />);
     this.panels[PanelType.isWithIn5m] =
         (<Panel
             title={"Ndani ya 5m:"}
             options={['✗', '✓']}
             values={[false, true]}
-            onValueChange={(v) => {this._updateSelectedArrival('isWithIn5m', v)}}
+            onValueChange={(v) => {this.props.updateArrival('isWithin5m', v)}}
         />);
     this.panels[PanelType.isNearestNeighbor] =
         (<Panel
             title={"Jirani wa karibu:"}
             options={['N', 'Y']}
             values={[false, true]}
-            onValueChange={(v) => {this._updateSelectedArrival('isNearestNeighbor', v)}}
+            onValueChange={(v) => {this.props.updateArrival('isNearestNeighbor', v)}}
         />);
 
   }
 
-  _updateArrival(chimpId, field, newValue) {
-    let newArrival = this.state.arrival;
-    newArrival[chimpId][field] = newValue;
-    this.setState(newArrival);
-    realm.write(() => {
-      const fa = this.state.arrival[chimpId];
-
-      const newFollowArrival = realm.create('FollowArrival', {
-        FA_FOL_date: this.props.followDate,
-        FA_FOL_B_focal_AnimID: this.props.focalChimpId,
-        FA_B_arr_AnimID: chimpId,
-        FA_type_of_certainty: parseInt(fa.certainty),
-        FA_type_of_cycle: parseInt(fa.estrus),
-        FA_closest_to_focal: fa.isNearestNeighbor,
-        FA_within_five_meters: fa.isWithIn5m
-      });
-    });
-
-    console.log(realm.objects('FollowArrival').length, " FollowArrivals in DB.");
-    console.log(this.state.arrival);
-  }
-
-  _updateSelectedArrival(field, newValue) {
-    if (this.state.selectedChimp !== null) {
-      this._updateArrival(this.state.selectedChimp, field, newValue);
-    }
-  }
-
-  _createDefultFollowArrival(time) {
-    return {
-      time: time,
-      certainty: Util.certaintyLabels.certain,
-      estrus: Util.estrusLabels.a,
-      isWithIn5m: false,
-      isNearestNeighbor: false
-    }
-  }
-
-  _onPanelButtonPress = (b) => {
-    const selectedChimp = this.state.selectedChimp;
+  _onPanelButtonPress = (time) => {
+    const selectedChimp = this.props.selectedChimp;
     if (selectedChimp !== null) {
-      let newArrival = this.state.arrival;
-      if (!(selectedChimp in newArrival)) {
-        if (b !== 'time-empty') { newArrival[selectedChimp] = this._createDefultFollowArrival(b); }
+      if (!(selectedChimp in this.props.followArrivals)) {
+        if (time !== 'absent') { this.props.createNewArrival(selectedChimp, time); }
       } else {
-        if (b !== 'time-empty') {
-          newArrival[selectedChimp]['time'] = b;
-        } else {
-          delete newArrival[selectedChimp];
-        }
+        this.props.updateArrival('time', time)
       }
-      this.setState({arrival: newArrival});
     }
   }
 
   _onRowPress = (c) => {
-    this.setState({selectedChimp: c.name});
+    this.props.onSelectChimp(c.name);
   }
 
   createInfoPanelButton = (n, i) => {
     return (
       <TouchableOpacity
           key={n}
-          style={{width: 50, height: 50}}
-          onPress={() => {this._onPanelButtonPress(n)}}
+          style={{width: 50, height: 50, paddingTop: 5, paddingLeft: 5, marginLeft: 7, marginRight: 7}}
+          onPress={() => {
+            this._onPanelButtonPress(n)}
+          }
       >
-        <Image style={{width: 30, height: 30}} source={infoButtonImages[n]} />
+        <Image style={{width: 40, height: 40}} source={infoButtonImages[n]} />
       </TouchableOpacity>
     );
   }
 
   createChimpRow = (c, i) => {
-    const isSelected = this.state.selectedChimp === c.name;
+    const isSelected = c.name === this.props.selectedChimp;
     const isFocal = c.name === this.props.focalChimpId;
     const chimpButtonStyles = isSelected ? chimpButtonStylesSelected : (isFocal ? chimpButtonStylesFocal : chimpButtonStylesNonFocal);
 
-    const hasRecorded = c.name in this.state.arrival;
-
-    if (!hasRecorded) {
+    const hasFollowed = c.name in this.state.arrival;
+    if (!hasFollowed) {
       return (
           <TouchableOpacity
               key={c.name}
@@ -220,7 +176,7 @@ export default class FollowArrivalTable extends Component {
               this.setState({panelType: PanelType.time});
             }}>{c.name}</Button>
 
-            <Image source={infoButtonImages[followArrival['time']]} />
+            <Image source={infoButtonImages[followArrival.time]} />
 
             <Button style={[styles.followArrivalTableBtn]} onPress={()=> {
               this._onRowPress(c)
@@ -235,7 +191,7 @@ export default class FollowArrivalTable extends Component {
             <Button style={[styles.followArrivalTableBtn]} onPress={()=> {
               this._onRowPress(c)
               this.setState({panelType: PanelType.isWithIn5m});
-            }}>{followArrival.isWithIn5m ? "✓" : "✗"}</Button>
+            }}>{followArrival.isWithin5m ? "✓" : "✗"}</Button>
 
             <Button style={[styles.followArrivalTableBtn]} onPress={()=> {
               this._onRowPress(c)
@@ -254,17 +210,14 @@ export default class FollowArrivalTable extends Component {
     const femaleChimpRows = femaleChimps.map(this.createChimpRow);
     const maleChimpRows = maleChimps.map(this.createChimpRow);
 
-    console.log("render " + this.state.panelType);
-    let panelContent = this.panels[this.state.panelType];
-
     return (
         <View>
           <View
               style={styles.infoPanel}>
-              {panelContent}
+              {this.panels[this.state.panelType]}
           </View>
           <ScrollView
-              style={{paddingLeft: 10, paddingRight: 10}}
+              style={{paddingLeft: 10, paddingRight: 10, paddingBottom: 300}}
               contentContainerStyle={styles.list}
           >
             <View style={[styles.chimpRowGroup, styles.borderBottom]}>
@@ -286,15 +239,19 @@ var styles = StyleSheet.create({
   show: {
     opacity: 1.0
   },
+  list: {
+    paddingBottom: 300
+  },
   infoPanel: {
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    height: 50,
+    height: 60,
     marginBottom: 10,
     borderWidth: 1,
-    paddingTop: 20,
+    paddingTop: 10,
+    paddingBottom: 10,
     marginLeft: 10,
     marginRight: 10
   },
@@ -336,71 +293,22 @@ var styles = StyleSheet.create({
     backgroundColor: '#9c0',
   },
   panelOptionButton: {
-    width: 40,
+    width: 50,
     backgroundColor: '#ececec',
     color: 'black',
-    fontSize: 14,
-    paddingTop: 2,
-    paddingBottom: 2,
-    paddingLeft: 5,
-    paddingRight: 5,
+    paddingTop: 10,
+    paddingBottom: 10,
+    paddingLeft: 3,
+    paddingRight: 3,
     marginLeft: 2,
     marginRight: 2,
     borderColor: '#ddd',
     borderWidth: 1,
+    flex: 1,
+    fontSize: 14,
   }
 });
 
 var chimpButtonStylesNonFocal = styles.followArrivalTableBtn;
 var chimpButtonStylesFocal = [styles.followArrivalTableBtn, styles.followArrivalTableBtnFocal];
 var chimpButtonStylesSelected = [styles.followArrivalTableBtn, styles.followArrivalTableBtnSelected];
-
-/*
-class FollowArrivalTableRow extends Component {
-  render() {
-    const chimp = this.props.chimp;
-    const chimpButtonStyles = this.props.isSelected ? chimpButtonStylesSelected : (this.props.isFocal ? chimpButtonStylesFocal : chimpButtonStylesNonFocal);
-    return (
-        <TouchableOpacity
-            onPress={this.props.onPress}
-        >
-          <View style={styles.item}>
-            <Button style={chimpButtonStyles} onPress={this.props.onPress}>{chimp.name}</Button>
-            <Image />
-            <Button style={styles.followArrivalTableBtn} onPress={this.props.onPress}>.</Button>
-            <Button style={styles.followArrivalTableBtn} onPress={this.props.onPress}>.00</Button>
-            <Button style={styles.followArrivalTableBtn} onPress={this.props.onPress}>X</Button>
-            <Button style={styles.followArrivalTableBtn} onPress={this.props.onPress}>N</Button>
-          </View>
-        </TouchableOpacity>
-    )
-  }
-}
-
-class FollowArrivalTableInfoPanelButton extends Component {
-  render() {
-    return (
-        <TouchableOpacity
-            style={{width: 50, height: 50}}
-            onPress={this.props.onPress(this.props.name)}
-        >
-          <Image style={{width: 30, height: 30}} source={infoButtonImages[this.props.name]} />
-        </TouchableOpacity>
-    )
-  }
-}
-
-class FollowArrivalTableInfoPanel extends Component {
-  render() {
-    const infoPanelButtons = ['time-empty', 'time-arrive-first', 'time-arrive-second', 'time-arrive-third',
-      'time-depart-first', 'time-depart-second', 'time-depart-third', 'time-continues']
-        .map((n, i) => (<FollowArrivalTableInfoPanelButton key={n} name={n} onPress={this.props.onPanelButtonPress} />));
-    return (
-        <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', height: 80}}>
-          {infoPanelButtons}
-        </View>
-    )
-
-  }
-}
-*/

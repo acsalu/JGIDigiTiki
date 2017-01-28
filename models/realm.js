@@ -31,16 +31,16 @@ FollowArrival.className = 'FollowArrival';
 FollowArrival.schema = {
   name: FollowArrival.className,
   properties: {
-    FA_FOL_date: 'date',
-    FA_FOL_B_focal_AnimID: 'string',
-    FA_B_arr_AnimID: 'string',
-    FA_time_start: {type: 'string', optional: true},
-    FA_time_end: {type: 'string', optional: true},
-    FA_duration_of_obs: {type: 'int', optional: true},
-    FA_type_of_certainty: 'int',
-    FA_type_of_cycle: 'int',
-    FA_closest_to_focal: 'bool',
-    FA_within_five_meters: 'bool'
+    date: 'date',
+    followStartTime: 'string',
+    focalId: 'string',
+    chimpId: 'string',
+    time: {type: 'string', optional: true},
+    duration: {type: 'int', optional: true},
+    certainty: 'int',
+    estrus: 'int',
+    isNearestNeighbor: 'bool',
+    isWithin5m: 'bool'
   }
 };
 
