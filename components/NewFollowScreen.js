@@ -23,7 +23,6 @@ export default class NewFollowScreen extends Component {
     chimpPickerItems: [],
     community: null,
     focalChimpId: null,
-    hasSetDate: false,
     date: new Date(),
     researcher: ''
   };
@@ -45,15 +44,14 @@ export default class NewFollowScreen extends Component {
 
   showDatePicker = async (stateKey, options) => {
     try {
-      var newState = {};
+      let newState = {};
       const {action, year, month, day} = await DatePickerAndroid.open(options);
       if (action === DatePickerAndroid.dismissedAction) {
         // newState[stateKey + 'Text'] = 'dismissed';
       } else {
-        var date = new Date(year, month, day);
+        let date = new Date(year, month, day);
         // newState[stateKey + 'Text'] = date.toLocaleDateString();
         newState['date'] = date;
-        newState['hasSetDate'] = true;
       }
       this.setState(newState);
     } catch ({code, message}) {
@@ -99,9 +97,6 @@ export default class NewFollowScreen extends Component {
   }
 
   getDateString = (date) => {
-    if (!this.state.hasSetDate) {
-      return "Tarehe ya ufuataji"
-    }
     const year = this.state.date.getYear() + 1900;
     const month = this.state.date.getMonth() + 1;
     const day = this.state.date.getDate();
@@ -164,13 +159,12 @@ export default class NewFollowScreen extends Component {
         <Button
             style={[styles.btn, styles.btnPositive]}
             onPress={() => {
-              const hasSetDate = this.state.hasSetDate;
               const hasSetBeginTime = this.state.beginTime !== null;
               const hasSetCommunity = this.state.community != null;
               const hasSetFocalChimpId = this.state.focalChimpId != null;
               const hasSetResearcher = this.state.researcher != null
 
-              if ([hasSetDate, hasSetBeginTime, hasSetCommunity, hasSetFocalChimpId, hasSetResearcher].some(e => !e)) {
+              if ([hasSetBeginTime, hasSetCommunity, hasSetFocalChimpId, hasSetResearcher].some(e => !e)) {
                 Alert.alert(
                   'Invalid Input',
                   'My Alert Msg',
