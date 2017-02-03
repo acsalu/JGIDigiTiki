@@ -1,0 +1,25 @@
+language: android
+before_install:
+- nvm install 6
+- node --version
+install:
+- npm install
+android:
+  components:
+  - build-tools-23.0.1
+  - android-23
+  - extra-android-m2repository
+  - extra-google-google_play_services
+  - extra-google-m2repository
+  - addon-google_apis-google-16
+script:
+- npm run ci
+- cd android && ./gradlew assembleRelease
+deploy:
+  provider: releases
+  api_key:
+    secure: ExtaM9t9vWGN2NuDFpHPkPtI4ERn54+wnsGP9Mv2O2nv/uDJ4TVO+OJ3bL3SaiitdUdYtYxY6+qgIEcysa83yabgI7V8kP/eg9mj5yBbx/U3lB+XU7JskaumunNmb6ZlMUGO1NfB4wlMD91vkHUuCPWqrupVjUXDT0iTRKdiwMTmIgqV1yNT/9oUhobRQcDBMPkhwE5+B84ZzWQQ7Xqu+T7xwP0A4bvWcWCdHn5sFP4XEHWMm81EgZ6epthOtJUd3GI4Utj2aJW3/EEy2hlqdIYb7cr3DO4WFWKuR3THnR7S0FsvKRiQDYkL6PYlslTB5WhCnt2P50XWDmwZ+dbDU7ZCzz6Td/3mkfALo2D5SOwS8XTEZjhBN03hTF+RCw4MY4bGozO7OY0DtvUj1vyfJXPpac3hzNTXiQm0PTLTp/tRd4g1ptUZHj+EMfD2agNBSBo4zD8y2ewooBLmOVJPh3TLNuxpUdVwp6QZZuRGeOWrT+MDUCgM9N1qTKQ1UgPku1/0/UlFQJSN5/9EhEElUfLiDDczXsuGMHdZlq+CUJBhCMcYrTVrd17MvuzLO7h+2/C9MjduEgYylcMMrZRKRq12RDZ12nCC5zib6FseDjHaDiwK/ILESYB4o6QIDB2BzV28kRpimEwmvvFm0yK3AJhvIHqmZ6exlkwqgLXtfP4=
+  file: "$TRAVIS_BUILD_DIR/android/app/build/outputs/apk/app-release.apk"
+  on:
+    repo: acsalu/JGIDigiTiki
+    branch: develop
