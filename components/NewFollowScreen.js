@@ -13,7 +13,9 @@ import {
   View
 } from 'react-native';
 import Button from 'react-native-button';
+
 import realm from '../models/realm';
+import strings from '../data/strings';
 import Util from './util';
 
 export default class NewFollowScreen extends Component {
@@ -62,7 +64,7 @@ export default class NewFollowScreen extends Component {
   getCommunityPickerItems = () => {
     const communities = this.getCommunities();
     const communityPromptPickerItem = (
-        <Picker.Item key="community-prompt" label="Kundi" value={null} />
+        <Picker.Item key="community-prompt" label={strings.NewFollow_Community} value={null} />
     );
     const communityPickerItems = communities.map((c, i) => {
       return (<Picker.Item key={c} label={c} value={c} />);
@@ -72,7 +74,7 @@ export default class NewFollowScreen extends Component {
 
   getBeginTimePickerItems = () => {
     const beginTimePromptPickerItem = (
-        <Picker.Item key="begin-time-prompt" label="Muda wa kuanza (s:dk)" value={null} />
+        <Picker.Item key="begin-time-prompt" label={strings.NewFollow_BeginTime + " " + strings.TimeFormat} value={null} />
     );
     const beginTimePickerItems = this.getAllTimesForUser().map((t, i) => {
       return (<Picker.Item key={t.dbTime} label={t.userTime} value={t.dbTime} />);
@@ -86,7 +88,7 @@ export default class NewFollowScreen extends Component {
       return [];
     }
 
-    const defaultPickerItem = (<Picker.Item key='Target' label='Target' value={null} />);
+    const defaultPickerItem = (<Picker.Item key='Target' label={strings.NewFollow_Target} value={null} />);
 
     const chimpPickerItems = this.props.chimps
       .filter((c) => c.community === community)
@@ -117,7 +119,7 @@ export default class NewFollowScreen extends Component {
 
     return(
       <View style={styles.container}>
-        <Text style={styles.description}>Fuata</Text>
+        <Text style={styles.description}>{strings.NewFollow_Title}</Text>
 
         <TouchableHighlight
             style={styles.inputField}
@@ -153,7 +155,7 @@ export default class NewFollowScreen extends Component {
             style={[styles.inputField, styles.researcherNameTextInput]}
             onChangeText={(text) => this.setState({researcher: text})}
             value={this.state.researcher}
-            placeholder="Jina la mtafiti"
+            placeholder={strings.NewFollow_ResearcherName}
         />
 
         <Button
@@ -199,7 +201,7 @@ export default class NewFollowScreen extends Component {
               }
             }}
         >
-          Anza
+          Begin
         </Button>
 
       </View>

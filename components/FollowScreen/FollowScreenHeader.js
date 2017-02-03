@@ -13,6 +13,8 @@ import {
 } from 'react-native';
 import Button from 'react-native-button';
 import ItemTracker from '../ItemTracker';
+
+import strings from '../../data/strings';
 import util from '../util';
 
 export default class FollowScreenHeader extends Component {
@@ -27,7 +29,7 @@ export default class FollowScreenHeader extends Component {
                 onPress={this.props.onPreviousPress}
                 disabled={isFirstFollow}
             >
-              Iliyopita
+              {strings.Follow_PreviousTimeInterval}
             </Button>
             <Text style={styles.followScreenHeaderMainText}>
               {util.dbTime2UserTime(this.props.followTime)}
@@ -36,7 +38,7 @@ export default class FollowScreenHeader extends Component {
                 style={styles.btn}
                 onPress={this.props.onNextPress}
             >
-              Inayofuata
+              {strings.Follow_NextTimeInterval}
             </Button>
           </View>
           <ItemTracker

@@ -141,6 +141,8 @@ repositories {
 }
 
 dependencies {
+    compile project(':react-native-localization')
+    compile project(':react-native-fs')
     compile project(':react-native-fabric')
     compile project(':realm')
     compile fileTree(dir: "libs", include: ["*.jar"])

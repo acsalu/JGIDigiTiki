@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import Button from 'react-native-button';
 import util from './util';
+import strings from '../data/strings';
 
 export default class ItemTrackerModal extends Component {
 
@@ -48,7 +49,7 @@ export default class ItemTrackerModal extends Component {
         .map((e, i) => {
           return (<Picker.Item key={i} label={e} value={e} />);
         });
-    timePickerItems.unshift((<Picker.Item key={-1} label="s:dk" value='ongoing' />));
+    timePickerItems.unshift((<Picker.Item key={-1} label={strings.TimeFormat} value='ongoing' />));
 
     return (
         <Modal
@@ -76,7 +77,7 @@ export default class ItemTrackerModal extends Component {
                     this.props.onSave(data, this.state.isEditing);
                     this.props.onDismiss();
                   }}>
-                Kubari (Save)
+                {strings.ItemTracker_Save}
               </Button>
 
               <Text style={styles.followScreenHeaderMainText}>
@@ -88,7 +89,7 @@ export default class ItemTrackerModal extends Component {
                   onPress={() => {
                     this.props.onDismiss();
                   }}>
-                Hapana (Cancel)
+                {strings.ItemTracker_Cancel}
               </Button>
             </View>
 

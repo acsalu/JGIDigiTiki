@@ -12,26 +12,28 @@ import {
 } from 'react-native';
 import Button from 'react-native-button';
 
+import strings from '../data/strings';
+
 export default class MenuScreen extends Component {
 
   render() {
     return(
       <Image source={require('../img/chimp.png')} style={styles.container}>
         <Text style={styles.header}>Jane Goodall Institute</Text>
-        <Text style={styles.description}>Fuata</Text>
+        <Text style={styles.description}>{strings.Menu_Title}</Text>
 
         <Button
             onPress={() => {this.props.navigator.push({id: 'NewFollowScreen'});}}
             style={styles.btn}
         >
-          Anza ufuataji
+          {strings.Menu_NewFollow}
         </Button>
 
         <Button
             onPress={() => {this.props.navigator.push({id: 'FollowListScreen'});}}
             style={styles.btn}
         >
-          Endelea kufuata
+          {strings.Menu_ContinueFollow}
         </Button>
 
         <Button
