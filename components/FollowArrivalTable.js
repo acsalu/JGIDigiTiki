@@ -135,6 +135,7 @@ export default class FollowArrivalTable extends Component {
   createChimpRow = (c, i) => {
     const isSelected = c.name === this.props.selectedChimp;
     const isFocal = c.name === this.props.focalChimpId;
+    const isMale = c.sex === 'M';
     const chimpButtonStyles = isSelected ? chimpButtonStylesSelected : (isFocal ? chimpButtonStylesFocal : chimpButtonStylesNonFocal);
 
     const hasFollowed = c.name in this.state.arrival;
@@ -161,39 +162,76 @@ export default class FollowArrivalTable extends Component {
     const followArrival = this.state.arrival[c.name];
     const certaintyLabel = Util.certaintyLabelsDb2UserMap[followArrival.certainty];
     const estrusLabel = Util.estrusLabelsDb2UserMap[followArrival.estrus];
+
+    if (isMale) {
+      return (
+          <TouchableOpacity
+              key={c.name}
+              style={{marginBottom: 10}}
+              onPress={() => {
+                this._onRowPress(c)
+                this.setState({panelType: PanelType.time});
+              }}
+          >
+            <View style={styles.item}>
+              <Button style={chimpButtonStyles} onPress={() => {
+                this._onRowPress(c)
+                this.setState({panelType: PanelType.time});
+              }}>{c.name}</Button>
+
+              <Image source={infoButtonImages[followArrival.time]}/>
+
+              <Button style={[styles.followArrivalTableBtn]} onPress={() => {
+                this._onRowPress(c)
+                this.setState({panelType: PanelType.certainty});
+              }}>{certaintyLabel}</Button>
+
+              <Button style={[styles.followArrivalTableBtn]} onPress={() => {
+                this._onRowPress(c)
+                this.setState({panelType: PanelType.isWithIn5m});
+              }}>{followArrival.isWithin5m ? "✓" : "✗"}</Button>
+
+              <Button style={[styles.followArrivalTableBtn]} onPress={() => {
+                this._onRowPress(c)
+                this.setState({panelType: PanelType.isNearestNeighbor});
+              }}>{followArrival.isNearestNeighbor ? "Y" : "N"}</Button>
+            </View>
+          </TouchableOpacity>
+      );
+    }
     return (
         <TouchableOpacity
             key={c.name}
             style={{marginBottom: 10}}
-            onPress={()=> {
+            onPress={() => {
               this._onRowPress(c)
               this.setState({panelType: PanelType.time});
             }}
         >
           <View style={styles.item}>
-            <Button style={chimpButtonStyles} onPress={()=> {
+            <Button style={chimpButtonStyles} onPress={() => {
               this._onRowPress(c)
               this.setState({panelType: PanelType.time});
             }}>{c.name}</Button>
 
-            <Image source={infoButtonImages[followArrival.time]} />
+            <Image source={infoButtonImages[followArrival.time]}/>
 
-            <Button style={[styles.followArrivalTableBtn]} onPress={()=> {
+            <Button style={[styles.followArrivalTableBtn]} onPress={() => {
               this._onRowPress(c)
               this.setState({panelType: PanelType.certainty});
             }}>{certaintyLabel}</Button>
 
-            <Button style={[styles.followArrivalTableBtn]} onPress={()=> {
+            <Button style={[styles.followArrivalTableBtn]} onPress={() => {
               this._onRowPress(c)
               this.setState({panelType: PanelType.estrus});
             }}>{estrusLabel}</Button>
 
-            <Button style={[styles.followArrivalTableBtn]} onPress={()=> {
+            <Button style={[styles.followArrivalTableBtn]} onPress={() => {
               this._onRowPress(c)
               this.setState({panelType: PanelType.isWithIn5m});
             }}>{followArrival.isWithin5m ? "✓" : "✗"}</Button>
 
-            <Button style={[styles.followArrivalTableBtn]} onPress={()=> {
+            <Button style={[styles.followArrivalTableBtn]} onPress={() => {
               this._onRowPress(c)
               this.setState({panelType: PanelType.isNearestNeighbor});
             }}>{followArrival.isNearestNeighbor ? "Y" : "N"}</Button>
