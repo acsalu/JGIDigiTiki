@@ -260,20 +260,35 @@ export default class FollowArrivalTable extends Component {
           <View
             style={{flex: 1, flexDirection: 'row', height: 700}}
           >
-            <ScrollView
-              contentContainerStyle={[styles.list]}
-            >
-              <View style={[styles.chimpRowGroup]}>
-                {maleChimpRows}
+            <View>
+              <View style={styles.followButtonLabelGroup}>
+                <Text style={styles.followButtonLabel}>C</Text>
+                <Text style={styles.followButtonLabel}>5m</Text>
+                <Text style={styles.followButtonLabel}>JK</Text>
               </View>
-            </ScrollView>
-            <ScrollView
+              <ScrollView
                 contentContainerStyle={[styles.list]}
-            >
-              <View style={[styles.chimpRowGroup, styles.chimpRowGroupFemale]}>
-                {femaleChimpRows}
+              >
+                <View style={[styles.chimpRowGroup]}>
+                  {maleChimpRows}
+                </View>
+              </ScrollView>
+            </View>
+            <View>
+              <View style={styles.followButtonLabelGroup}>
+                <Text style={styles.followButtonLabel}>C</Text>
+                <Text style={styles.followButtonLabel}>U</Text>
+                <Text style={styles.followButtonLabel}>5m</Text>
+                <Text style={styles.followButtonLabel}>JK</Text>
               </View>
-            </ScrollView>
+              <ScrollView
+                  contentContainerStyle={[styles.list]}
+              >
+                <View style={[styles.chimpRowGroup, styles.chimpRowGroupFemale]}>
+                  {femaleChimpRows}
+                </View>
+              </ScrollView>
+            </View>
           </View>
         </View>
     );
@@ -302,6 +317,16 @@ var styles = StyleSheet.create({
     paddingBottom: 10,
     marginLeft: 10,
     marginRight: 10
+  },
+  followButtonLabelGroup: {
+    flex: 1,
+    flexDirection: 'row',
+    height: 20,
+    marginLeft: 100
+  },
+  followButtonLabel: {
+    width: 50,
+    fontWeight: "500"
   },
   item: {
     width: (Dimensions.get('window').width - 20) / 2,
