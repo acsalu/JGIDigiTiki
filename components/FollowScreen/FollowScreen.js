@@ -12,7 +12,7 @@ import {
   View
 } from 'react-native';
 import FollowArrivalTable from '../FollowArrivalTable';
-import ItemTrackerModal from '../ItemTrackerModal';
+import ItemTrackerModal from './ItemTrackerModal';
 import FollowScreenHeader from './FollowScreenHeader';
 import Util from '../util';
 

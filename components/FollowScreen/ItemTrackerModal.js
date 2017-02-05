@@ -8,8 +8,8 @@ import {
   View
 } from 'react-native';
 import Button from 'react-native-button';
-import util from './util';
-import strings from '../data/strings';
+import util from '../util';
+import strings from '../../data/strings';
 
 export default class ItemTrackerModal extends Component {
 

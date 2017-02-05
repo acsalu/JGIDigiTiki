@@ -12,7 +12,7 @@ import {
   View
 } from 'react-native';
 import Button from 'react-native-button';
-import ItemTracker from '../ItemTracker';
+import ItemTracker from './ItemTracker';
 
 import strings from '../../data/strings';
 import util from '../util';
