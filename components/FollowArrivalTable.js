@@ -210,23 +210,33 @@ export default class FollowArrivalTable extends Component {
     const femaleChimpRows = femaleChimps.map(this.createChimpRow);
     const maleChimpRows = maleChimps.map(this.createChimpRow);
 
+    console.log(maleChimps.length);
+    console.log(femaleChimps.length);
+
     return (
         <View>
           <View
               style={styles.infoPanel}>
               {this.panels[this.state.panelType]}
           </View>
-          <ScrollView
-              style={{paddingLeft: 10, paddingRight: 10, paddingBottom: 300}}
-              contentContainerStyle={styles.list}
+          <View
+            style={{flex: 1, flexDirection: 'row', height: 700}}
           >
-            <View style={[styles.chimpRowGroup, styles.borderBottom]}>
-              {femaleChimpRows}
-            </View>
-            <View style={[styles.chimpRowGroup]}>
-            {maleChimpRows}
-            </View>
-          </ScrollView>
+            <ScrollView
+              contentContainerStyle={[styles.list]}
+            >
+              <View style={[styles.chimpRowGroup]}>
+                {maleChimpRows}
+              </View>
+            </ScrollView>
+            <ScrollView
+                contentContainerStyle={[styles.list]}
+            >
+              <View style={[styles.chimpRowGroup, styles.chimpRowGroupFemale]}>
+                {femaleChimpRows}
+              </View>
+            </ScrollView>
+          </View>
         </View>
     );
   }
@@ -240,7 +250,7 @@ var styles = StyleSheet.create({
     opacity: 1.0
   },
   list: {
-    paddingBottom: 300
+    paddingBottom: 50
   },
   infoPanel: {
     flex: 1,
@@ -265,6 +275,7 @@ var styles = StyleSheet.create({
     borderBottomWidth: 2,
   },
   chimpRowGroup: {
+    width: (Dimensions.get('window').width - 20) / 2,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -306,6 +317,10 @@ var styles = StyleSheet.create({
     borderWidth: 1,
     flex: 1,
     fontSize: 14,
+  },
+  chimpRowGroupFemale: {
+    borderLeftColor: 'black',
+    borderLeftWidth: 2,
   }
 });
 
