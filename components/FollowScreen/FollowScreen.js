@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {
+  Alert,
   AppRegistry,
   DatePickerAndroid,
   StyleSheet,
@@ -17,6 +18,7 @@ import FollowScreenHeader from './FollowScreenHeader';
 import Util from '../util';
 
 import realm from '../../models/realm';
+import strings from '../../data/strings';
 
 const ModalType = Object.freeze({
   none: 0,
@@ -134,6 +136,14 @@ export default class FollowScreen extends Component {
     this.setModalVisible(true);
   }
 
+  navigateToFollowTime(followTime) {
+    this.props.navigator.replace({
+      id: 'FollowScreen',
+      follow: this.props.follow,
+      followTime: followTime
+    });
+  }
+
   render() {
     const beginFollowTime = this.props.follow.FOL_time_begin;
     const beginFollowTimeIndex = this.props.times.indexOf(beginFollowTime);
@@ -226,11 +236,31 @@ export default class FollowScreen extends Component {
                 });
             }}
             onNextPress={()=>{
-              this.props.navigator.replace({
-                  id: 'FollowScreen',
-                  follow: this.props.follow,
-                  followTime: nextFollowTime
-                });
+              const followArrivals =
+                  Object.keys(this.state.followArrivals).map(key => this.state.followArrivals[key]);
+              const hasNearest = followArrivals.some((fa, i) => fa.isNearestNeighbor);
+              const hasWithin5m = followArrivals.some((fa, i) => fa.isWithin5m);
+
+              if (!hasNearest || !hasWithin5m) {
+                let alertMessages = [];
+                if (!hasNearest) { alertMessages.push(strings.Follow_NextDataValidationAlertMessageNoNearest); }
+                if (!hasWithin5m) { alertMessages.push(strings.Follow_NextDataValidationAlertMessageNoWithIn5m); }
+                const alertMessage = alertMessages.join('\n');
+
+                Alert.alert(
+                    strings.Follow_NextDataValidationAlertTitle,
+                    alertMessage,
+                    [
+                      {text: strings.Follow_NextDataValidationAlertCancel,
+                        onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                      {text: strings.Follow_NextDataValidationAlertConfirm,
+                        onPress: () => this.navigateToFollowTime(nextFollowTime)},
+                    ],
+                    {cancelable: true}
+                );
+              } else {
+                this.navigateToFollowTime(nextFollowTime)
+              }
             }}
             onFoodTrackerSelected={()=>{
               this.updateItemTrackerData(ModalType.food, null);

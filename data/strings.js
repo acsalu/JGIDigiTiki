@@ -14,6 +14,11 @@ export default strings = new LocalizedStrings({
     NewFollow_Begin: "Begin",
     Follow_NextTimeInterval: "Next Interval",
     Follow_PreviousTimeInterval: "Previous Interval",
+    Follow_NextDataValidationAlertTitle: "Warning",
+    Follow_NextDataValidationAlertMessageNoWithIn5m: "No chimpanzees nearby. Are you sure?",
+    Follow_NextDataValidationAlertMessageNoNearest: "No chimpanzees within 5m. Are you sure?",
+    Follow_NextDataValidationAlertConfirm: "Yes",
+    Follow_NextDataValidationAlertCancel: "Cancel",
     ItemTracker_Save: "Save",
     ItemTracker_Cancel: "Cancel",
   },
@@ -30,5 +35,10 @@ export default strings = new LocalizedStrings({
     NewFollow_Begin: "Anza",
     Follow_NextTimeInterval: "Inayofuata",
     Follow_PreviousTimeInterval: "Iliyopita",
+    Follow_NextDataValidationAlertTitle: "Warning",
+    Follow_NextDataValidationAlertMessageNoWithIn5m: "Hakuna sokwe ndani ya 5m. Una uhakika?",
+    Follow_NextDataValidationAlertMessageNoNearest: "Hakuna sokwe jirani. Una uhakika?",
+    Follow_NextDataValidationAlertConfirm: "Yes",
+    Follow_NextDataValidationAlertCancel: "Cancel",
   }
 });

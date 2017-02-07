@@ -82,9 +82,7 @@ const styles = {
     justifyContent: 'space-between',
     alignSelf: 'stretch',
     alignItems: 'center',
-    height: 40,
-    paddingLeft: 12,
-    paddingRight: 12
+    height: 40
   },
   headerRow: {
     flex:1,
