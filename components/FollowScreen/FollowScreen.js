@@ -240,11 +240,16 @@ export default class FollowScreen extends Component {
                   Object.keys(this.state.followArrivals).map(key => this.state.followArrivals[key]);
               const hasNearest = followArrivals.some((fa, i) => fa.isNearestNeighbor);
               const hasWithin5m = followArrivals.some((fa, i) => fa.isWithin5m);
+              const hasOpenFood = this.state.activeFood.length !== 0;
+              const hasOpenSpeices = this.state.activeSpecies.length !== 0;
 
-              if (!hasNearest || !hasWithin5m) {
+              if (!hasNearest || !hasWithin5m || hasOpenFood || hasOpenSpeices) {
                 let alertMessages = [];
                 if (!hasNearest) { alertMessages.push(strings.Follow_NextDataValidationAlertMessageNoNearest); }
                 if (!hasWithin5m) { alertMessages.push(strings.Follow_NextDataValidationAlertMessageNoWithIn5m); }
+                if (hasOpenFood) { alertMessages.push(strings.Follow_NextDataValidationAlertMessageOpenFood); }
+                if (hasOpenSpeices) { alertMessages.push(strings.Follow_NextDataValidationAlertMessageOpenSpecies); }
+                alertMessages.push(strings.Follow_NextDataValidationAlertMessagePrompt);
                 const alertMessage = alertMessages.join('\n');
 
                 Alert.alert(
