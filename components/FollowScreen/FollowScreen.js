@@ -159,7 +159,7 @@ export default class FollowScreen extends Component {
             visible={this.state.modalVisible}
             mainList={this.state.modalMainList}
             secondaryList={this.state.modalSubList}
-            beginFollowTime={beginFollowTime}
+            beginFollowTime={this.props.followTimegi}
             initialStartTime={this.state.itemTrackerInitialStartTime}
             initialEndTime={this.state.itemTrackerInitialEndTime}
             initialMainSelection={this.state.itemTrackerInitialMainSelection}
