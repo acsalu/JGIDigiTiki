@@ -8,25 +8,68 @@ import React, { Component } from 'react';
 import {
   AppRegistry,
   StyleSheet,
-  Text,
+  TextInput,
+  Navigator,
   View
 } from 'react-native';
+
+import FollowListScreen from './components/FollowListScreen';
+import FollowScreen from './components/FollowScreen/FollowScreen';
+import MenuScreen from './components/MenuScreen';
+import NewFollowScreen from './components/NewFollowScreen';
+
+import chimps from './data/chimp-list.json';
+import times from './data/time-list.json';
+import food from './data/food-list.json';
+import foodParts from './data/food-part-list.json';
+import species from './data/species-list.json';
+import speciesNumbers from './data/species-number-list.json';
 
 export default class JGIDigiTiki extends Component {
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.android.js
-        </Text>
-        <Text style={styles.instructions}>
-          Double tap R on your keyboard to reload,{'\n'}
-          Shake or press menu button for dev menu
-        </Text>
-      </View>
+      <Navigator initialRoute={{id: 'MenuScreen', name: 'Index'}}
+        renderScene={(route, navigator) => {
+          const routeId = route.id;
+          switch (routeId) {
+            case 'MenuScreen':
+              return (
+                <MenuScreen navigator={navigator} />
+              );
+            case 'NewFollowScreen':
+              return (
+                <NewFollowScreen navigator={navigator} chimps={chimps} times={times} />
+              );
+            case 'FollowScreen':
+              const chimpsInCommunity = chimps.filter((c) => c.community === route.follow.FOL_CL_community_id);
+              return (
+                <FollowScreen
+                  navigator={navigator}
+                  chimps={chimpsInCommunity}
+                  food={food}
+                  foodParts={foodParts}
+                  species={species}
+                  speciesNumbers={speciesNumbers}
+                  follow={route.follow}
+                  followTime={route.followTime}
+                  times={times}
+                />
+              );
+            case 'FollowListScreen':
+              return (
+                <FollowListScreen navigator={navigator} />
+              );
+            default:
+              break;
+          }
+        }}
+        configureScene={(route) => {
+          if (route.sceneConfig) {
+            return route.sceneConfig;
+          }
+          return Navigator.SceneConfigs.FadeAndroid;
+        }}
+      />
     );
   }
 }
