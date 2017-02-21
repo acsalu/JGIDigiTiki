@@ -15,14 +15,14 @@ import Util from '../util';
 import sharedStyles from '../SharedStyles';
 
 const infoButtonImages = {
-  'absent': require('../../img/time-empty.png'),
+  'arrivalEmpty': require('../../img/time-empty.png'),
   'arriveFirst': require('../../img/time-arrive-first.png'),
   'arriveSecond': require('../../img/time-arrive-second.png'),
   'arriveThird': require('../../img/time-arrive-third.png'),
   'departFirst': require('../../img/time-depart-first.png'),
   'departSecond': require('../../img/time-depart-second.png'),
   'departThird': require('../../img/time-depart-third.png'),
-  'continuing': require('../../img/time-full.png'),
+  'departContinues': require('../../img/time-continues.png'),
 };
 
 
@@ -64,8 +64,8 @@ export default class FollowArrivalTable extends Component {
     };
 
     this.panels = {};
-    this.panels[PanelType.time] = ['empty', 'arriveFirst', 'arriveSecond', 'arriveThird',
-      'departFirst', 'departSecond', 'departThird', 'continuing'].map(this.createInfoPanelButton);
+    this.panels[PanelType.time] = ['arrivalEmpty', 'arriveFirst', 'arriveSecond', 'arriveThird',
+      'departFirst', 'departSecond', 'departThird', 'departContinues'].map(this.createInfoPanelButton);
 
     const certaintyOrder = ['certain', 'uncertain', 'nestCertain', 'nestUncertain'];
     const certaintyOptions = certaintyOrder.map((c, i) => Util.certaintyLabelsUser[c]);
