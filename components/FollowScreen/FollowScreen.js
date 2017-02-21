@@ -31,15 +31,11 @@ const ModalType = Object.freeze({
 export default class FollowScreen extends Component {
 
   constructor(props) {
+
     super(props);
 
     const focalId = this.props.follow.FOL_B_AnimID;
     const date = this.props.follow.FOL_date;
-
-    console.log(this.props.followArrivals);
-    console.log(this.props.followTime);
-    console.log(this.props.follow);
-    console.log(this.props.abc);
 
     let followArrivals = null;
     if (this.props.followArrivals !== undefined && this.props.followArrivals !== null) {
@@ -149,8 +145,7 @@ export default class FollowScreen extends Component {
   }
 
   navigateToFollowTime(followTime, followArrivals) {
-    console.log("navigateToFollowTime", followArrivals);
-    this.props.navigator.push({
+    this.props.navigator.replace({
       id: 'FollowScreen',
       follow: this.props.follow,
       followTime: followTime,

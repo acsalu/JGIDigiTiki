@@ -8,6 +8,8 @@ import {
 } from 'react-native';
 import Button from 'react-native-button';
 
+import sharedStyles from '../../SharedStyles';
+
 export default class ItemTracker extends Component {
   state = {
     dummyActiveItem: null,
@@ -29,7 +31,7 @@ export default class ItemTracker extends Component {
     return (
         <View style={styles.row}>
           <Button
-              style={styles.btn}
+              style={sharedStyles.btn}
               onPress={()=>{this.props.onTrigger();}}>{this.props.title}</Button>
 
           <Picker style={[styles.picker, activePickerItems.length === 1 ? styles.hidden : {}]}
@@ -67,17 +69,6 @@ const styles = {
   picker: {
     width: 200,
     height: 35
-  },
-  btn: {
-    paddingTop: 8,
-    paddingBottom: 8,
-    paddingLeft: 15,
-    paddingRight: 15,
-    fontSize: 14,
-    color: '#fff',
-    backgroundColor: '#33b5e5',
-    borderRadius: 3,
-    marginRight: 8
   },
   hidden: {
     height: 0,

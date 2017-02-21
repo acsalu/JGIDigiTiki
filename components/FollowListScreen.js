@@ -24,7 +24,6 @@ export default class FollowListScreen extends Component {
                 id: 'FollowScreen',
                 follow: f,
                 followTime: f.FOL_time_begin,
-                abc: "TEST"
               });
           }}
           follow={f}

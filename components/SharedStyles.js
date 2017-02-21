@@ -9,6 +9,9 @@ export default sharedStyles = {
     backgroundColor: '#33b5e5',
     borderRadius: 3
   },
+  btnPrimary: {
+    backgroundColor: '#33b5e5',
+  },
   btnSuccess: {
     backgroundColor: '#9c0'
   },
