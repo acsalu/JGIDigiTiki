@@ -19,6 +19,7 @@ import Util from '../util';
 
 import realm from '../../models/realm';
 import strings from '../../data/strings';
+import _ from 'lodash';
 
 const ModalType = Object.freeze({
   none: 0,
@@ -34,13 +35,23 @@ export default class FollowScreen extends Component {
     const focalId = this.props.follow.FOL_B_AnimID;
     const date = this.props.follow.FOL_date;
 
-    // Populate followArrival in db
-    const allFollowArrival = realm.objects('FollowArrival')
-        .filtered('focalId = $0 AND date = $1 AND followStartTime = $2', focalId, date, this.props.followTime);
-    let followArrivals = {};
-    for (let i = 0; i < allFollowArrival.length; i++) {
-      const arrival = allFollowArrival[i];
-      followArrivals[arrival.chimpId] = arrival;
+    console.log(this.props.followArrivals);
+    console.log(this.props.followTime);
+    console.log(this.props.follow);
+    console.log(this.props.abc);
+
+    let followArrivals = null;
+    if (this.props.followArrivals !== undefined && this.props.followArrivals !== null) {
+      followArrivals = this.props.followArrivals;
+    } else {
+      followArrivals = {};
+      // Populate followArrival in db
+      const allFollowArrival = realm.objects('FollowArrival')
+          .filtered('focalId = $0 AND date = $1 AND followStartTime = $2', focalId, date, this.props.followTime);
+      for (let i = 0; i < allFollowArrival.length; i++) {
+        const arrival = allFollowArrival[i];
+        followArrivals[arrival.chimpId] = arrival;
+      }
     }
 
     // Populate food in db
@@ -136,11 +147,13 @@ export default class FollowScreen extends Component {
     this.setModalVisible(true);
   }
 
-  navigateToFollowTime(followTime) {
-    this.props.navigator.replace({
+  navigateToFollowTime(followTime, followArrivals) {
+    console.log("navigateToFollowTime", followArrivals);
+    this.props.navigator.push({
       id: 'FollowScreen',
       follow: this.props.follow,
-      followTime: followTime
+      followTime: followTime,
+      followArrivals: followArrivals
     });
   }
 
@@ -159,7 +172,7 @@ export default class FollowScreen extends Component {
             visible={this.state.modalVisible}
             mainList={this.state.modalMainList}
             secondaryList={this.state.modalSubList}
-            beginFollowTime={this.props.followTimegi}
+            beginFollowTime={this.props.followTime}
             initialStartTime={this.state.itemTrackerInitialStartTime}
             initialEndTime={this.state.itemTrackerInitialEndTime}
             initialMainSelection={this.state.itemTrackerInitialMainSelection}
@@ -229,11 +242,7 @@ export default class FollowScreen extends Component {
             activeSpecies={this.state.activeSpecies.map((s, i) => s.speciesName)}
             finishedSpecies={this.state.finishedSpecies.map((s, i) => s.speciesName)}
             onPreviousPress={()=> {
-              this.props.navigator.replace({
-                  id: 'FollowScreen',
-                  follow: this.props.follow,
-                  followTime: previousFollowTime
-                });
+              this.navigateToFollowTime(previousFollowTime, null);
             }}
             onNextPress={()=>{
               const followArrivals =
@@ -259,12 +268,12 @@ export default class FollowScreen extends Component {
                       {text: strings.Follow_NextDataValidationAlertCancel,
                         onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
                       {text: strings.Follow_NextDataValidationAlertConfirm,
-                        onPress: () => this.navigateToFollowTime(nextFollowTime)},
+                        onPress: () => this.navigateToFollowTime(nextFollowTime, _.extend(this.state.followArrivals))},
                     ],
                     {cancelable: true}
                 );
               } else {
-                this.navigateToFollowTime(nextFollowTime)
+                this.navigateToFollowTime(nextFollowTime, _.extend(this.state.followArrivals))
               }
             }}
             onFoodTrackerSelected={()=>{

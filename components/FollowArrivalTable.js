@@ -54,6 +54,8 @@ export default class FollowArrivalTable extends Component {
 
   constructor(props) {
     super(props);
+    // console.log("props of FollowArrivalTable");
+    // console.log(props);
     this.state = {
       selectedChimp: null,
       panelType: PanelType.time,
@@ -137,7 +139,8 @@ export default class FollowArrivalTable extends Component {
     const isFocal = c.name === this.props.focalChimpId;
     const isMale = c.sex === 'M';
     const chimpButtonStyles = isSelected ? chimpButtonStylesSelected : (isFocal ? chimpButtonStylesFocal : chimpButtonStylesNonFocal);
-
+    // console.log(c.name);
+    // console.log(this.state.arrival);
     const hasFollowed = c.name in this.state.arrival;
     if (!hasFollowed) {
       return (
@@ -245,11 +248,14 @@ export default class FollowArrivalTable extends Component {
     const femaleChimps = this.props.chimps.filter((c) => c.sex === 'F');
     const maleChimps = this.props.chimps.filter((c) => c.sex === 'M');
 
+    // console.log(femaleChimps);
+    // console.log(maleChimps);
+
     const femaleChimpRows = femaleChimps.map(this.createChimpRow);
     const maleChimpRows = maleChimps.map(this.createChimpRow);
 
-    console.log(maleChimps.length);
-    console.log(femaleChimps.length);
+    // console.log(maleChimps.length);
+    // console.log(femaleChimps.length);
 
     return (
         <View>

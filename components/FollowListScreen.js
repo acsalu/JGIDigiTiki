@@ -23,7 +23,8 @@ export default class FollowListScreen extends Component {
             this.props.navigator.push({
                 id: 'FollowScreen',
                 follow: f,
-                followTime: f.FOL_time_begin
+                followTime: f.FOL_time_begin,
+                abc: "TEST"
               });
           }}
           follow={f}
