@@ -52,6 +52,7 @@ export default class JGIDigiTiki extends Component {
                   speciesNumbers={speciesNumbers}
                   follow={route.follow}
                   followTime={route.followTime}
+                  followArrivals={route.followArrivals}
                   times={times}
                 />
               );

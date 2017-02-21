@@ -14,6 +14,7 @@ import {
 import Button from 'react-native-button';
 import ItemTracker from './ItemTracker';
 
+import sharedStyles from '../SharedStyles';
 import strings from '../../data/strings';
 import util from '../util';
 
@@ -25,7 +26,7 @@ export default class FollowScreenHeader extends Component {
         <View style={styles.followScreenHeader}>
           <View style={styles.followScreenHeaderInfoRow}>
             <Button
-                style={[{opacity: (isFirstFollow ? 0.0 : 1.0)}, styles.btn]}
+                style={[{opacity: (isFirstFollow ? 0.0 : 1.0)}, sharedStyles.btn]}
                 onPress={this.props.onPreviousPress}
                 disabled={isFirstFollow}
             >
@@ -35,7 +36,7 @@ export default class FollowScreenHeader extends Component {
               {util.dbTime2UserTime(this.props.followTime)}
             </Text>
             <Button
-                style={styles.btn}
+                style={sharedStyles.btn}
                 onPress={this.props.onNextPress}
             >
               {strings.Follow_NextTimeInterval}
@@ -68,7 +69,7 @@ export default class FollowScreenHeader extends Component {
 
 const styles = {
   followScreenHeader: {
-    flex: 1,
+    alignSelf: 'stretch',
     flexDirection: 'column',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -77,7 +78,6 @@ const styles = {
     paddingRight: 12
   },
   followScreenHeaderInfoRow: {
-    flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignSelf: 'stretch',
@@ -95,16 +95,6 @@ const styles = {
   followScreenHeaderMainText: {
     fontSize: 34,
     color: '#000'
-  },
-  btn: {
-    paddingTop: 8,
-    paddingBottom: 8,
-    paddingLeft: 15,
-    paddingRight: 15,
-    fontSize: 14,
-    color: '#fff',
-    backgroundColor: '#33b5e5',
-    borderRadius: 3
   },
   btnInGroup: {
     marginRight: 8

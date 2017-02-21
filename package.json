@@ -8,10 +8,10 @@
   },
   "dependencies": {
     "babyparse": "^0.4.6",
-    "react": "15.3.2",
-    "react-native": "^0.36.0",
+    "lodash": "^4.17.4",
+    "react": "^15.4.2",
+    "react-native": "^0.41.2",
     "react-native-button": "^1.7.1",
-    "react-native-fabric": "^0.3.2",
     "react-native-fs": "^2.0.1-rc.2",
     "react-native-localization": "^0.1.26",
     "realm": "^0.14.3"

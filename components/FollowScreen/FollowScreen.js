@@ -3,6 +3,7 @@ import {
   Alert,
   AppRegistry,
   DatePickerAndroid,
+  Dimensions,
   StyleSheet,
   TouchableHighlight,
   Text,
@@ -12,13 +13,14 @@ import {
   Picker,
   View
 } from 'react-native';
-import FollowArrivalTable from '../FollowArrivalTable';
+import FollowArrivalTable from './FollowArrivalTable';
 import ItemTrackerModal from './ItemTrackerModal';
 import FollowScreenHeader from './FollowScreenHeader';
 import Util from '../util';
 
 import realm from '../../models/realm';
 import strings from '../../data/strings';
+import _ from 'lodash';
 
 const ModalType = Object.freeze({
   none: 0,
@@ -29,18 +31,24 @@ const ModalType = Object.freeze({
 export default class FollowScreen extends Component {
 
   constructor(props) {
+
     super(props);
 
     const focalId = this.props.follow.FOL_B_AnimID;
     const date = this.props.follow.FOL_date;
 
-    // Populate followArrival in db
-    const allFollowArrival = realm.objects('FollowArrival')
-        .filtered('focalId = $0 AND date = $1 AND followStartTime = $2', focalId, date, this.props.followTime);
-    let followArrivals = {};
-    for (let i = 0; i < allFollowArrival.length; i++) {
-      const arrival = allFollowArrival[i];
-      followArrivals[arrival.chimpId] = arrival;
+    let followArrivals = null;
+    if (this.props.followArrivals !== undefined && this.props.followArrivals !== null) {
+      followArrivals = this.props.followArrivals;
+    } else {
+      followArrivals = {};
+      // Populate followArrival in db
+      const allFollowArrival = realm.objects('FollowArrival')
+          .filtered('focalId = $0 AND date = $1 AND followStartTime = $2', focalId, date, this.props.followTime);
+      for (let i = 0; i < allFollowArrival.length; i++) {
+        const arrival = allFollowArrival[i];
+        followArrivals[arrival.chimpId] = arrival;
+      }
     }
 
     // Populate food in db
@@ -136,11 +144,12 @@ export default class FollowScreen extends Component {
     this.setModalVisible(true);
   }
 
-  navigateToFollowTime(followTime) {
+  navigateToFollowTime(followTime, followArrivals) {
     this.props.navigator.replace({
       id: 'FollowScreen',
       follow: this.props.follow,
-      followTime: followTime
+      followTime: followTime,
+      followArrivals: followArrivals
     });
   }
 
@@ -151,15 +160,22 @@ export default class FollowScreen extends Component {
     const previousFollowTime = followTimeIndex !== beginFollowTimeIndex ? this.props.times[followTimeIndex - 1] : null;
     const nextFollowTime = followTimeIndex !== this.props.times.length - 1 ? this.props.times[followTimeIndex + 1] : null;
 
+    // return(
+    //     <View style={styles.container}>
+    //       <View style={styles.followScreenHeader}></View>
+    //       <View style={styles.followArrivalTable}></View>
+    //     </View>
+    // );
+
     return(
-      <View>
+      <View style={styles.container}>
 
         <ItemTrackerModal
             title={this.state.modalMainList == this.props.food ? "Food" : "Species"}
             visible={this.state.modalVisible}
             mainList={this.state.modalMainList}
             secondaryList={this.state.modalSubList}
-            beginFollowTime={this.props.followTimegi}
+            beginFollowTime={this.props.followTime}
             initialStartTime={this.state.itemTrackerInitialStartTime}
             initialEndTime={this.state.itemTrackerInitialEndTime}
             initialMainSelection={this.state.itemTrackerInitialMainSelection}
@@ -222,6 +238,7 @@ export default class FollowScreen extends Component {
         />
 
         <FollowScreenHeader
+            styles={styles.followScreenHeader}
             follow={this.props.follow}
             followTime={this.props.followTime}
             activeFood={this.state.activeFood.map((f, i) => f.foodName + ' ' + f.foodPart)}
@@ -229,11 +246,7 @@ export default class FollowScreen extends Component {
             activeSpecies={this.state.activeSpecies.map((s, i) => s.speciesName)}
             finishedSpecies={this.state.finishedSpecies.map((s, i) => s.speciesName)}
             onPreviousPress={()=> {
-              this.props.navigator.replace({
-                  id: 'FollowScreen',
-                  follow: this.props.follow,
-                  followTime: previousFollowTime
-                });
+              this.navigateToFollowTime(previousFollowTime, null);
             }}
             onNextPress={()=>{
               const followArrivals =
@@ -259,12 +272,12 @@ export default class FollowScreen extends Component {
                       {text: strings.Follow_NextDataValidationAlertCancel,
                         onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
                       {text: strings.Follow_NextDataValidationAlertConfirm,
-                        onPress: () => this.navigateToFollowTime(nextFollowTime)},
+                        onPress: () => this.navigateToFollowTime(nextFollowTime, _.extend(this.state.followArrivals))},
                     ],
                     {cancelable: true}
                 );
               } else {
-                this.navigateToFollowTime(nextFollowTime)
+                this.navigateToFollowTime(nextFollowTime, _.extend(this.state.followArrivals))
               }
             }}
             onFoodTrackerSelected={()=>{
@@ -296,6 +309,7 @@ export default class FollowScreen extends Component {
         />
 
          <FollowArrivalTable
+            styles={styles.followArrivalTable}
             chimps={this.props.chimps}
             focalChimpId={this.props.follow.FOL_B_AnimID}
             followDate={this.props.follow.FOL_date}
@@ -341,46 +355,26 @@ export default class FollowScreen extends Component {
 }
 
 const styles = {
-  followScreenHeader: {
+  container: {
+    width: undefined,
+    height: undefined,
     flex: 1,
+    alignItems: 'center',
     flexDirection: 'column',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    height: 150,
-    paddingLeft: 12,
-    paddingRight: 12
-  },
-  followScreenHeaderInfoRow: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignSelf: 'stretch',
-    alignItems: 'center',
-    height: 40,
-    paddingLeft: 12,
-    paddingRight: 12
-  },
-  headerRow: {
-    flex:1,
-    flexDirection: 'row',
     justifyContent: 'flex-start',
+    backgroundColor:'white',
+  },
+  followScreenHeader: {
     alignSelf: 'stretch',
-    alignItems: 'center',
-    height: 50,
+    paddingLeft: 12,
+    paddingRight: 12,
+    height: 150,
+    backgroundColor: 'pink'
   },
-  followScreenHeaderMainText: {
-    fontSize: 34,
-    color: '#000'
-  },
-  btn: {
-    paddingTop: 8,
-    paddingBottom: 8,
-    paddingLeft: 15,
-    paddingRight: 15,
-    fontSize: 14,
-    color: '#fff',
-    backgroundColor: '#33b5e5',
-    borderRadius: 3
+  followArrivalTable: {
+    flex: 1,
+    height: 200,
+    alignSelf: 'stretch'
   },
   btnInGroup: {
     marginRight: 8
