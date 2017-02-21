@@ -15,6 +15,7 @@ import {
 import Button from 'react-native-button';
 
 import realm from '../models/realm';
+import sharedStyles from './SharedStyles';
 import strings from '../data/strings';
 import Util from './util';
 
@@ -159,7 +160,7 @@ export default class NewFollowScreen extends Component {
         />
 
         <Button
-            style={[styles.btn, styles.btnPositive]}
+            style={[sharedStyles.btn, sharedStyles.btnSuccess, styles.beginBtn]}
             onPress={() => {
               const hasSetBeginTime = this.state.beginTime !== null;
               const hasSetCommunity = this.state.community != null;
@@ -210,7 +211,7 @@ export default class NewFollowScreen extends Component {
 }
 
 
-var styles = {
+const styles = {
   container: {
     flex: 1,
     flexDirection: 'column',
@@ -226,20 +227,16 @@ var styles = {
     lineHeight: 40,
     color: 'black'
   },
-  btn: {
+  beginBtn: {
     width: 500,
     marginTop: 20,
     marginBottom: 20,
     paddingTop: 8,
     paddingBottom: 8,
     paddingLeft: 15,
-    paddingRight: 15,
-    fontSize: 14,
-    color: '#fff'
+    paddingRight: 15
   },
-  btnPositive: {
-    backgroundColor: '#9c0'
-  },
+
   inputField: {
     width: 500,
   },

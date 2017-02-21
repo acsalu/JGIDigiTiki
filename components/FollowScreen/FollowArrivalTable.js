@@ -11,17 +11,18 @@ import {
   View
 } from 'react-native';
 import Button from 'react-native-button';
-import Util from './util';
+import Util from '../util';
+import sharedStyles from '../SharedStyles';
 
 const infoButtonImages = {
-  'absent': require('../img/time-empty.png'),
-  'arriveFirst': require('../img/time-arrive-first.png'),
-  'arriveSecond': require('../img/time-arrive-second.png'),
-  'arriveThird': require('../img/time-arrive-third.png'),
-  'departFirst': require('../img/time-depart-first.png'),
-  'departSecond': require('../img/time-depart-second.png'),
-  'departThird': require('../img/time-depart-third.png'),
-  'continuing': require('../img/time-full.png'),
+  'absent': require('../../img/time-empty.png'),
+  'arriveFirst': require('../../img/time-arrive-first.png'),
+  'arriveSecond': require('../../img/time-arrive-second.png'),
+  'arriveThird': require('../../img/time-arrive-third.png'),
+  'departFirst': require('../../img/time-depart-first.png'),
+  'departSecond': require('../../img/time-depart-second.png'),
+  'departThird': require('../../img/time-depart-third.png'),
+  'continuing': require('../../img/time-full.png'),
 };
 
 
@@ -124,7 +125,7 @@ export default class FollowArrivalTable extends Component {
     return (
       <TouchableOpacity
           key={n}
-          style={{width: 50, height: 50, paddingTop: 5, paddingLeft: 5, marginLeft: 7, marginRight: 7}}
+          style={{width: 50, height: 50, paddingTop: 5, paddingLeft: 5}}
           onPress={() => {
             this._onPanelButtonPress(n)}
           }
@@ -150,7 +151,7 @@ export default class FollowArrivalTable extends Component {
                 this._onRowPress(c);
                 this.setState({panelType: PanelType.time});
               }}
-              style={{marginBottom: 10}}
+              style={styles.chimpRow}
           >
             <View style={styles.item}>
               <Button style={chimpButtonStyles} onPress={()=> {
@@ -170,7 +171,7 @@ export default class FollowArrivalTable extends Component {
       return (
           <TouchableOpacity
               key={c.name}
-              style={{marginBottom: 10}}
+              style={styles.chimpRow}
               onPress={() => {
                 this._onRowPress(c)
                 this.setState({panelType: PanelType.time});
@@ -205,7 +206,7 @@ export default class FollowArrivalTable extends Component {
     return (
         <TouchableOpacity
             key={c.name}
-            style={{marginBottom: 10}}
+            style={styles.chimpRow}
             onPress={() => {
               this._onRowPress(c)
               this.setState({panelType: PanelType.time});
@@ -264,7 +265,7 @@ export default class FollowArrivalTable extends Component {
               {this.panels[this.state.panelType]}
           </View>
           <View
-            style={{flex: 1, flexDirection: 'row', height: 700}}
+            style={{flexDirection: 'row', height: 700}}
           >
             <View>
               <View style={styles.followButtonLabelGroup}>
@@ -301,18 +302,11 @@ export default class FollowArrivalTable extends Component {
   }
 }
 
-var styles = StyleSheet.create({
-  hidden: {
-    opacity: 0.0
-  },
-  show: {
-    opacity: 1.0
-  },
+const styles = StyleSheet.create({
   list: {
     paddingBottom: 50
   },
   infoPanel: {
-    flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
@@ -325,7 +319,6 @@ var styles = StyleSheet.create({
     marginRight: 10
   },
   followButtonLabelGroup: {
-    flex: 1,
     flexDirection: 'row',
     height: 20,
     marginLeft: 100
@@ -337,7 +330,9 @@ var styles = StyleSheet.create({
   item: {
     width: (Dimensions.get('window').width - 20) / 2,
     padding: 3,
-    flexDirection: 'row'
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   borderBottom: {
     borderBottomColor: 'black',
@@ -349,7 +344,6 @@ var styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexWrap: 'wrap',
-    flex: 1
   },
   followArrivalTableBtn: {
     width: 50,
@@ -387,12 +381,15 @@ var styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
   },
+  chimpRow: {
+    marginBottom: 10,
+  },
   chimpRowGroupFemale: {
     borderLeftColor: 'black',
     borderLeftWidth: 2,
   }
 });
 
-var chimpButtonStylesNonFocal = styles.followArrivalTableBtn;
-var chimpButtonStylesFocal = [styles.followArrivalTableBtn, styles.followArrivalTableBtnFocal];
-var chimpButtonStylesSelected = [styles.followArrivalTableBtn, styles.followArrivalTableBtnSelected];
+const chimpButtonStylesNonFocal = styles.followArrivalTableBtn;
+const chimpButtonStylesFocal = [styles.followArrivalTableBtn, styles.followArrivalTableBtnFocal];
+const chimpButtonStylesSelected = [styles.followArrivalTableBtn, styles.followArrivalTableBtnSelected];

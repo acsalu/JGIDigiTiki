@@ -83,10 +83,11 @@ var styles = {
     paddingTop: 8,
     paddingBottom: 20,
     borderBottomWidth: 8,
-    borderBottomColor: '#33b5e5'
+    borderBottomColor: '#33b5e5',
+    height: 100
   },
   followRowInnerWrap: {
-    height: 50,
+    height: 60,
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -96,8 +97,11 @@ var styles = {
     width: 200
   },
   followRowMainText: {
-    fontSize: 18,
+    fontSize: 20,
     color: 'black'
+  },
+  followRowDescriptionText: {
+    fontSize: 16
   },
   followRowArrow: {
     marginTop: 20

@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import Button from 'react-native-button';
 
+import sharedStyles from './SharedStyles';
 import strings from '../data/strings';
 
 export default class MenuScreen extends Component {
@@ -24,21 +25,21 @@ export default class MenuScreen extends Component {
 
         <Button
             onPress={() => {this.props.navigator.push({id: 'NewFollowScreen'});}}
-            style={styles.btn}
+            style={[sharedStyles.btn, styles.menuBtn]}
         >
           {strings.Menu_NewFollow}
         </Button>
 
         <Button
             onPress={() => {this.props.navigator.push({id: 'FollowListScreen'});}}
-            style={styles.btn}
+            style={[sharedStyles.btn, styles.menuBtn]}
         >
           {strings.Menu_ContinueFollow}
         </Button>
 
         <Button
             onPress={() => {}}
-            style={styles.btn}>
+            style={[sharedStyles.btn, styles.menuBtn]}>
           Endelea na ufuataji ulipoachia
         </Button>
 
@@ -49,7 +50,7 @@ export default class MenuScreen extends Component {
   }
 }
 
-var styles = {
+const styles = {
   container: {
     flex: 1,
     width: undefined,
@@ -77,16 +78,9 @@ var styles = {
     lineHeight: 40,
     color: 'black'
   },
-  btn: {
+  menuBtn: {
     width: 500,
     marginTop: 20,
-    marginBottom: 20,
-    paddingTop: 8,
-    paddingBottom: 8,
-    paddingLeft: 15,
-    paddingRight: 15,
-    fontSize: 14,
-    color: '#fff',
-    backgroundColor: '#33b5e5'
+    marginBottom: 20
   }
 };
