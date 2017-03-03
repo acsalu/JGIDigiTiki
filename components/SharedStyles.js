@@ -21,4 +21,16 @@ export default sharedStyles = {
   show: {
     opacity: 1.0
   },
+  text: {
+    size: {
+      title: {
+        fontSize: 34
+      }
+    },
+    color: {
+      normal: {
+        color: '#000'
+      }
+    }
+  }
 };

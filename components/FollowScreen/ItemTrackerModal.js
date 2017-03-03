@@ -10,6 +10,7 @@ import {
 import Button from 'react-native-button';
 import util from '../util';
 import strings from '../../data/strings';
+import sharedStyles from '../SharedStyles';
 
 export default class ItemTrackerModal extends Component {
 
@@ -53,15 +54,16 @@ export default class ItemTrackerModal extends Component {
 
     return (
         <Modal
+            style={styles.modal}
             animationType={"slide"}
             transparent={false}
             visible={this.props.visible}
             onRequestClose={() => {alert("Modal has been closed.")}}
         >
           <View style={{marginTop: 22}}>
-            <View style={styles.followScreenHeaderInfoRow}>
+            <View style={styles.modalHeader}>
               <Button
-                  style={styles.btn}
+                  style={sharedStyles.btn}
                   styleDisabled={{opacity: 0.5}}
                   disabled={
                     [this.state.mainSelection, this.state.secondarySelection, this.state.startTime]
@@ -80,12 +82,12 @@ export default class ItemTrackerModal extends Component {
                 {strings.ItemTracker_Save}
               </Button>
 
-              <Text style={styles.followScreenHeaderMainText}>
+              <Text style={[sharedStyles.text.size.title, sharedStyles.text.color.normal]}>
                 {this.props.title}
               </Text>
 
               <Button
-                  style={styles.btn}
+                  style={sharedStyles.btn}
                   onPress={() => {
                     this.props.onDismiss();
                   }}>
@@ -93,19 +95,19 @@ export default class ItemTrackerModal extends Component {
               </Button>
             </View>
 
-            <View>
+            <View style={styles.timeSelectionGroup}>
               <Picker
                   selectedValue={this.state.startTime}
                   onValueChange={(v)=>{this.setState({startTime: v})}}
-                  style={{}}
+                  style={styles.timeSelectionPicker}
               >
                 {timePickerItems}
               </Picker>
-              <Text style={{textAlign: 'center'}}>hadi</Text>
+              <Text style={styles.timeSelectionToText}>{strings.ItemTracker_TimeTo}</Text>
               <Picker
                   selectedValue={this.state.endTime}
                   onValueChange={(v)=>{this.setState({endTime: v})}}
-                  style={{}}
+                  style={styles.timeSelectionPicker}
               >
                 {timePickerItems}
               </Picker>
@@ -129,17 +131,10 @@ export default class ItemTrackerModal extends Component {
 }
 
 const styles = {
-  followScreenHeader: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    height: 150,
-    paddingLeft: 12,
-    paddingRight: 12
+  modal: {
+    flex: 1
   },
-  followScreenHeaderInfoRow: {
-    flex: 1,
+  modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignSelf: 'stretch',
@@ -156,21 +151,15 @@ const styles = {
     alignItems: 'center',
     height: 50,
   },
-  followScreenHeaderMainText: {
-    fontSize: 34,
-    color: '#000'
+  timeSelectionGroup: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
-  btn: {
-    paddingTop: 8,
-    paddingBottom: 8,
-    paddingLeft: 15,
-    paddingRight: 15,
-    fontSize: 14,
-    color: '#fff',
-    backgroundColor: '#33b5e5',
-    borderRadius: 3
+  timeSelectionToText: {
+    fontSize: 16
   },
-  btnInGroup: {
-    marginRight: 8
+  timeSelectionPicker: {
+    width: 250
   }
 };

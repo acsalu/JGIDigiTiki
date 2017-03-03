@@ -24,6 +24,7 @@ export default strings = new LocalizedStrings({
     Follow_NextDataValidationAlertCancel: "Cancel",
     ItemTracker_Save: "Save",
     ItemTracker_Cancel: "Cancel",
+    ItemTracker_TimeTo: "to"
   },
   sw:{
     TimeFormat: "(s:dk)",
@@ -46,5 +47,6 @@ export default strings = new LocalizedStrings({
     Follow_NextDataValidationAlertMessagePrompt: "Are you sure?",
     Follow_NextDataValidationAlertConfirm: "Yes",
     Follow_NextDataValidationAlertCancel: "Cancel",
+    ItemTracker_TimeTo: "hadi"
   }
 });

@@ -360,12 +360,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
   },
-  followArrivalTableBtnFocal: {
-    backgroundColor: '#33b5e5',
-  },
-  followArrivalTableBtnSelected: {
-    backgroundColor: '#9c0',
-  },
   panelOptionButton: {
     width: 50,
     backgroundColor: '#ececec',
@@ -391,5 +385,5 @@ const styles = StyleSheet.create({
 });
 
 const chimpButtonStylesNonFocal = styles.followArrivalTableBtn;
-const chimpButtonStylesFocal = [styles.followArrivalTableBtn, styles.followArrivalTableBtnFocal];
-const chimpButtonStylesSelected = [styles.followArrivalTableBtn, styles.followArrivalTableBtnSelected];
+const chimpButtonStylesFocal = [styles.followArrivalTableBtn, sharedStyles.btnPrimary];
+const chimpButtonStylesSelected = [styles.followArrivalTableBtn, sharedStyles.btnSuccess];
