@@ -15,7 +15,7 @@ import Util from '../util';
 import sharedStyles from '../SharedStyles';
 
 const infoButtonImages = {
-  'arrivalEmpty': require('../../img/time-empty.png'),
+  'arriveEmpty': require('../../img/time-empty.png'),
   'arriveFirst': require('../../img/time-arrive-first.png'),
   'arriveSecond': require('../../img/time-arrive-second.png'),
   'arriveThird': require('../../img/time-arrive-third.png'),
@@ -55,8 +55,6 @@ export default class FollowArrivalTable extends Component {
 
   constructor(props) {
     super(props);
-    // console.log("props of FollowArrivalTable");
-    // console.log(props);
     this.state = {
       selectedChimp: null,
       panelType: PanelType.time,
@@ -64,8 +62,12 @@ export default class FollowArrivalTable extends Component {
     };
 
     this.panels = {};
-    this.panels[PanelType.time] = ['arrivalEmpty', 'arriveFirst', 'arriveSecond', 'arriveThird',
-      'departFirst', 'departSecond', 'departThird', 'departContinues'].map(this.createInfoPanelButton);
+    const arrivalButtons = ['arriveEmpty', 'arriveFirst', 'arriveSecond', 'arriveThird']
+        .map((t, i) => this.createInfoPanelButton(t, i, false));
+    const departureButtons = ['departFirst', 'departSecond', 'departThird', 'departContinues']
+        .map((t, i) => this.createInfoPanelButton(t, i, true));
+
+    this.panels[PanelType.time] = arrivalButtons.concat(departureButtons);
 
     const certaintyOrder = ['certain', 'uncertain', 'nestCertain', 'nestUncertain'];
     const certaintyOptions = certaintyOrder.map((c, i) => Util.certaintyLabelsUser[c]);
@@ -110,7 +112,7 @@ export default class FollowArrivalTable extends Component {
     const selectedChimp = this.props.selectedChimp;
     if (selectedChimp !== null) {
       if (!(selectedChimp in this.props.followArrivals)) {
-        if (time !== 'absent') { this.props.createNewArrival(selectedChimp, time); }
+        if (time.startsWith('arrive')) { this.props.createNewArrival(selectedChimp, time); }
       } else {
         this.props.updateArrival('time', time)
       }
@@ -121,7 +123,7 @@ export default class FollowArrivalTable extends Component {
     this.props.onSelectChimp(c.name);
   }
 
-  createInfoPanelButton = (n, i) => {
+  createInfoPanelButton = (n, i, isDeparture) => {
     return (
       <TouchableOpacity
           key={n}
@@ -130,7 +132,12 @@ export default class FollowArrivalTable extends Component {
             this._onPanelButtonPress(n)}
           }
       >
-        <Image style={{width: 40, height: 40}} source={infoButtonImages[n]} />
+        <Image
+            style={{
+              width: 40, height: 40
+            }}
+            source={infoButtonImages[n]}
+        />
       </TouchableOpacity>
     );
   }
@@ -249,19 +256,14 @@ export default class FollowArrivalTable extends Component {
     const femaleChimps = this.props.chimps.filter((c) => c.sex === 'F');
     const maleChimps = this.props.chimps.filter((c) => c.sex === 'M');
 
-    // console.log(femaleChimps);
-    // console.log(maleChimps);
-
     const femaleChimpRows = femaleChimps.map(this.createChimpRow);
     const maleChimpRows = maleChimps.map(this.createChimpRow);
-
-    // console.log(maleChimps.length);
-    // console.log(femaleChimps.length);
 
     return (
         <View>
           <View
-              style={styles.infoPanel}>
+              style={styles.infoPanel}
+          >
               {this.panels[this.state.panelType]}
           </View>
           <View
