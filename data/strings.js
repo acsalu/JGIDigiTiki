@@ -6,6 +6,7 @@ export default strings = new LocalizedStrings({
     Menu_Title: "Follow",
     Menu_NewFollow: "New Follow",
     Menu_ContinueFollow: "Continue Follow",
+    Menu_ExportData: "Export Data",
     NewFollow_Title: "New Follow",
     NewFollow_Community: "Community",
     NewFollow_Target: "Target",
