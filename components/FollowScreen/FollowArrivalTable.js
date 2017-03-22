@@ -256,6 +256,9 @@ export default class FollowArrivalTable extends Component {
     const femaleChimps = this.props.chimps.filter((c) => c.sex === 'F');
     const maleChimps = this.props.chimps.filter((c) => c.sex === 'M');
 
+    femaleChimps.sort(Util.compareChimp);
+    maleChimps.sort(Util.compareChimp);
+
     const femaleChimpRows = femaleChimps.map(this.createChimpRow);
     const maleChimpRows = maleChimps.map(this.createChimpRow);
 

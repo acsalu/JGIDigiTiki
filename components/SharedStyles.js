@@ -1,7 +1,7 @@
 export default sharedStyles = {
   btn: {
-    paddingTop: 8,
-    paddingBottom: 8,
+    paddingTop: 12,
+    paddingBottom: 12,
     paddingLeft: 15,
     paddingRight: 15,
     fontSize: 14,

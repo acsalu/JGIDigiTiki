@@ -83,4 +83,15 @@ export default class Util {
   static getDateString = (date) => {
     return dateFormat(date, "dd-mm-yyyy");
   }
+
+  static compareChimp = (c1, c2) => {
+    if (c1.name < c2.name) {
+      return -1;
+    }
+    if (c1.name > c2.name) {
+      return 1;
+    }
+
+    return 0;
+  }
 }

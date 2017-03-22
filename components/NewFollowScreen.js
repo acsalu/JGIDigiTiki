@@ -156,7 +156,7 @@ export default class NewFollowScreen extends Component {
         />
 
         <Button
-            style={[sharedStyles.btn, sharedStyles.btnSuccess, styles.beginBtn]}
+            style={[styles.beginBtn, sharedStyles.btn, sharedStyles.btnSuccess]}
             onPress={() => {
               const hasSetBeginTime = this.state.beginTime !== null;
               const hasSetCommunity = this.state.community != null;
