@@ -8,12 +8,17 @@ import {
   Text,
   TextInput,
   Navigator,
+  NativeModules,
   View
 } from 'react-native';
 import Button from 'react-native-button';
 
 import sharedStyles from './SharedStyles';
 import strings from '../data/strings';
+import RNFS from 'react-native-fs';
+import realm from '../models/realm';
+
+const Mailer = NativeModules.RNMail;
 
 export default class MenuScreen extends Component {
 
@@ -43,7 +48,11 @@ export default class MenuScreen extends Component {
           Endelea na ufuataji ulipoachia
         </Button>
 
-
+        <Button
+            onPress={() => {this.props.navigator.push({id: 'ExportDataScreen'});}}
+            style={[sharedStyles.btn, styles.menuBtn]}>
+          {strings.Menu_ExportData}
+        </Button>
 
       </Image>
     );
