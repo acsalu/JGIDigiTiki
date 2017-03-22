@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "babyparse": "^0.4.6",
+    "dateformat": "^2.0.0",
     "lodash": "^4.17.4",
     "react": "^15.4.2",
     "react-native": "^0.41.2",

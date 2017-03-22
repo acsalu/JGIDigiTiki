@@ -1,3 +1,5 @@
+import dateFormat from 'dateformat';
+
 Number.prototype.pad = function(size) {
   var s = String(this);
   while (s.length < (size || 2)) {s = "0" + s;}
@@ -76,5 +78,9 @@ export default class Util {
     const hourString = time.substring(0, columnIndex + 1);
     const lastCharacter = time.slice(-1);
     return minutes.map((m, i) => { return hourString + m.pad(2) + lastCharacter });
+  }
+
+  static getDateString = (date) => {
+    return dateFormat(date, "dd-mm-yyyy");
   }
 }

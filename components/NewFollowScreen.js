@@ -13,6 +13,7 @@ import {
   View
 } from 'react-native';
 import Button from 'react-native-button';
+import dateformat from 'dateformat';
 
 import realm from '../models/realm';
 import sharedStyles from './SharedStyles';
@@ -89,21 +90,14 @@ export default class NewFollowScreen extends Component {
       return [];
     }
 
-    const defaultPickerItem = (<Picker.Item key='Target' label={strings.NewFollow_Target} value={null} />);
+    const defaultPickerItem = (<Picker.Item key='Target' label={strings.NewFollow_Target} value={null}/>);
 
     const chimpPickerItems = this.props.chimps
-      .filter((c) => c.community === community)
-      .map((c, i) => {
-        return (<Picker.Item key={c.name} label={c.name} value={c.name} />);
-      });
+        .filter((c) => c.community === community)
+        .map((c, i) => {
+          return (<Picker.Item key={c.name} label={c.name} value={c.name}/>);
+        });
     return [defaultPickerItem].concat(chimpPickerItems);
-  }
-
-  getDateString = (date) => {
-    const year = this.state.date.getYear() + 1900;
-    const month = this.state.date.getMonth() + 1;
-    const day = this.state.date.getDate();
-    return month + '/' + day + '/' + year;
   }
 
   render() {
@@ -118,7 +112,7 @@ export default class NewFollowScreen extends Component {
       return false;
     });
 
-    console.log('create db:', realm.path)
+    console.log('create db:', realm.path);
 
     return(
       <View style={styles.container}>
@@ -128,7 +122,7 @@ export default class NewFollowScreen extends Component {
             style={styles.inputField}
             onPress={this.showDatePicker.bind(this, '', {date: this.state.date})}>
           <Text style={styles.datePickerText}>
-            {this.getDateString(this.state.date)}
+            {Util.getDateString(this.state.date)}
           </Text>
         </TouchableHighlight>
 

@@ -10,6 +10,7 @@ import {
     View
 } from 'react-native';
 import realm from '../models/realm';
+import Util from './util';
 
 export default class FollowListScreen extends Component {
 
@@ -46,10 +47,7 @@ class FollowListRow extends Component {
     const date = this.props.follow.FOL_date;
     const beginTime = this.props.follow.FOL_time_begin;
 
-    const year = date.getYear() + 1900;
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    const dateString = month + '/' + day + '/' + year;
+    const dateString = Util.getDateString(date);
 
     return(
         <TouchableHighlight
