@@ -159,14 +159,14 @@ export default class FollowScreen extends Component {
     }
   }
 
-  editFood(foodName, foodPart) {
-    const food = this.state.activeFood.filter((f) => f.foodName === foodName && f.foodPart === foodPart)[0];
+  editFood(foodName, foodPart, foodList) {
+    const food = foodList.filter((f) => f.foodName === foodName && f.foodPart === foodPart)[0];
     this.updateItemTrackerData(ModalType.food, food);
     this.setModalVisible(true);
   }
 
-  editSpecies(speciesName) {
-    const species = this.state.activeSpecies.filter((s) => s.speciesName === speciesName)[0];
+  editSpecies(speciesName, speciesList) {
+    const species = speciesList.filter((s) => s.speciesName === speciesName)[0];
     this.updateItemTrackerData(ModalType.species, species);
     this.setModalVisible(true);
   }
@@ -321,17 +321,22 @@ export default class FollowScreen extends Component {
               const spaceIndex = f.indexOf(' ');
               const foodName = f.substring(0, spaceIndex);
               const foodPart = f.substring(spaceIndex + 1);
-              this.editFood(foodName, foodPart);
+              this.editFood(foodName, foodPart, this.state.activeFood);
             }}
 
             onSelectFinishedFood={(f) => {
+              const spaceIndex = f.indexOf(' ');
+              const foodName = f.substring(0, spaceIndex);
+              const foodPart = f.substring(spaceIndex + 1);
+              this.editFood(foodName, foodPart, this.state.finishedFood);
             }}
 
             onSelectActiveSpecies={(s) => {
-              this.editSpecies(s);
+              this.editSpecies(s, this.state.activeSpecies);
             }}
 
             onSelectFinishedSpecies={(s) => {
+              this.editSpecies(s, this.state.finishedSpecies);
             }}
         />
 

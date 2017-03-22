@@ -75,7 +75,8 @@ const styles = {
     alignItems: 'center',
     height: 150,
     paddingLeft: 12,
-    paddingRight: 12
+    paddingRight: 12,
+    paddingTop: 8
   },
   followScreenHeaderInfoRow: {
     flexDirection: 'row',
