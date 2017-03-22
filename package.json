@@ -15,7 +15,7 @@
     "react-native-fs": "^2.0.1-rc.2",
     "react-native-localization": "^0.1.26",
     "react-native-mail": "^3.0.1",
-    "realm": "^0.14.3"
+    "realm": "1.0.0"
   },
   "jest": {
     "preset": "jest-react-native"

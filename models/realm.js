@@ -72,4 +72,19 @@ Food.schema = {
   }
 };
 
-export default new Realm({schema: [Follow, FollowArrival, Species, Food]});
+class Location {}
+Location.className = 'Location';
+Location.schema = {
+  name: Location.className,
+  properties: {
+    timestamp: 'int',
+    longitude: 'float',
+    latitude: 'float',
+    altitude: 'float',
+    accuracy: 'float'
+  }
+}
+
+export default new Realm({
+  schema: [Follow, FollowArrival, Species, Food, Location]
+});

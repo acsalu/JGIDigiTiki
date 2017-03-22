@@ -30,6 +30,31 @@ const ModalType = Object.freeze({
 
 export default class FollowScreen extends Component {
 
+  watchID: ?number = null;
+
+  componentDidMount() {
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+          console.log("get position:", JSON.stringify(position));
+          realm.write(() => {
+            const newLocation = realm.create('Location', {
+              timestamp: position.timestamp,
+              longitude: position.coords.longitude,
+              latitude: position.coords.latitude,
+              altitude: position.coords.altitude,
+              accuracy: position.coords.accuracy
+            });
+          });
+        },
+        (error) => alert(JSON.stringify(error)),
+        {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
+    );
+  }
+
+  componentWillUnmount() {
+    navigator.geolocation.clearWatch(this.watchID);
+  }
+
   constructor(props) {
 
     super(props);
@@ -97,7 +122,9 @@ export default class FollowScreen extends Component {
       itemTrackerInitialMainSelection: null,
       itemTrackerInitialSecondarySelection: null,
       followArrivals: followArrivals,
-      selectedChimp: null
+      selectedChimp: null,
+      initialPosition: 'unknown',
+      lastPosition: 'unknown',
     };
   };
 

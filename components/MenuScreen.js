@@ -15,6 +15,8 @@ import Button from 'react-native-button';
 
 import sharedStyles from './SharedStyles';
 import strings from '../data/strings';
+import RNFS from 'react-native-fs';
+import realm from '../models/realm';
 
 const Mailer = NativeModules.RNMail;
 
@@ -47,25 +49,7 @@ export default class MenuScreen extends Component {
         </Button>
 
         <Button
-            onPress={() => {
-              Mailer.mail({
-                subject: 'need help',
-                recipients: ['support@example.com'],
-                ccRecipients: ['supportCC@example.com'],
-                bccRecipients: ['supportBCC@example.com'],
-                body: '',
-                attachment: {
-                  path: '',  // The absolute path of the file from which to read data.
-                  type: '',   // Mime Type: jpg, png, doc, ppt, html, pdf
-                  name: '',   // Optional: Custom filename for attachment
-                }
-              }, (error, event) => {
-                if(error) {
-                  console.log("bla, no email supported");
-                  console.log(error);
-                }
-              });
-            }}
+            onPress={() => {this.props.navigator.push({id: 'ExportDataScreen'});}}
             style={[sharedStyles.btn, styles.menuBtn]}>
           {strings.Menu_ExportData}
         </Button>
