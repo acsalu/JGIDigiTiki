@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
   AppRegistry,
+  BackAndroid,
   Dimensions,
   Image,
   StyleSheet,
@@ -43,6 +44,14 @@ export default class ExportDataScreen extends Component {
     const path = RNFS.ExternalDirectoryPath + '/test.csv';
 
     console.log(csvContent);
+
+    BackAndroid.addEventListener('hardwareBackPress', () => {
+      if (this.props.navigator && this.props.navigator.getCurrentRoutes().length > 1) {
+        this.props.navigator.pop();
+        return true;
+      }
+      return false;
+    });
 
     return(
         <Image source={require('../img/chimp.png')} style={styles.container}>

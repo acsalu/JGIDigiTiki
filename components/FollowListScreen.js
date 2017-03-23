@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
     AppRegistry,
+    BackAndroid,
     Image,
     StyleSheet,
     TouchableHighlight,
@@ -15,6 +16,14 @@ import Util from './util';
 export default class FollowListScreen extends Component {
 
   render() {
+    BackAndroid.addEventListener('hardwareBackPress', () => {
+      if (this.props.navigator && this.props.navigator.getCurrentRoutes().length > 1) {
+        this.props.navigator.pop();
+        return true;
+      }
+      return false;
+    });
+
     const follows = realm.objects('Follow');
     const rows = follows.map((f, i) => {
       // TODO: Show arrivals
