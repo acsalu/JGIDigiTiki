@@ -182,9 +182,11 @@ export default class FollowScreen extends Component {
       const fa = followArrivals[k];
       console.log('fa', k, fa);
       if (fa.time.startsWith('arrive')) {
-        let faCopy = _.clone(fa);
-        faCopy.time = 'arriveContinues';
-        updatedFollowArrivals[k] = faCopy;
+        let newFa = _.clone(fa);
+        newFa.time = 'arriveContinues';
+        newFa.isWithin5m = false;
+        newFa.isNearestNeighbor = false;
+        updatedFollowArrivals[k] = newFa;
       }
     }
 
