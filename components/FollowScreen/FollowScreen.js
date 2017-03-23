@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
   Alert,
+  ActivityIndicator,
   AppRegistry,
   DatePickerAndroid,
   Dimensions,
@@ -21,6 +22,8 @@ import Util from '../util';
 import realm from '../../models/realm';
 import strings from '../../data/strings';
 import _ from 'lodash';
+import BusyIndicator from 'react-native-busy-indicator';
+import loaderHandler from 'react-native-busy-indicator/LoaderHandler';
 
 const ModalType = Object.freeze({
   none: 0,
@@ -62,18 +65,37 @@ export default class FollowScreen extends Component {
     const focalId = this.props.follow.FOL_B_AnimID;
     const date = this.props.follow.FOL_date;
 
-    let followArrivals = null;
     if (this.props.followArrivals !== undefined && this.props.followArrivals !== null) {
-      followArrivals = this.props.followArrivals;
-    } else {
-      followArrivals = {};
-      // Populate followArrival in db
-      const allFollowArrival = realm.objects('FollowArrival')
-          .filtered('focalId = $0 AND date = $1 AND followStartTime = $2', focalId, date, this.props.followTime);
-      for (let i = 0; i < allFollowArrival.length; i++) {
-        const arrival = allFollowArrival[i];
-        followArrivals[arrival.chimpId] = arrival;
-      }
+      // Write follows from previous into db
+
+      realm.write(() => {
+        Object.keys(this.props.followArrivals).forEach((key, index) => {
+          const fa = this.props.followArrivals[key];
+          console.log('writing', key, fa, 'into db');
+          const newArrival = realm.create('FollowArrival', {
+            date: this.props.follow.FOL_date,
+            followStartTime: this.props.followTime,
+            focalId: this.props.follow.FOL_B_AnimID,
+            chimpId: fa.chimpId,
+            time: fa.time,
+            certainty: fa.certainty,
+            estrus: fa.estrus,
+            isWithin5m: fa.isWithin5m,
+            isNearestNeighbor: fa.isNearestNeighbor
+          });
+        });
+      });
+    }
+
+    loaderHandler.showLoader('Loading More');
+
+    let followArrivals = {};
+    // Populate followArrival in db
+    const allFollowArrival = realm.objects('FollowArrival')
+        .filtered('focalId = $0 AND date = $1 AND followStartTime = $2', focalId, date, this.props.followTime);
+    for (let i = 0; i < allFollowArrival.length; i++) {
+      const arrival = allFollowArrival[i];
+      followArrivals[arrival.chimpId] = arrival;
     }
 
     console.log("Follow Arrivals:\n", followArrivals);
@@ -174,28 +196,35 @@ export default class FollowScreen extends Component {
   }
 
   navigateToFollowTime(followTime, followArrivals) {
-    let updatedFollowArrivals = {};
-    const keys = Object.keys(followArrivals);
-    console.log('keys', keys);
-    for (let i = 0; i < keys.length; ++i) {
-      const k = keys[i];
-      const fa = followArrivals[k];
-      console.log('fa', k, fa);
-      if (fa.time.startsWith('arrive')) {
-        let newFa = _.clone(fa);
-        newFa.time = 'arriveContinues';
-        newFa.isWithin5m = false;
-        newFa.isNearestNeighbor = false;
-        updatedFollowArrivals[k] = newFa;
-      }
-    }
+    if (followArrivals !== null) {
+      let updatedFollowArrivals = {};
+      const keys = Object.keys(followArrivals);
+      console.log('keys', keys);
+      for (let i = 0; i < keys.length; ++i) {
+        const k = keys[i];
+        const fa = followArrivals[k];
+        if (fa.time.startsWith('arrive')) {
+          let newFa = _.extend({}, fa);
+          newFa.time = 'arriveContinues';
+          newFa.isWithin5m = false;
+          newFa.isNearestNeighbor = false;
+          updatedFollowArrivals[k] = newFa;
+        }
 
-    this.props.navigator.replace({
-      id: 'FollowScreen',
-      follow: this.props.follow,
-      followTime: followTime,
-      followArrivals: updatedFollowArrivals
-    });
+        this.props.navigator.replace({
+          id: 'FollowScreen',
+          follow: this.props.follow,
+          followTime: followTime,
+          followArrivals: updatedFollowArrivals
+        });
+      }
+    } else {
+      this.props.navigator.replace({
+        id: 'FollowScreen',
+        follow: this.props.follow,
+        followTime: followTime
+      });
+    }
   }
 
   render() {
@@ -392,6 +421,7 @@ export default class FollowScreen extends Component {
               }
             }}
         />
+        <BusyIndicator/>
       </View>
     );
   }
