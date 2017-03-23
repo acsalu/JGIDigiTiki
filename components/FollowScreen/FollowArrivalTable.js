@@ -19,10 +19,10 @@ const infoButtonImages = {
   'arriveFirst': require('../../img/time-arrive-first.png'),
   'arriveSecond': require('../../img/time-arrive-second.png'),
   'arriveThird': require('../../img/time-arrive-third.png'),
+  'arriveContinues': require('../../img/time-arrive-continues.png'),
   'departFirst': require('../../img/time-depart-first.png'),
   'departSecond': require('../../img/time-depart-second.png'),
-  'departThird': require('../../img/time-depart-third.png'),
-  'departContinues': require('../../img/time-continues.png'),
+  'departThird': require('../../img/time-depart-third.png')
 };
 
 
@@ -64,7 +64,7 @@ export default class FollowArrivalTable extends Component {
     this.panels = {};
     const arrivalButtons = ['arriveEmpty', 'arriveFirst', 'arriveSecond', 'arriveThird']
         .map((t, i) => this.createInfoPanelButton(t, i, false));
-    const departureButtons = ['departFirst', 'departSecond', 'departThird', 'departContinues']
+    const departureButtons = ['departFirst', 'departSecond', 'departThird']
         .map((t, i) => this.createInfoPanelButton(t, i, true));
 
     this.panels[PanelType.time] = arrivalButtons.concat(departureButtons);
@@ -109,6 +109,7 @@ export default class FollowArrivalTable extends Component {
   }
 
   _onPanelButtonPress = (time) => {
+    console.log(time);
     const selectedChimp = this.props.selectedChimp;
     if (selectedChimp !== null) {
       if (!(selectedChimp in this.props.followArrivals)) {

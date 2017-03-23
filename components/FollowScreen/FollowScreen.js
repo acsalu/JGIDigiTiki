@@ -76,6 +76,8 @@ export default class FollowScreen extends Component {
       }
     }
 
+    console.log("Follow Arrivals:\n", followArrivals);
+
     // Populate food in db
     const allFood = realm.objects('Food')
         .filtered('focalId = $0 AND date = $1', focalId, date);
@@ -172,11 +174,25 @@ export default class FollowScreen extends Component {
   }
 
   navigateToFollowTime(followTime, followArrivals) {
+    let updatedFollowArrivals = {};
+    const keys = Object.keys(followArrivals);
+    console.log('keys', keys);
+    for (let i = 0; i < keys.length; ++i) {
+      const k = keys[i];
+      const fa = followArrivals[k];
+      console.log('fa', k, fa);
+      if (fa.time.startsWith('arrive')) {
+        let faCopy = _.clone(fa);
+        faCopy.time = 'arriveContinues';
+        updatedFollowArrivals[k] = faCopy;
+      }
+    }
+
     this.props.navigator.replace({
       id: 'FollowScreen',
       follow: this.props.follow,
       followTime: followTime,
-      followArrivals: followArrivals
+      followArrivals: updatedFollowArrivals
     });
   }
 
@@ -186,13 +202,6 @@ export default class FollowScreen extends Component {
     const followTimeIndex = this.props.times.indexOf(this.props.followTime);
     const previousFollowTime = followTimeIndex !== beginFollowTimeIndex ? this.props.times[followTimeIndex - 1] : null;
     const nextFollowTime = followTimeIndex !== this.props.times.length - 1 ? this.props.times[followTimeIndex + 1] : null;
-
-    // return(
-    //     <View style={styles.container}>
-    //       <View style={styles.followScreenHeader}></View>
-    //       <View style={styles.followArrivalTable}></View>
-    //     </View>
-    // );
 
     return(
       <View style={styles.container}>
