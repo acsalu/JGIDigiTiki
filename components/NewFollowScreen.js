@@ -4,6 +4,7 @@ import {
   AppRegistry,
   BackAndroid,
   DatePickerAndroid,
+  Keyboard,
   Picker,
   StyleSheet,
   TouchableHighlight,
@@ -158,6 +159,10 @@ export default class NewFollowScreen extends Component {
         <Button
             style={[styles.beginBtn, sharedStyles.btn, sharedStyles.btnSuccess]}
             onPress={() => {
+
+              // Dismiss keyboard
+              Keyboard.dismiss();
+
               const hasSetBeginTime = this.state.beginTime !== null;
               const hasSetCommunity = this.state.community != null;
               const hasSetFocalChimpId = this.state.focalChimpId != null;
@@ -190,7 +195,7 @@ export default class NewFollowScreen extends Component {
 
                 const follow = realm.objects('Follow').slice(-1).pop();
 
-                this.props.navigator.push({
+                this.props.navigator.replace({
                   id: 'FollowScreen',
                   follow: follow,
                   followTime: this.state.beginTime
