@@ -80,7 +80,8 @@ export default class FollowScreen extends Component {
             certainty: fa.certainty,
             estrus: fa.estrus,
             isWithin5m: fa.isWithin5m,
-            isNearestNeighbor: fa.isNearestNeighbor
+            isNearestNeighbor: fa.isNearestNeighbor,
+            grooming: fa.grooming
           });
         });
       });
@@ -129,6 +130,9 @@ export default class FollowScreen extends Component {
       }
     }
 
+    const maleChimpsSorted = this.getSortedChimps(this.props.chimps, 'M', followArrivals);
+    const femaleChimpsSorted = this.getSortedChimps(this.props.chimps, 'F', followArrivals);
+
     this.state = {
       modalVisible: false,
       activeFood: activeFood,
@@ -146,8 +150,17 @@ export default class FollowScreen extends Component {
       selectedChimp: null,
       initialPosition: 'unknown',
       lastPosition: 'unknown',
+      maleChimpsSorted: maleChimpsSorted,
+      femaleChimpsSorted: femaleChimpsSorted
     };
   };
+
+  getSortedChimps(chimps, sex, followArrivals) {
+    const sexChimps = chimps.filter((c) => c.sex === sex);
+    const presentChimps = sexChimps.filter((c) => followArrivals[c.name] !== undefined);
+    const unpresentChimps = sexChimps.filter((c) => followArrivals[c.name] === undefined);
+    return presentChimps.sort(Util.compareChimp).concat(unpresentChimps.sort((Util.compareChimp)));
+  }
 
   setModalVisible(visible) {
     this.setState({modalVisible: visible});
@@ -380,6 +393,8 @@ export default class FollowScreen extends Component {
          <FollowArrivalTable
             styles={styles.followArrivalTable}
             chimps={this.props.chimps}
+            maleChimpsSorted={this.state.maleChimpsSorted}
+            femaleChimpsSorted={this.state.femaleChimpsSorted}
             focalChimpId={this.props.follow.FOL_B_AnimID}
             followDate={this.props.follow.FOL_date}
             followArrivals={this.state.followArrivals}
