@@ -286,7 +286,7 @@ export default class FollowArrivalTable extends Component {
               {this.panels[this.state.panelType]}
           </View>
           <View style={{flexDirection: 'row', height: 700}}>
-            <View style={[styles.male, {paddingRight: 5}]}>
+            <View style={[styles.male]}>
               <View style={styles.followButtonLabelGroup}>
                 <Text style={styles.followButtonLabel}>C</Text>
                 <Text style={styles.followButtonLabel}>5m</Text>
@@ -294,14 +294,14 @@ export default class FollowArrivalTable extends Component {
                 <Text style={styles.followButtonLabel}>G</Text>
               </View>
               <ScrollView
-                contentContainerStyle={[styles.list]}
+                contentContainerStyle={[styles.list, {paddingRight: 5}]}
               >
                 <View style={[styles.chimpRowGroup, styles.male]}>
                   {maleChimpRows}
                 </View>
               </ScrollView>
             </View>
-            <View style={[styles.female, styles.chimpRowGroupFemale, {paddingLeft: 5}]}>
+            <View style={[styles.female, styles.chimpRowGroupFemale]}>
               <View style={styles.followButtonLabelGroup}>
                 <Text style={styles.followButtonLabel}>C</Text>
                 <Text style={styles.followButtonLabel}>U</Text>
@@ -310,7 +310,7 @@ export default class FollowArrivalTable extends Component {
                 <Text style={styles.followButtonLabel}>G</Text>
               </View>
               <ScrollView
-                  contentContainerStyle={[styles.list]}
+                  contentContainerStyle={[styles.list, {paddingLeft: 5}]}
               >
                 <View style={[styles.chimpRowGroup]}>
                   {femaleChimpRows}
@@ -371,7 +371,7 @@ const styles = StyleSheet.create({
     width: femaleWidth
   },
   panelOptionButton: {
-    width: 50,
+    width: 70,
     backgroundColor: '#ececec',
     color: 'black',
     paddingTop: 10,
