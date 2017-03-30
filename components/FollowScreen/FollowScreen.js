@@ -71,7 +71,6 @@ export default class FollowScreen extends Component {
       realm.write(() => {
         Object.keys(this.props.followArrivals).forEach((key, index) => {
           const fa = this.props.followArrivals[key];
-          console.log('writing', key, fa, 'into db');
           const newArrival = realm.create('FollowArrival', {
             date: this.props.follow.FOL_date,
             followStartTime: this.props.followTime,
@@ -97,8 +96,6 @@ export default class FollowScreen extends Component {
       const arrival = allFollowArrival[i];
       followArrivals[arrival.chimpId] = arrival;
     }
-
-    console.log("Follow Arrivals:\n", followArrivals);
 
     // Populate food in db
     const allFood = realm.objects('Food')
@@ -399,7 +396,8 @@ export default class FollowScreen extends Component {
                   certainty: parseInt(Util.certaintyLabels.certain),
                   estrus: parseInt(Util.estrusLabels.a),
                   isWithin5m: false,
-                  isNearestNeighbor: false
+                  isNearestNeighbor: false,
+                  grooming: 'Give'
                 });
                 let newFollowArrivals = this.state.followArrivals;
                 newFollowArrivals[chimpId] = newArrival;

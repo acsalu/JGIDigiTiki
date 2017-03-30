@@ -26,7 +26,14 @@ const infoButtonImages = {
 };
 
 
-const PanelType = Object.freeze({'time': 1, 'certainty': 2, 'estrus': 3, 'isWithIn5m': 4, 'isNearestNeighbor': 5});
+const PanelType = Object.freeze({
+  'time': 1,
+  'certainty': 2,
+  'estrus': 3,
+  'isWithIn5m': 4,
+  'isNearestNeighbor': 5,
+  'grooming': 6
+});
 
 class Panel extends Component {
   render() {
@@ -105,6 +112,13 @@ export default class FollowArrivalTable extends Component {
             values={[false, true]}
             onValueChange={(v) => {this.props.updateArrival('isNearestNeighbor', v)}}
         />);
+    this.panels[PanelType.grooming] =
+        (<Panel
+            title={"Grooming:"}
+            options={['Give', 'Receive', 'Mutual']}
+            values={['Give', 'Receive', 'Mutual']}
+            onValueChange={(v) => {this.props.updateArrival('grooming', v)}}
+        />);
 
   }
 
@@ -159,14 +173,11 @@ export default class FollowArrivalTable extends Component {
                 this._onRowPress(c);
                 this.setState({panelType: PanelType.time});
               }}
-              style={styles.chimpRow}
-          >
-            <View style={styles.item}>
+              style={styles.chimpRow}>
               <Button style={chimpButtonStyles} onPress={()=> {
                 this._onRowPress(c);
                 this.setState({panelType: PanelType.time});
               }}>{c.name}</Button>
-            </View>
           </TouchableOpacity>
       );
     }
@@ -185,7 +196,6 @@ export default class FollowArrivalTable extends Component {
                 this.setState({panelType: PanelType.time});
               }}
           >
-            <View style={styles.item}>
               <Button style={chimpButtonStyles} onPress={() => {
                 this._onRowPress(c)
                 this.setState({panelType: PanelType.time});
@@ -207,7 +217,11 @@ export default class FollowArrivalTable extends Component {
                 this._onRowPress(c)
                 this.setState({panelType: PanelType.isNearestNeighbor});
               }}>{followArrival.isNearestNeighbor ? "Y" : "N"}</Button>
-            </View>
+
+              <Button style={[styles.followArrivalTableBtn]} onPress={() => {
+                this._onRowPress(c)
+                this.setState({panelType: PanelType.grooming});
+              }}>{followArrival.grooming.charAt(0)}</Button>
           </TouchableOpacity>
       );
     }
@@ -220,7 +234,6 @@ export default class FollowArrivalTable extends Component {
               this.setState({panelType: PanelType.time});
             }}
         >
-          <View style={styles.item}>
             <Button style={chimpButtonStyles} onPress={() => {
               this._onRowPress(c)
               this.setState({panelType: PanelType.time});
@@ -247,7 +260,11 @@ export default class FollowArrivalTable extends Component {
               this._onRowPress(c)
               this.setState({panelType: PanelType.isNearestNeighbor});
             }}>{followArrival.isNearestNeighbor ? "Y" : "N"}</Button>
-          </View>
+
+            <Button style={[styles.followArrivalTableBtn]} onPress={() => {
+              this._onRowPress(c)
+              this.setState({panelType: PanelType.grooming});
+            }}>{followArrival.grooming.charAt(0)}</Button>
         </TouchableOpacity>
     );
   }
@@ -264,40 +281,38 @@ export default class FollowArrivalTable extends Component {
     const maleChimpRows = maleChimps.map(this.createChimpRow);
 
     return (
-        <View>
-          <View
-              style={styles.infoPanel}
-          >
+        <View style={styles.container}>
+          <View style={styles.infoPanel}>
               {this.panels[this.state.panelType]}
           </View>
-          <View
-            style={{flexDirection: 'row', height: 700}}
-          >
-            <View>
+          <View style={{flexDirection: 'row', height: 700}}>
+            <View style={[styles.male, {paddingRight: 5}]}>
               <View style={styles.followButtonLabelGroup}>
                 <Text style={styles.followButtonLabel}>C</Text>
                 <Text style={styles.followButtonLabel}>5m</Text>
                 <Text style={styles.followButtonLabel}>JK</Text>
+                <Text style={styles.followButtonLabel}>G</Text>
               </View>
               <ScrollView
                 contentContainerStyle={[styles.list]}
               >
-                <View style={[styles.chimpRowGroup]}>
+                <View style={[styles.chimpRowGroup, styles.male]}>
                   {maleChimpRows}
                 </View>
               </ScrollView>
             </View>
-            <View>
+            <View style={[styles.female, styles.chimpRowGroupFemale, {paddingLeft: 5}]}>
               <View style={styles.followButtonLabelGroup}>
                 <Text style={styles.followButtonLabel}>C</Text>
                 <Text style={styles.followButtonLabel}>U</Text>
                 <Text style={styles.followButtonLabel}>5m</Text>
                 <Text style={styles.followButtonLabel}>JK</Text>
+                <Text style={styles.followButtonLabel}>G</Text>
               </View>
               <ScrollView
                   contentContainerStyle={[styles.list]}
               >
-                <View style={[styles.chimpRowGroup, styles.chimpRowGroupFemale]}>
+                <View style={[styles.chimpRowGroup]}>
                   {femaleChimpRows}
                 </View>
               </ScrollView>
@@ -308,7 +323,20 @@ export default class FollowArrivalTable extends Component {
   }
 }
 
+const padding = 10;
+const unitWidth = (Dimensions.get('window').width - 5 * padding) / 13.0;
+const maleWidth = unitWidth * 6 + 1.5 * padding;
+const femaleWidth = unitWidth * 7 + 1.5 * padding;
+
+console.log("male", maleWidth, "female", femaleWidth);
+
+
 const styles = StyleSheet.create({
+  container: {
+    alignSelf: 'stretch',
+    paddingLeft: padding,
+    paddingRight: padding
+  },
   list: {
     paddingBottom: 50
   },
@@ -320,51 +348,27 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderWidth: 1,
     paddingTop: 10,
-    paddingBottom: 10,
-    marginLeft: 10,
-    marginRight: 10
+    paddingBottom: 10
   },
   followButtonLabelGroup: {
     flexDirection: 'row',
+    justifyContent: 'flex-end',
     height: 20,
-    marginLeft: 100
   },
   followButtonLabel: {
-    width: 50,
+    width: unitWidth + 5,
+    textAlign: 'center',
     fontWeight: "500"
-  },
-  item: {
-    width: (Dimensions.get('window').width - 20) / 2,
-    padding: 3,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
   },
   borderBottom: {
     borderBottomColor: 'black',
     borderBottomWidth: 2,
   },
-  chimpRowGroup: {
-    width: (Dimensions.get('window').width - 20) / 2,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
+  male: {
+    width: maleWidth
   },
-  followArrivalTableBtn: {
-    width: 50,
-    backgroundColor: '#ececec',
-    color: 'black',
-    paddingTop: 10,
-    paddingBottom: 10,
-    paddingLeft: 3,
-    paddingRight: 3,
-    marginLeft: 2,
-    marginRight: 2,
-    borderColor: '#ddd',
-    borderWidth: 1,
-    flex: 1,
-    fontSize: 14,
+  female: {
+    width: femaleWidth
   },
   panelOptionButton: {
     width: 50,
@@ -381,8 +385,33 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
   },
+  chimpRowGroup: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+  },
   chimpRow: {
     marginBottom: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    alignSelf: 'stretch',
+    height: 40
+  },
+
+  followArrivalTableBtn: {
+    width: unitWidth,
+    backgroundColor: '#ececec',
+    color: 'black',
+    paddingTop: 10,
+    paddingBottom: 10,
+    paddingLeft: 3,
+    paddingRight: 3,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    flex: 1,
+    fontSize: 14,
   },
   chimpRowGroupFemale: {
     borderLeftColor: 'black',
