@@ -101,22 +101,22 @@ export default class FollowArrivalTable extends Component {
     this.panels[PanelType.isWithIn5m] =
         (<Panel
             title={"Ndani ya 5m:"}
-            options={['✗', '✓']}
-            values={[false, true]}
+            options={['-', '✗', '✓']}
+            values={['none', 'yes', 'no']}
             onValueChange={(v) => {this.props.updateArrival('isWithin5m', v)}}
         />);
     this.panels[PanelType.isNearestNeighbor] =
         (<Panel
             title={"Jirani wa karibu:"}
-            options={['N', 'Y']}
-            values={[false, true]}
+            options={['-', '✗', '✓']}
+            values={['none', 'yes', 'no']}
             onValueChange={(v) => {this.props.updateArrival('isNearestNeighbor', v)}}
         />);
     this.panels[PanelType.grooming] =
         (<Panel
             title={"Grooming:"}
-            options={['Give', 'Receive', 'Mutual']}
-            values={['Give', 'Receive', 'Mutual']}
+            options={['None', 'Give', 'Receive', 'Mutual']}
+            values={['none', 'give', 'receive', 'mutual']}
             onValueChange={(v) => {this.props.updateArrival('grooming', v)}}
         />);
 
@@ -185,6 +185,9 @@ export default class FollowArrivalTable extends Component {
     const followArrival = this.state.arrival[c.name];
     const certaintyLabel = Util.certaintyLabelsDb2UserMap[followArrival.certainty];
     const estrusLabel = Util.estrusLabelsDb2UserMap[followArrival.estrus];
+    const isWithin5mLabel = followArrival.isWithin5m === 'none' ? '' : followArrival.isWithin5m === 'yes' ? '✓' : '✗';
+    const isNearestNeighborLabel = followArrival.isNearestNeighbor === 'none' ? '' : followArrival.isNearestNeighbor === 'yes' ? '✓' : '✗';
+    const groomingLabel = followArrival.grooming === 'none' ? '' : followArrival.grooming.charAt(0);
 
     if (isMale) {
       return (
@@ -211,17 +214,17 @@ export default class FollowArrivalTable extends Component {
               <Button style={[styles.followArrivalTableBtn]} onPress={() => {
                 this._onRowPress(c)
                 this.setState({panelType: PanelType.isWithIn5m});
-              }}>{followArrival.isWithin5m ? "✓" : "✗"}</Button>
+              }}>{isWithin5mLabel}</Button>
 
               <Button style={[styles.followArrivalTableBtn]} onPress={() => {
                 this._onRowPress(c)
                 this.setState({panelType: PanelType.isNearestNeighbor});
-              }}>{followArrival.isNearestNeighbor ? "Y" : "N"}</Button>
+              }}>{isNearestNeighborLabel}</Button>
 
               <Button style={[styles.followArrivalTableBtn]} onPress={() => {
                 this._onRowPress(c)
                 this.setState({panelType: PanelType.grooming});
-              }}>{followArrival.grooming.charAt(0)}</Button>
+              }}>{groomingLabel}</Button>
           </TouchableOpacity>
       );
     }
@@ -254,17 +257,17 @@ export default class FollowArrivalTable extends Component {
             <Button style={[styles.followArrivalTableBtn]} onPress={() => {
               this._onRowPress(c)
               this.setState({panelType: PanelType.isWithIn5m});
-            }}>{followArrival.isWithin5m ? "✓" : "✗"}</Button>
+            }}>{isWithin5mLabel}</Button>
 
             <Button style={[styles.followArrivalTableBtn]} onPress={() => {
               this._onRowPress(c)
               this.setState({panelType: PanelType.isNearestNeighbor});
-            }}>{followArrival.isNearestNeighbor ? "Y" : "N"}</Button>
+            }}>{isNearestNeighborLabel}</Button>
 
             <Button style={[styles.followArrivalTableBtn]} onPress={() => {
               this._onRowPress(c)
               this.setState({panelType: PanelType.grooming});
-            }}>{followArrival.grooming.charAt(0)}</Button>
+            }}>{groomingLabel}</Button>
         </TouchableOpacity>
     );
   }

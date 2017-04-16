@@ -410,9 +410,9 @@ export default class FollowScreen extends Component {
                   time: time,
                   certainty: parseInt(Util.certaintyLabels.certain),
                   estrus: parseInt(Util.estrusLabels.a),
-                  isWithin5m: false,
-                  isNearestNeighbor: false,
-                  grooming: 'Give'
+                  isWithin5m: 'none',
+                  isNearestNeighbor: 'none',
+                  grooming: 'none'
                 });
                 let newFollowArrivals = this.state.followArrivals;
                 newFollowArrivals[chimpId] = newArrival;
