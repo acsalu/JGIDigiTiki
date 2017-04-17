@@ -43,8 +43,6 @@ export default class ExportDataScreen extends Component {
     // create a path you want to write to
     const path = RNFS.ExternalDirectoryPath + '/test.csv';
 
-    console.log(csvContent);
-
     BackAndroid.addEventListener('hardwareBackPress', () => {
       if (this.props.navigator && this.props.navigator.getCurrentRoutes().length > 1) {
         this.props.navigator.pop();

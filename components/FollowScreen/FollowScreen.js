@@ -216,8 +216,9 @@ export default class FollowScreen extends Component {
         if (fa.time.startsWith('arrive')) {
           let newFa = _.extend({}, fa);
           newFa.time = 'arriveContinues';
-          newFa.isWithin5m = false;
-          newFa.isNearestNeighbor = false;
+          newFa.isWithin5m = 'none';
+          newFa.isNearestNeighbor = 'none';
+          newFa.grooming = 'none';
           updatedFollowArrivals[k] = newFa;
         }
 
