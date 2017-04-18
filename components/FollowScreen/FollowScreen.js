@@ -216,8 +216,8 @@ export default class FollowScreen extends Component {
         if (fa.time.startsWith('arrive')) {
           let newFa = _.extend({}, fa);
           newFa.time = 'arriveContinues';
-          newFa.isWithin5m = 'none';
-          newFa.isNearestNeighbor = 'none';
+          newFa.isWithin5m = false;
+          newFa.isNearestNeighbor = false;
           newFa.grooming = 'none';
           updatedFollowArrivals[k] = newFa;
         }
@@ -411,8 +411,8 @@ export default class FollowScreen extends Component {
                   time: time,
                   certainty: parseInt(Util.certaintyLabels.certain),
                   estrus: parseInt(Util.estrusLabels.a),
-                  isWithin5m: 'none',
-                  isNearestNeighbor: 'none',
+                  isWithin5m: false,
+                  isNearestNeighbor: false,
                   grooming: 'none'
                 });
                 let newFollowArrivals = this.state.followArrivals;

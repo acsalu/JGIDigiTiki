@@ -39,8 +39,8 @@ FollowArrival.schema = {
     duration: {type: 'int', optional: true},
     certainty: 'int',
     estrus: 'int',
-    isNearestNeighbor: 'string',
-    isWithin5m: 'string',
+    isNearestNeighbor: 'bool',
+    isWithin5m: 'bool',
     grooming: 'string'
   }
 };
