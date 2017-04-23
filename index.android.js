@@ -16,7 +16,7 @@ import FollowListScreen from './components/FollowListScreen';
 import FollowScreen from './components/FollowScreen/FollowScreen';
 import MenuScreen from './components/MenuScreen';
 import NewFollowScreen from './components/NewFollowScreen';
-import SummaryScreen from './components/SummaryScreen';
+import SummaryScreen from './components/SummaryScreen/SummaryScreen';
 
 import chimps from './data/chimp-list.json';
 import times from './data/time-list.json';
@@ -65,10 +65,13 @@ export default class JGIDigiTiki extends Component {
                   <ExportDataScreen navigator={navigator} />
               );
             case 'SummaryScreen':
+              const cs = chimps.filter((c) => c.community === route.follow.FOL_CL_community_id);
               return (
                   <SummaryScreen navigator={navigator}
                      follow={route.follow}
                      followTime={route.followTime}
+                     chimps={cs}
+                     times={times}
                   />
               );
             default:
