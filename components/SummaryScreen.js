@@ -14,11 +14,17 @@ import {
 } from 'react-native';
 import Button from 'react-native-button';
 
+import Orientation from 'react-native-orientation';
+import realm from '../models/realm';
 import sharedStyles from './SharedStyles';
 import strings from '../data/strings';
-import realm from '../models/realm';
+
 
 export default class SummaryScreen extends Component {
+
+  componentDidMount() {
+    Orientation.lockToLandscapeLeft();
+  }
 
   render() {
 

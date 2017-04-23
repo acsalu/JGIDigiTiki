@@ -17,6 +17,7 @@
     "react-native-fs": "^2.0.1-rc.2",
     "react-native-localization": "^0.1.26",
     "react-native-mail": "^3.0.1",
+    "react-native-orientation": "git+https://git@github.com/yamill/react-native-orientation.git",
     "realm": "1.0.0"
   },
   "jest": {
