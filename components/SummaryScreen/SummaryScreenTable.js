@@ -31,12 +31,18 @@ class SummaryScreenTableCell extends Component {
 
 export default class SummaryScreenTable extends Component {
 
-  createChimpCol(chimpId, i, rows) {
+  createChimpCol(chimpId, i, rows, isFocalChimp) {
     const cells = ([...Array(rows||0)])
         .map((v, i) => (<SummaryScreenTableCell />));
+
+    let titleStyles = [styles.chimpColTitle];
+    if (isFocalChimp) {
+      titleStyles.push(sharedStyles.btnPrimary);
+    }
+
     return (
         <View style={styles.chimpCol} key={i}>
-          <View style={styles.chimpColTitle}>
+          <View style={titleStyles}>
             <Text style={styles.chimpColTitleText}>{chimpId}</Text>
           </View>
           {cells}
@@ -63,15 +69,15 @@ export default class SummaryScreenTable extends Component {
 
     const startTimeIndex = this.props.times.indexOf(this.props.followStartTime);
     const endTimeIndex = this.props.times.indexOf(this.props.followEndTime);
-    const timeCol = this.props.times.slice(startTimeIndex, endTimeIndex + 1)
+    const timeCol = this.props.times.slice(startTimeIndex, endTimeIndex + 2)
         .map((t, i) => this.createTimeRow(t, i, this.props.onFollowTimeSelected));
 
-    const intervals = endTimeIndex - startTimeIndex;
+    const intervals = endTimeIndex - startTimeIndex + 1;
     const maleChimpCols = this.props.chimps.filter((c) => c.sex == 'M')
-                  .map((c, i) => this.createChimpCol(c.name, i, intervals));
+                  .map((c, i) => this.createChimpCol(c.name, i, intervals, c.name === this.props.focalChimpId));
 
     const femaleChimpCols = this.props.chimps.filter((c) => c.sex == 'F')
-        .map((c, i) => this.createChimpCol(c.name, i, intervals));
+        .map((c, i) => this.createChimpCol(c.name, i, intervals, c.name === this.props.focalChimpId));
 
     return(
         <View style={styles.container}>
@@ -111,6 +117,8 @@ const styles = {
   chimpColTitleText: {
     fontSize: 8,
     transform: [{ rotate: '90deg'}],
+    textAlign: 'center',
+    padding: 0,
   },
   chimpColGroup: {
     flexDirection: 'row',
@@ -119,7 +127,7 @@ const styles = {
   chimpCol: {
     alignSelf: 'stretch',
     flexDirection: 'column',
-    width: 14,
+    width: 15,
   },
   cell: {
     height: 20,

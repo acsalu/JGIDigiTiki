@@ -58,6 +58,7 @@ export default class SummaryScreen extends Component {
             followEndTime={lastFollowStartTime}
           />
           <SummaryScreenTable
+            focalChimpId={this.props.follow.FOL_B_AnimID}
             chimps={this.props.chimps}
             followStartTime={followStartTime}
             followEndTime={lastFollowStartTime}
