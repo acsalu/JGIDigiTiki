@@ -26,12 +26,11 @@ export default class FollowListScreen extends Component {
 
     const follows = realm.objects('Follow');
     const rows = follows.map((f, i) => {
-      // TODO: Show arrivals
       return (
         <FollowListRow key={i}
           onPress={() => {
             this.props.navigator.push({
-                id: 'FollowScreen',
+                id: 'SummaryScreen',
                 follow: f,
                 followTime: f.FOL_time_begin,
               });

@@ -101,15 +101,15 @@ export default class FollowArrivalTable extends Component {
     this.panels[PanelType.isWithIn5m] =
         (<Panel
             title={"Ndani ya 5m:"}
-            options={['-', '✗', '✓']}
-            values={['none', 'yes', 'no']}
+            options={['✓', '']}
+            values={[true, false]}
             onValueChange={(v) => {this.props.updateArrival('isWithin5m', v)}}
         />);
     this.panels[PanelType.isNearestNeighbor] =
         (<Panel
             title={"Jirani wa karibu:"}
-            options={['-', '✗', '✓']}
-            values={['none', 'yes', 'no']}
+            options={['✓', '']}
+            values={[true, false]}
             onValueChange={(v) => {this.props.updateArrival('isNearestNeighbor', v)}}
         />);
     this.panels[PanelType.grooming] =
@@ -185,8 +185,8 @@ export default class FollowArrivalTable extends Component {
     const followArrival = this.state.arrival[c.name];
     const certaintyLabel = Util.certaintyLabelsDb2UserMap[followArrival.certainty];
     const estrusLabel = Util.estrusLabelsDb2UserMap[followArrival.estrus];
-    const isWithin5mLabel = followArrival.isWithin5m === 'none' ? '' : followArrival.isWithin5m === 'yes' ? '✓' : '✗';
-    const isNearestNeighborLabel = followArrival.isNearestNeighbor === 'none' ? '' : followArrival.isNearestNeighbor === 'yes' ? '✓' : '✗';
+    const isWithin5mLabel = followArrival.isWithin5m ? '✓' : '';
+    const isNearestNeighborLabel = followArrival.isNearestNeighbor ? '✓' : '';
     const groomingLabel = followArrival.grooming === 'none' ? '' : followArrival.grooming.charAt(0);
 
     if (isMale) {

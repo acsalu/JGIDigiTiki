@@ -8,16 +8,15 @@ import React, { Component } from 'react';
 import {
   AppRegistry,
   StyleSheet,
-  TextInput,
   Navigator,
-  View
 } from 'react-native';
 
+import ExportDataScreen from './components/ExportDataScreen';
 import FollowListScreen from './components/FollowListScreen';
 import FollowScreen from './components/FollowScreen/FollowScreen';
 import MenuScreen from './components/MenuScreen';
 import NewFollowScreen from './components/NewFollowScreen';
-import ExportDataScreen from './components/ExportDataScreen';
+import SummaryScreen from './components/SummaryScreen';
 
 import chimps from './data/chimp-list.json';
 import times from './data/time-list.json';
@@ -64,6 +63,13 @@ export default class JGIDigiTiki extends Component {
             case 'ExportDataScreen':
               return (
                   <ExportDataScreen navigator={navigator} />
+              );
+            case 'SummaryScreen':
+              return (
+                  <SummaryScreen navigator={navigator}
+                     follow={route.follow}
+                     followTime={route.followTime}
+                  />
               );
             default:
               break;
