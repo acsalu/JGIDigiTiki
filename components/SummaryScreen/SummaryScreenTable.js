@@ -50,6 +50,19 @@ export default class SummaryScreenTable extends Component {
     );
   }
 
+  createItemCol(title, rows) {
+    const cells = ([...Array(rows||0)])
+        .map((v, i) => (<SummaryScreenTableCell />));
+    return (
+        <View style={styles.itemCol}>
+          <View style={styles.chimpColTitle}>
+            <Text style={styles.itemColTitleText}>{title}</Text>
+          </View>
+          {cells}
+        </View>
+    );
+  }
+
   createTimeRow(dbTime, i, onTimeSelected) {
     return (
         <TouchableHighlight key={i}
@@ -78,23 +91,25 @@ export default class SummaryScreenTable extends Component {
 
     const femaleChimpCols = this.props.chimps.filter((c) => c.sex == 'F')
         .map((c, i) => this.createChimpCol(c.name, i, intervals, c.name === this.props.focalChimpId));
+    const foodCol = this.createItemCol("Food", intervals);
+    const speciesCol = this.createItemCol("Species", intervals);
 
     return(
         <View style={styles.container}>
           <View style={styles.timeGroups}>
             {timeCol}
           </View>
-          <View style={styles.chimpColGroup}>
+          <View style={styles.colGroup}>
             {maleChimpCols}
           </View>
-          <View>
-            <Text>Food</Text>
+          <View style={styles.colGroup}>
+            {foodCol}
           </View>
-          <View style={styles.chimpColGroup}>
+          <View style={styles.colGroup}>
             {femaleChimpCols}
           </View>
-          <View>
-            <Text>Species</Text>
+          <View style={styles.colGroup}>
+            {speciesCol}
           </View>
           <View style={styles.timeGroups}>
             {timeCol}
@@ -120,7 +135,7 @@ const styles = {
     textAlign: 'center',
     padding: 0,
   },
-  chimpColGroup: {
+  colGroup: {
     flexDirection: 'row',
     borderWidth: 1,
   },
@@ -128,6 +143,13 @@ const styles = {
     alignSelf: 'stretch',
     flexDirection: 'column',
     width: 15,
+  },
+  itemCol: {
+    width: 45,
+  },
+  itemColTitleText: {
+    fontSize: 10,
+    textAlign: 'center',
   },
   cell: {
     height: 20,

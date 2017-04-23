@@ -71,7 +71,6 @@ export default class SummaryScreen extends Component {
               });
             }}
           />
-
         </View>
     );
   }
