@@ -42,9 +42,10 @@ class SummaryScreenTableChimpCol extends Component {
   }
 
   render() {
-    // TODO: Fix highlight wrong cell issue
     const cells = ([...Array(this.props.rows||0)])
-        .map((v, i) => (<SummaryScreenTableCell key={i} shouldHighlight={i in this.props.timeIndices} />));
+        .map((v, i) => {
+            return (<SummaryScreenTableCell key={i} shouldHighlight={this.props.timeIndices.indexOf(i) !== -1} />)
+        });
 
     let titleStyles = [styles.chimpColTitle];
     if (this.props.isFocalChimp) {
@@ -87,7 +88,7 @@ export default class SummaryScreenTable extends Component {
 
   createItemCol(title, rows) {
     const cells = ([...Array(rows||0)])
-        .map((v, i) => (<SummaryScreenTableCell />));
+        .map((v, i) => (<SummaryScreenTableCell key={i} />));
     return (
         <View style={styles.itemCol}>
           <View style={styles.chimpColTitle}>
@@ -100,17 +101,21 @@ export default class SummaryScreenTable extends Component {
 
   createTimeRow(dbTime, i, onTimeSelected) {
     return (
-        <TouchableHighlight key={i}
-          onPress={()=>{
-            onTimeSelected(dbTime);
-          }}
+        <TouchableHighlight
+            key={i}
+            style={styles.timeRow}
+            onPress={()=>{
+              onTimeSelected(dbTime);
+            }}
         >
-          <Text>{Util.dbTime2UserTime(dbTime)}</Text>
+          <Text style={styles.timeRowText}>{Util.dbTime2UserTime(dbTime)}</Text>
         </TouchableHighlight>
     );
   }
 
   render() {
+
+    console.log(this.props.followArrivalSummary);
 
     const startTimeIndex = this.props.times.indexOf(this.props.followStartTime);
     const endTimeIndex = this.props.times.indexOf(this.props.followEndTime);
@@ -163,6 +168,7 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     padding: 0,
+    borderWidth: 0.5,
   },
   chimpColTitleText: {
     transform: [{ rotate: '90deg'}],
@@ -173,7 +179,7 @@ const styles = {
   },
   colGroup: {
     flexDirection: 'row',
-    borderWidth: 1,
+
   },
   chimpCol: {
     alignSelf: 'stretch',
@@ -187,6 +193,13 @@ const styles = {
     fontSize: 10,
     textAlign: 'center',
   },
+  timeRow: {
+    marginBottom: 3,
+  },
+  timeRowText: {
+    fontSize: 12,
+    textAlign: 'center'
+  },
   cell: {
     height: 20,
     borderWidth: 0.5,
@@ -195,7 +208,7 @@ const styles = {
     backgroundColor: 'grey'
   },
   timeGroups: {
-    paddingTop: 22,
+    paddingTop: 32,
     width: 40
   },
   chimpColTitleSwelled: {
