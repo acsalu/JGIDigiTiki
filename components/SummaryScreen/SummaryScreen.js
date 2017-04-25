@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import Button from 'react-native-button';
 import Orientation from 'react-native-orientation';
+import assert from 'assert';
 
 import realm from '../../models/realm';
 import sharedStyles from '../SharedStyles';
@@ -48,6 +49,23 @@ export default class SummaryScreen extends Component {
     const followEndTime = followEndTimes.pop();
     const followDate = this.props.follow.FOL_date;
 
+    let followArrivalSummary = {};
+    let swelledChimps = new Set();
+    for (let i = 0; i < this.props.chimps.length; ++i) {
+      const c = this.props.chimps[i];
+      followArrivalSummary[c.name] = [];
+    }
+
+    for (var i = 0; i < followArrivals.length; ++i) {
+      const fa = followArrivals[i];
+      assert(fa.chimpId in followArrivalSummary);
+      followArrivalSummary[fa.chimpId].push(fa.followStartTime);
+      if (fa.estrus == 100) {
+        swelledChimps.add(fa.chimpId);
+      }
+    }
+
+
     return(
         <View style={styles.container}>
           <SummaryScreenHeader
@@ -70,6 +88,8 @@ export default class SummaryScreen extends Component {
                 followTime: t,
               });
             }}
+            followArrivalSummary={followArrivalSummary}
+            swelledChimps={swelledChimps}
           />
         </View>
     );

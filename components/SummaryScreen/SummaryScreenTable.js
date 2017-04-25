@@ -12,6 +12,7 @@ import {
   NativeModules,
   View
 } from 'react-native';
+import assert from 'assert';
 import Button from 'react-native-button';
 import { Col, Row, Grid } from "react-native-easy-grid";
 
@@ -22,31 +23,65 @@ import strings from '../../data/strings';
 import Util from '../util';
 
 class SummaryScreenTableCell extends Component {
+
   render() {
+    let cellStyles = [styles.cell];
+    if (this.props.shouldHighlight) {
+      cellStyles.push(styles.cellHighlight);
+    }
     return (
-      <View style={styles.cell}></View>
+      <View style={cellStyles}></View>
     );
   }
 }
 
-export default class SummaryScreenTable extends Component {
+class SummaryScreenTableChimpCol extends Component {
+  onLayout(event) {
+    var {x, y, width, height} = event.nativeEvent.layout;
+    console.log(x, y, width, height);
+  }
 
-  createChimpCol(chimpId, i, rows, isFocalChimp) {
-    const cells = ([...Array(rows||0)])
-        .map((v, i) => (<SummaryScreenTableCell />));
+  render() {
+    // TODO: Fix highlight wrong cell issue
+    const cells = ([...Array(this.props.rows||0)])
+        .map((v, i) => (<SummaryScreenTableCell key={i} shouldHighlight={i in this.props.timeIndices} />));
 
     let titleStyles = [styles.chimpColTitle];
-    if (isFocalChimp) {
+    if (this.props.isFocalChimp) {
       titleStyles.push(sharedStyles.btnPrimary);
+    } else if (this.props.isSwelled) {
+      titleStyles.push(styles.chimpColTitleSwelled);
     }
 
     return (
-        <View style={styles.chimpCol} key={i}>
+        <View style={styles.chimpCol}>
           <View style={titleStyles}>
-            <Text style={styles.chimpColTitleText}>{chimpId}</Text>
+            <Text style={styles.chimpColTitleText}>{this.props.chimpId}</Text>
           </View>
           {cells}
         </View>
+    );
+  }
+
+}
+
+export default class SummaryScreenTable extends Component {
+
+  createChimpCol(chimpId, i, rows, isFocalChimp, isSwelled) {
+
+    assert(chimpId in this.props.followArrivalSummary);
+    const timeIndices = this.props.followArrivalSummary[chimpId]
+        .map((t, i) => this.props.times.indexOf(t) - this.props.times.indexOf(this.props.followStartTime));
+
+    return (
+      <SummaryScreenTableChimpCol
+          key={i}
+          chimpId={chimpId}
+          rows={rows}
+          isFocalChimp={isFocalChimp}
+          isSwelled={isSwelled}
+          timeIndices={timeIndices}
+        />
     );
   }
 
@@ -77,9 +112,6 @@ export default class SummaryScreenTable extends Component {
 
   render() {
 
-    console.log(this.props.followStartTime, );
-    console.log(this.props.followEndTime, );
-
     const startTimeIndex = this.props.times.indexOf(this.props.followStartTime);
     const endTimeIndex = this.props.times.indexOf(this.props.followEndTime);
     const timeCol = this.props.times.slice(startTimeIndex, endTimeIndex + 2)
@@ -87,10 +119,10 @@ export default class SummaryScreenTable extends Component {
 
     const intervals = endTimeIndex - startTimeIndex + 1;
     const maleChimpCols = this.props.chimps.filter((c) => c.sex == 'M')
-                  .map((c, i) => this.createChimpCol(c.name, i, intervals, c.name === this.props.focalChimpId));
+                  .map((c, i) => this.createChimpCol(c.name, i, intervals, c.name === this.props.focalChimpId, false));
 
     const femaleChimpCols = this.props.chimps.filter((c) => c.sex == 'F')
-        .map((c, i) => this.createChimpCol(c.name, i, intervals, c.name === this.props.focalChimpId));
+        .map((c, i) => this.createChimpCol(c.name, i, intervals, c.name === this.props.focalChimpId, this.props.swelledChimps.has(c.name)));
     const foodCol = this.createItemCol("Food", intervals);
     const speciesCol = this.createItemCol("Species", intervals);
 
@@ -127,13 +159,17 @@ const styles = {
   },
   chimpColTitle: {
     borderBottomWidth: 1,
-    height: 30
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 0,
   },
   chimpColTitleText: {
-    fontSize: 8,
     transform: [{ rotate: '90deg'}],
-    textAlign: 'center',
-    padding: 0,
+    width: 23,
+    fontSize: 8,
+    fontWeight: 'bold',
+    color: 'black'
   },
   colGroup: {
     flexDirection: 'row',
@@ -155,8 +191,14 @@ const styles = {
     height: 20,
     borderWidth: 0.5,
   },
+  cellHighlight: {
+    backgroundColor: 'grey'
+  },
   timeGroups: {
     paddingTop: 22,
     width: 40
+  },
+  chimpColTitleSwelled: {
+    backgroundColor: '#F48FB1',
   }
 }
