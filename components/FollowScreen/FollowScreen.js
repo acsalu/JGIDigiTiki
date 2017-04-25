@@ -1,29 +1,20 @@
 import React, { Component } from 'react';
 import {
   Alert,
-  ActivityIndicator,
-  AppRegistry,
-  DatePickerAndroid,
-  Dimensions,
-  StyleSheet,
-  TouchableHighlight,
-  Text,
-  TextInput,
-  Modal,
-  Navigator,
-  Picker,
   View
 } from 'react-native';
-import FollowArrivalTable from './FollowArrivalTable';
-import ItemTrackerModal from './ItemTrackerModal';
-import FollowScreenHeader from './FollowScreenHeader';
-import Util from '../util';
+import Orientation from 'react-native-orientation';
+import BusyIndicator from 'react-native-busy-indicator';
+import loaderHandler from 'react-native-busy-indicator/LoaderHandler';
+import _ from 'lodash';
 
 import realm from '../../models/realm';
 import strings from '../../data/strings';
-import _ from 'lodash';
-import BusyIndicator from 'react-native-busy-indicator';
-import loaderHandler from 'react-native-busy-indicator/LoaderHandler';
+import Util from '../util';
+
+import FollowArrivalTable from './FollowArrivalTable';
+import FollowScreenHeader from './FollowScreenHeader';
+import ItemTrackerModal from './ItemTrackerModal';
 
 const ModalType = Object.freeze({
   none: 0,
@@ -36,6 +27,7 @@ export default class FollowScreen extends Component {
   watchID: ?number = null;
 
   componentDidMount() {
+    Orientation.lockToPortrait();
     navigator.geolocation.getCurrentPosition(
         (position) => {
           console.log("get position:", JSON.stringify(position));

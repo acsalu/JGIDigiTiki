@@ -19,8 +19,13 @@ import RNFS from 'react-native-fs';
 import realm from '../models/realm';
 
 const Mailer = NativeModules.RNMail;
+import Orientation from 'react-native-orientation';
 
 export default class MenuScreen extends Component {
+
+  componentDidMount() {
+    Orientation.lockToPortrait();
+  }
 
   render() {
     return(

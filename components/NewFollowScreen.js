@@ -1,20 +1,17 @@
 import React, { Component } from 'react';
 import {
   Alert,
-  AppRegistry,
   BackAndroid,
   DatePickerAndroid,
   Keyboard,
   Picker,
-  StyleSheet,
   TouchableHighlight,
   Text,
   TextInput,
-  Navigator,
   View
 } from 'react-native';
 import Button from 'react-native-button';
-import dateformat from 'dateformat';
+import Orientation from 'react-native-orientation';
 
 import realm from '../models/realm';
 import sharedStyles from './SharedStyles';
@@ -31,6 +28,10 @@ export default class NewFollowScreen extends Component {
     date: new Date(),
     researcher: ''
   };
+
+  componentDidMount() {
+    Orientation.lockToPortrait();
+  }
 
   getCommunities = () => {
     return Array.from(new Set(this.props.chimps.map((c, i) => {

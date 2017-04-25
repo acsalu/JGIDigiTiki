@@ -1,19 +1,22 @@
 import React, { Component } from 'react';
 import {
-    AppRegistry,
     BackAndroid,
     Image,
-    StyleSheet,
     TouchableHighlight,
     Text,
-    TextInput,
-    Navigator,
     View
 } from 'react-native';
+import Orientation from 'react-native-orientation';
+
 import realm from '../models/realm';
+import strings from '../data/strings';
 import Util from './util';
 
 export default class FollowListScreen extends Component {
+
+  componentDidMount() {
+    Orientation.lockToPortrait();
+  }
 
   render() {
     BackAndroid.addEventListener('hardwareBackPress', () => {
@@ -52,6 +55,7 @@ class FollowListRow extends Component {
   render() {
     const follow = this.props.follow;
     const focalChimpId = follow.FOL_B_AnimID;
+    const researcherName = follow.FOL_am_observer1;
     const date = this.props.follow.FOL_date;
     const beginTime = this.props.follow.FOL_time_begin;
 
@@ -65,7 +69,10 @@ class FollowListRow extends Component {
           <View style={styles.followRowInnerWrap}>
             <View style={styles.followRowTextBlock}>
               <Text style={styles.followRowMainText}>{dateString} {beginTime}</Text>
-              <Text style={styles.followRowDescriptionText}>Focal: {focalChimpId}</Text>
+              <View style={styles.followRowDescriptionGroup}>
+                <Text style={styles.followRowDescriptionText}>{strings.NewFollow_Target}: {focalChimpId}</Text>
+                <Text style={styles.followRowDescriptionText}>{strings.NewFollow_ResearcherName}: {researcherName}</Text>
+              </View>
             </View>
             <Image style={styles.followRowArrow} source={require('../img/right-arrow.png')} />
           </View>
@@ -91,6 +98,9 @@ var styles = {
     borderBottomColor: '#33b5e5',
     height: 100
   },
+  followRowDescriptionGroup: {
+    flexDirection: 'row'
+  },
   followRowInnerWrap: {
     height: 60,
     flex: 1,
@@ -106,7 +116,8 @@ var styles = {
     color: 'black'
   },
   followRowDescriptionText: {
-    fontSize: 16
+    fontSize: 16,
+    marginRight: 10,
   },
   followRowArrow: {
     marginTop: 20

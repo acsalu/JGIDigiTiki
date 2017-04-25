@@ -1,14 +1,7 @@
 import React, { Component } from 'react';
 import {
-  AppRegistry,
   BackAndroid,
-  Dimensions,
   Image,
-  StyleSheet,
-  TouchableHighlight,
-  Text,
-  TextInput,
-  Navigator,
   NativeModules,
   View
 } from 'react-native';
@@ -20,8 +13,13 @@ import RNFS from 'react-native-fs';
 import realm from '../models/realm';
 
 const Mailer = NativeModules.RNMail;
+import Orientation from 'react-native-orientation';
 
 export default class ExportDataScreen extends Component {
+
+  componentDidMount() {
+    Orientation.lockToPortrait();
+  }
 
   render() {
     const follows = realm.objects('Follow');
@@ -52,8 +50,7 @@ export default class ExportDataScreen extends Component {
     });
 
     return(
-        <Image source={require('../img/chimp.png')} style={styles.container}>
-
+      <View style={styles.container}>
           <Button
               onPress={() => {
                 console.log(path);
@@ -88,8 +85,7 @@ export default class ExportDataScreen extends Component {
               style={[sharedStyles.btn, styles.menuBtn]}>
             {strings.Menu_ExportData}
           </Button>
-
-        </Image>
+      </View>
     );
   }
 }
