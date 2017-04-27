@@ -15,6 +15,9 @@ export default sharedStyles = {
   btnSuccess: {
     backgroundColor: '#9c0'
   },
+  btnDisabled: {
+    backgroundColor: '#B0BEC5',
+  },
   hidden: {
     opacity: 0.0
   },
