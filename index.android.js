@@ -16,6 +16,7 @@ import FollowListScreen from './components/FollowListScreen';
 import FollowScreen from './components/FollowScreen/FollowScreen';
 import MenuScreen from './components/MenuScreen';
 import NewFollowScreen from './components/NewFollowScreen';
+import SettingsScreen from './components/SettingsScreen';
 import SummaryScreen from './components/SummaryScreen/SummaryScreen';
 
 import chimps from './data/chimp-list.json';
@@ -73,6 +74,12 @@ export default class JGIDigiTiki extends Component {
                      chimps={cs}
                      times={times}
                   />
+              );
+            case 'SettingsScreen':
+              return (
+                  <SettingsScreen navigator={navigator}>
+
+                  </SettingsScreen>
               );
             default:
               break;
