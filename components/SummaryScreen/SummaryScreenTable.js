@@ -36,10 +36,6 @@ class SummaryScreenTableCell extends Component {
 }
 
 class SummaryScreenTableChimpCol extends Component {
-  onLayout(event) {
-    var {x, y, width, height} = event.nativeEvent.layout;
-    console.log(x, y, width, height);
-  }
 
   render() {
     const cells = ([...Array(this.props.rows||0)])
@@ -115,8 +111,6 @@ export default class SummaryScreenTable extends Component {
 
   render() {
 
-    console.log(this.props.followArrivalSummary);
-
     const startTimeIndex = this.props.times.indexOf(this.props.followStartTime);
     const endTimeIndex = this.props.times.indexOf(this.props.followEndTime);
     const timeCol = this.props.times.slice(startTimeIndex, endTimeIndex + 2)
@@ -174,7 +168,6 @@ const styles = {
     transform: [{ rotate: '90deg'}],
     width: 23,
     fontSize: 8,
-    fontWeight: 'bold',
     color: 'black'
   },
   colGroup: {

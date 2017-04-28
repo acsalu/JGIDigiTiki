@@ -114,8 +114,6 @@ export default class NewFollowScreen extends Component {
       return false;
     });
 
-    console.log('create db:', realm.path);
-
     return(
       <View style={styles.container}>
         <Text style={styles.description}>{strings.NewFollow_Title}</Text>

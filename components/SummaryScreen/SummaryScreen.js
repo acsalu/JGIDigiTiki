@@ -14,13 +14,13 @@ import {
 } from 'react-native';
 import Button from 'react-native-button';
 import Orientation from 'react-native-orientation';
-import assert from 'assert';
 
 import realm from '../../models/realm';
 import sharedStyles from '../SharedStyles';
 import strings from '../../data/strings';
 import SummaryScreenHeader from './SummaryScreenHeader';
 import SummaryScreenTable from './SummaryScreenTable';
+import assert from 'assert';
 
 
 export default class SummaryScreen extends Component {
@@ -33,20 +33,13 @@ export default class SummaryScreen extends Component {
 
     const followArrivals = realm.objects('FollowArrival')
         .filtered('focalId = $0 AND date = $1', this.props.follow.FOL_B_AnimID, this.props.follow.FOL_date);
-    console.log(followArrivals.length, 'followArrivals');
-    for (var i = 0; i < followArrivals.length; ++i) {
-      const fa = followArrivals[i];
-      console.log(fa.followStartTime);
-    }
 
-    const followStartTimes = followArrivals.map((fa, i) => fa.followStartTime);
-    const followEndTimes = followArrivals.map((fa, i) => fa.followEndTime);
+    let followStartTimes = [this.props.follow.FOL_time_begin];
+    followStartTimes = followStartTimes.concat(followArrivals.map((fa, i) => fa.followStartTime));
     followStartTimes.sort();
-    followEndTimes.sort();
-    const lastFollowStartTime = followStartTimes.pop();
+    const lastFollowStartTime = followStartTimes.length === 0 ? this.props.follow.FOL_time_begin : followStartTimes.pop();
 
-    const followStartTime = followStartTimes[0];
-    const followEndTime = followEndTimes.pop();
+    const followStartTime = this.props.follow.FOL_time_begin;
     const followDate = this.props.follow.FOL_date;
 
     let followArrivalSummary = {};

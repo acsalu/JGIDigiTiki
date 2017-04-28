@@ -119,7 +119,6 @@ export default class ExportDataScreen extends Component {
     RNFS.mkdir(dirPath);
     await this.exportFollows(follows, dirPath);
     let result = await RNFS.readDir(`${dirPath}`);
-    console.log(result);
 
     console.log(`zip ${dirPath} into ${RNFS.DocumentDirectoryPath}/myFile.zip`);
     await zip(dirPath, zipPath)

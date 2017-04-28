@@ -30,7 +30,6 @@ export default class FollowScreen extends Component {
     Orientation.lockToPortrait();
     navigator.geolocation.getCurrentPosition(
         (position) => {
-          console.log("get position:", JSON.stringify(position));
           realm.write(() => {
             const newLocation = realm.create('Location', {
               timestamp: position.timestamp,
@@ -201,7 +200,6 @@ export default class FollowScreen extends Component {
     if (followArrivals !== null) {
       let updatedFollowArrivals = {};
       const keys = Object.keys(followArrivals);
-      console.log('keys', keys);
       for (let i = 0; i < keys.length; ++i) {
         const k = keys[i];
         const fa = followArrivals[k];
@@ -415,14 +413,12 @@ export default class FollowScreen extends Component {
             updateArrival={(field, value) => {
               const chimpId = this.state.selectedChimp;
               if (chimpId !== null) {
-                console.log("update arrival", chimpId, field, value);
                 let arrival = this.state.followArrivals[chimpId];
                 realm.write(() => {
                   arrival[field] = value;
                   let newFollowArrivals = this.state.followArrivals;
                   newFollowArrivals[chimpId] = arrival;
                   this.setState({followArrivals: newFollowArrivals});
-                  console.log(this.state.followArrivals[chimpId]);
                 });
               }
             }}

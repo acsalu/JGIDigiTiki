@@ -123,7 +123,6 @@ export default class FollowArrivalTable extends Component {
   }
 
   _onPanelButtonPress = (time) => {
-    console.log(time);
     const selectedChimp = this.props.selectedChimp;
     if (selectedChimp !== null) {
       if (!(selectedChimp in this.props.followArrivals)) {
@@ -162,8 +161,6 @@ export default class FollowArrivalTable extends Component {
     const isFocal = c.name === this.props.focalChimpId;
     const isMale = c.sex === 'M';
     const chimpButtonStyles = isSelected ? chimpButtonStylesSelected : (isFocal ? chimpButtonStylesFocal : chimpButtonStylesNonFocal);
-    // console.log(c.name);
-    // console.log(this.state.arrival);
     const hasFollowed = c.name in this.state.arrival;
     if (!hasFollowed) {
       return (
@@ -327,8 +324,6 @@ const padding = 10;
 const unitWidth = (Dimensions.get('window').width - 5 * padding) / 13.0;
 const maleWidth = unitWidth * 6 + 1.5 * padding;
 const femaleWidth = unitWidth * 7 + 1.5 * padding;
-
-console.log("male", maleWidth, "female", femaleWidth);
 
 
 const styles = StyleSheet.create({

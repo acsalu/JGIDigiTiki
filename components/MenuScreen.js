@@ -23,8 +23,23 @@ import Orientation from 'react-native-orientation';
 
 export default class MenuScreen extends Component {
 
+  _orientationDidChange(orientation) {
+    console.log("_orientationDidChange", orientation);
+    if (orientation == 'LANDSCAPE') {
+      //do something with landscape layout
+    } else {
+      //do something with portrait layout
+    }
+  }
+
+  componentWillMount() {
+    console.log("[MenuScreen] componentWillMount");
+  }
+
   componentDidMount() {
+    console.log("[MenuScreen] componentDidMount");
     Orientation.lockToPortrait();
+    Orientation.addOrientationListener(this._orientationDidChange);
   }
 
   render() {
