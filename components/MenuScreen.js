@@ -1,25 +1,15 @@
 import React, { Component } from 'react';
 import {
-  AppRegistry,
-  Dimensions,
   Image,
-  StyleSheet,
   TouchableHighlight,
   Text,
-  TextInput,
-  Navigator,
-  NativeModules,
   View
 } from 'react-native';
+import Orientation from 'react-native-orientation';
 import Button from 'react-native-button';
 
-import sharedStyles from './SharedStyles';
+import sharedStyles from  './SharedStyles';
 import strings from '../data/strings';
-import RNFS from 'react-native-fs';
-import realm from '../models/realm';
-
-const Mailer = NativeModules.RNMail;
-import Orientation from 'react-native-orientation';
 
 export default class MenuScreen extends Component {
 
