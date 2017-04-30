@@ -94,4 +94,18 @@ export default class Util {
 
     return 0;
   }
+
+  static compareUserTime = (t1, t2) => {
+    // t1 == t2 => 0
+    // t1 > t2 => 1
+    // t1 < t2 => -1
+    if (t1 === t2) { return 0; }
+    const lastChar1 = t1.charAt(t1.length - 1);
+    const lastChar2 = t2.charAt(t2.length - 1);
+    if (lastChar1 !== lastChar2) {
+      return lastChar1 === 'J' ? 1 : -1;
+    }
+
+    return t1.localeCompare(t2);
+  }
 }

@@ -368,6 +368,7 @@ export default class FollowScreen extends Component {
             }}
 
             onSelectFinishedFood={(f) => {
+              if (f === null) { return; }
               const spaceIndex = f.indexOf(' ');
               const foodName = f.substring(0, spaceIndex);
               const foodPart = f.substring(spaceIndex + 1);
@@ -379,6 +380,7 @@ export default class FollowScreen extends Component {
             }}
 
             onSelectFinishedSpecies={(s) => {
+              if (s === null) { return; }
               this.editSpecies(s, this.state.finishedSpecies);
             }}
         />

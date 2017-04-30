@@ -6,7 +6,7 @@ import {
   View
 } from 'react-native';
 import Button from 'react-native-button';
-import util from '../util';
+import Util from '../util';
 import sharedStyles from '../SharedStyles';
 
 export default class ItemTrackerModal extends Component {
@@ -43,11 +43,19 @@ export default class ItemTrackerModal extends Component {
       return (<Picker.Item key={i} label={e[1]} value={e[0]} />);
     });
 
-    let timePickerItems = util.getTrackerTimes(util.dbTime2UserTime(this.props.beginFollowTime))
+    let isTrackedBefore = false;
+    if (this.state.startTime !== undefined && this.state.startTime !== null) {
+      isTrackedBefore = Util.compareUserTime(this.state.startTime, Util.dbTime2UserTime(this.props.beginFollowTime)) === -1;
+    }
+
+    let timePickerItems = Util.getTrackerTimes(Util.dbTime2UserTime(this.props.beginFollowTime))
         .map((e, i) => {
           return (<Picker.Item key={i} label={e} value={e} />);
         });
-    timePickerItems.unshift((<Picker.Item key={-1} label={strings.TimeFormat} value='ongoing' />));
+    if (isTrackedBefore) {
+      timePickerItems.unshift((<Picker.Item key={-1} label={this.state.startTime} value={this.state.startTime} />));
+    }
+    timePickerItems.unshift((<Picker.Item key={-2} label={strings.TimeFormat} value='ongoing' />));
 
     return (
         <Modal
