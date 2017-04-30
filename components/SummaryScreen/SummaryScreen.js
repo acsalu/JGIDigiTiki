@@ -12,7 +12,6 @@ import {
   NativeModules,
   View
 } from 'react-native';
-import Button from 'react-native-button';
 import Orientation from 'react-native-orientation';
 
 import realm from '../../models/realm';

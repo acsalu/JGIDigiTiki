@@ -15,7 +15,6 @@ import Orientation from 'react-native-orientation';
 
 import realm from '../models/realm';
 import sharedStyles from './SharedStyles';
-import strings from '../data/strings';
 import Util from './util';
 
 export default class NewFollowScreen extends Component {
@@ -103,6 +102,7 @@ export default class NewFollowScreen extends Component {
   }
 
   render() {
+    const strings = this.props.strings;
     const communityPickerItems = this.getCommunityPickerItems();
     const beginTimePickerItems = this.getBeginTimePickerItems();
 

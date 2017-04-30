@@ -1,7 +1,5 @@
-import LocalizedStrings from 'react-native-localization';
-
-export default strings = new LocalizedStrings({
-  "en-US":{
+export default defaultStrings = {
+  'en':{
     TimeFormat: "(h:mm)",
     Menu_Title: "Follow",
     Menu_NewFollow: "New Follow",
@@ -25,9 +23,9 @@ export default strings = new LocalizedStrings({
     Follow_NextDataValidationAlertCancel: "Cancel",
     ItemTracker_Save: "Save",
     ItemTracker_Cancel: "Cancel",
-    ItemTracker_TimeTo: "to"
+    ItemTracker_TimeTo: "to",
   },
-  sw:{
+  'sw':{
     TimeFormat: "(s:dk)",
     Menu_Title: "Fuata",
     Menu_NewFollow: "Anza ufuataji",
@@ -48,6 +46,6 @@ export default strings = new LocalizedStrings({
     Follow_NextDataValidationAlertMessagePrompt: "Are you sure?",
     Follow_NextDataValidationAlertConfirm: "Yes",
     Follow_NextDataValidationAlertCancel: "Cancel",
-    ItemTracker_TimeTo: "hadi"
+    ItemTracker_TimeTo: "hadi",
   }
-});
+};

@@ -8,8 +8,7 @@ import {
 import Orientation from 'react-native-orientation';
 import Button from 'react-native-button';
 
-import sharedStyles from  './SharedStyles';
-import strings from '../data/strings';
+import sharedStyles from './SharedStyles';
 
 export default class MenuScreen extends Component {
 
@@ -33,6 +32,8 @@ export default class MenuScreen extends Component {
   }
 
   render() {
+    const strings = this.props.strings;
+
     return(
       <Image source={require('../img/chimp.png')} style={styles.container}>
         <View style={styles.header}>
