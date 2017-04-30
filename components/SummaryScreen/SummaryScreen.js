@@ -51,7 +51,7 @@ export default class SummaryScreen extends Component {
     for (var i = 0; i < followArrivals.length; ++i) {
       const fa = followArrivals[i];
       assert(fa.chimpId in followArrivalSummary);
-      followArrivalSummary[fa.chimpId].push(fa.followStartTime);
+      followArrivalSummary[fa.chimpId].push(fa);
       if (fa.estrus == 100) {
         swelledChimps.add(fa.chimpId);
       }

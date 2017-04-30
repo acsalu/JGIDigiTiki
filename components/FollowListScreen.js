@@ -30,7 +30,9 @@ export default class FollowListScreen extends Component {
     const follows = realm.objects('Follow');
     const rows = follows.map((f, i) => {
       return (
-        <FollowListRow key={i}
+        <FollowListRow 
+          key={i}
+          strings={this.props.strings}
           onPress={() => {
             this.props.navigator.push({
                 id: 'SummaryScreen',
@@ -53,6 +55,7 @@ export default class FollowListScreen extends Component {
 
 class FollowListRow extends Component {
   render() {
+    const strings = this.props.strings;
     const follow = this.props.follow;
     const focalChimpId = follow.FOL_B_AnimID;
     const researcherName = follow.FOL_am_observer1;

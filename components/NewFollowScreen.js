@@ -65,6 +65,7 @@ export default class NewFollowScreen extends Component {
   };
 
   getCommunityPickerItems = () => {
+    const strings = this.props.strings;
     const communities = this.getCommunities();
     const communityPromptPickerItem = (
         <Picker.Item key="community-prompt" label={strings.NewFollow_Community} value={null} />
@@ -76,6 +77,7 @@ export default class NewFollowScreen extends Component {
   };
 
   getBeginTimePickerItems = () => {
+    const strings = this.props.strings;
     const beginTimePromptPickerItem = (
         <Picker.Item key="begin-time-prompt" label={strings.NewFollow_BeginTime + " " + strings.TimeFormat} value={null} />
     );
@@ -86,11 +88,10 @@ export default class NewFollowScreen extends Component {
   }
 
   getChimpPickerItems = (community) => {
-
+    const strings = this.props.strings;
     if (community === null) {
       return [];
     }
-
     const defaultPickerItem = (<Picker.Item key='Target' label={strings.NewFollow_Target} value={null}/>);
 
     const chimpPickerItems = this.props.chimps

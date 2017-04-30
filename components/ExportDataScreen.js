@@ -80,7 +80,7 @@ export default class ExportDataScreen extends Component {
                 this.exportButtonPressed(follows, dirPath, zipPath);
               }}
               style={exportButtonStyles}>
-            {strings.Menu_ExportData}
+            {strings.ExportData_ExportButtonTitle}
           </Button>
       </View>
     );

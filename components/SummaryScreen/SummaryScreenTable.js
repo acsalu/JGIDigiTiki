@@ -30,7 +30,9 @@ class SummaryScreenTableCell extends Component {
       cellStyles.push(styles.cellHighlight);
     }
     return (
-      <View style={cellStyles}></View>
+      <View style={cellStyles}>
+        <Text style={styles.cellCertaintyText}>{this.props.certaintyText}</Text>
+      </View>
     );
   }
 }
@@ -40,7 +42,12 @@ class SummaryScreenTableChimpCol extends Component {
   render() {
     const cells = ([...Array(this.props.rows||0)])
         .map((v, i) => {
-            return (<SummaryScreenTableCell key={i} shouldHighlight={this.props.timeIndices.indexOf(i) !== -1} />)
+            const index = this.props.timeIndices.indexOf(i);
+            return (<SummaryScreenTableCell 
+              key={i} 
+              shouldHighlight={index !== -1}
+              certaintyText={this.props.certaintyTexts[index]}
+            />);
         });
 
     let titleStyles = [styles.chimpColTitle];
@@ -68,7 +75,9 @@ export default class SummaryScreenTable extends Component {
 
     assert(chimpId in this.props.followArrivalSummary);
     const timeIndices = this.props.followArrivalSummary[chimpId]
-        .map((t, i) => this.props.times.indexOf(t) - this.props.times.indexOf(this.props.followStartTime));
+        .map((fa, i) => this.props.times.indexOf(fa.followStartTime) - this.props.times.indexOf(this.props.followStartTime))
+    const certaintyTexts = this.props.followArrivalSummary[chimpId]
+        .map((fa, i) => fa.certainty <= 2 ? Util.certaintyLabelsDb2UserMap[fa.certainty] : "");
 
     return (
       <SummaryScreenTableChimpCol
@@ -78,6 +87,7 @@ export default class SummaryScreenTable extends Component {
           isFocalChimp={isFocalChimp}
           isSwelled={isSwelled}
           timeIndices={timeIndices}
+          certaintyTexts={certaintyTexts}
         />
     );
   }
@@ -198,7 +208,7 @@ const styles = {
     borderWidth: 0.5,
   },
   cellHighlight: {
-    backgroundColor: 'grey'
+    backgroundColor: '#ddd'
   },
   timeGroups: {
     paddingTop: 32,
@@ -206,5 +216,8 @@ const styles = {
   },
   chimpColTitleSwelled: {
     backgroundColor: '#F48FB1',
+  },
+  cellCertaintyText: {
+    textAlign: 'center'
   }
 }

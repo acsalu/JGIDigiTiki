@@ -24,12 +24,14 @@ export default defaultStrings = {
     ItemTracker_Save: "Save",
     ItemTracker_Cancel: "Cancel",
     ItemTracker_TimeTo: "to",
+    ExportData_ExportButtonTitle: "Export Data",
   },
   'sw':{
     TimeFormat: "(s:dk)",
     Menu_Title: "Fuata",
     Menu_NewFollow: "Anza ufuataji",
     Menu_ContinueFollow: "Endelea kufuata",
+    Menu_ExportData: "Export Data",
     NewFollow_Title: "Fuata",
     NewFollow_Community: "Kundi",
     NewFollow_Target: "Target",
@@ -46,6 +48,9 @@ export default defaultStrings = {
     Follow_NextDataValidationAlertMessagePrompt: "Are you sure?",
     Follow_NextDataValidationAlertConfirm: "Yes",
     Follow_NextDataValidationAlertCancel: "Cancel",
+    ItemTracker_Save: "Save",
+    ItemTracker_Cancel: "Cancel",
     ItemTracker_TimeTo: "hadi",
+    ExportData_ExportButtonTitle: "Export Data",
   }
 };
