@@ -7,7 +7,6 @@ import {
 } from 'react-native';
 import Button from 'react-native-button';
 import util from '../util';
-import strings from '../../data/strings';
 import sharedStyles from '../SharedStyles';
 
 export default class ItemTrackerModal extends Component {
@@ -35,7 +34,7 @@ export default class ItemTrackerModal extends Component {
   }
 
   render() {
-
+    const strings = this.props.strings;
     const mainPickerItems = this.props.mainList.map((e, i) => {
       return (<Picker.Item key={i} label={e[1]} value={e[0]} />);
     });

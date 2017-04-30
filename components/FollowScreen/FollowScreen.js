@@ -9,7 +9,6 @@ import loaderHandler from 'react-native-busy-indicator/LoaderHandler';
 import _ from 'lodash';
 
 import realm from '../../models/realm';
-import strings from '../../data/strings';
 import Util from '../util';
 
 import FollowArrivalTable from './FollowArrivalTable';
@@ -229,6 +228,7 @@ export default class FollowScreen extends Component {
   }
 
   render() {
+    const strings = this.props.strings;
     const beginFollowTime = this.props.follow.FOL_time_begin;
     const beginFollowTimeIndex = this.props.times.indexOf(beginFollowTime);
     const followTimeIndex = this.props.times.indexOf(this.props.followTime);
@@ -240,6 +240,7 @@ export default class FollowScreen extends Component {
 
         <ItemTrackerModal
             title={this.state.modalMainList == this.props.food ? "Food" : "Species"}
+            strings={strings}
             visible={this.state.modalVisible}
             mainList={this.state.modalMainList}
             secondaryList={this.state.modalSubList}
@@ -307,6 +308,7 @@ export default class FollowScreen extends Component {
 
         <FollowScreenHeader
             styles={styles.followScreenHeader}
+            strings={strings}
             follow={this.props.follow}
             followTime={this.props.followTime}
             activeFood={this.state.activeFood.map((f, i) => f.foodName + ' ' + f.foodPart)}

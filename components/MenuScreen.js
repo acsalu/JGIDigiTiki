@@ -1,25 +1,14 @@
 import React, { Component } from 'react';
 import {
-  AppRegistry,
-  Dimensions,
   Image,
-  StyleSheet,
   TouchableHighlight,
   Text,
-  TextInput,
-  Navigator,
-  NativeModules,
   View
 } from 'react-native';
+import Orientation from 'react-native-orientation';
 import Button from 'react-native-button';
 
 import sharedStyles from './SharedStyles';
-import strings from '../data/strings';
-import RNFS from 'react-native-fs';
-import realm from '../models/realm';
-
-const Mailer = NativeModules.RNMail;
-import Orientation from 'react-native-orientation';
 
 export default class MenuScreen extends Component {
 
@@ -43,9 +32,21 @@ export default class MenuScreen extends Component {
   }
 
   render() {
+    const strings = this.props.strings;
+
     return(
       <Image source={require('../img/chimp.png')} style={styles.container}>
-        <Text style={styles.header}>Jane Goodall Institute</Text>
+        <View style={styles.header}>
+          <Text style={styles.headerText}>Jane Goodall Institute</Text>
+          <TouchableHighlight
+            onPress={() => {this.props.navigator.push({id: 'SettingsScreen'});}}>
+            <View style={styles.settingsButtonWrapper}>
+              <Image source={require('../img/settings.png')}></Image>
+            </View>
+          </TouchableHighlight>
+        </View>
+
+
         <Text style={styles.description}>{strings.Menu_Title}</Text>
 
         <Button
@@ -89,14 +90,20 @@ const styles = {
     resizeMode: Image.resizeMode.contain
   },
   header: {
-    alignSelf: "stretch",
-    paddingTop: 15,
-    paddingBottom: 15,
-    paddingLeft: 15,
-    fontSize: 18,
-    textAlign: 'left',
+    flexDirection: 'row',
+    alignSelf: 'stretch',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 15,
     backgroundColor: '#ececec',
-    color: 'black'
+  },
+  headerText: {
+    textAlign: 'left',
+    fontSize: 18,
+    color: 'black',
+  },
+  settingsButtonWrapper: {
+    flexDirection: 'row',
   },
   description: {
     alignSelf: 'stretch',

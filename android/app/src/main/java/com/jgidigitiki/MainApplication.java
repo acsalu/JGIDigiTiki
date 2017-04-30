@@ -1,24 +1,22 @@
 package com.jgidigitiki;
 
 import android.app.Application;
-import android.util.Log;
 
-import com.facebook.react.ReactApplication;
-import com.rnziparchive.RNZipArchivePackage;
 import com.babisoft.ReactNativeLocalization.ReactNativeLocalizationPackage;
-import com.rnfs.RNFSPackage;
-import io.realm.react.RealmReactPackage;
+import com.chirag.RNMail.*;
+import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 import com.github.yamill.orientation.OrientationPackage;
+import com.rnfs.RNFSPackage;
+import com.rnziparchive.RNZipArchivePackage;
+import io.realm.react.RealmReactPackage;
 
 import java.util.Arrays;
 import java.util.List;
-
-import com.chirag.RNMail.*;
 
 public class MainApplication extends Application implements ReactApplication {
 

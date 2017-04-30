@@ -15,11 +15,11 @@ import Button from 'react-native-button';
 import ItemTracker from './ItemTracker';
 
 import sharedStyles from '../SharedStyles';
-import strings from '../../data/strings';
 import util from '../util';
 
 export default class FollowScreenHeader extends Component {
   render() {
+    const strings = this.props.strings;
     const isFirstFollow = this.props.followTime === this.props.follow.FOL_time_begin;
 
     return (

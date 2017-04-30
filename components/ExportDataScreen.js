@@ -10,7 +10,6 @@ import {
 import Button from 'react-native-button';
 import format from 'string-format';
 import sharedStyles from './SharedStyles';
-import strings from '../data/strings';
 import RNFS from 'react-native-fs';
 import realm from '../models/realm';
 
@@ -31,13 +30,9 @@ export default class ExportDataScreen extends Component {
   };
 
   render() {
+    const strings = this.props.strings;
     const follows = realm.objects('Follow')
         .filtered('FOL_date >= $0 AND FOL_date <= $1', this.state.startDate, this.state.endDate);
-    // FOL_date: 'date',
-    // FOL_B_AnimID: 'string',
-    // FOL_CL_community_id: 'string',
-    // FOL_time_begin: 'string',
-    // FOL_time_end: {type: 'string', optional: true},
 
     // create a path you want to write to
     const dirPath = RNFS.ExternalDirectoryPath + '/follow-data';
