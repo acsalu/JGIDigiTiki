@@ -32,7 +32,7 @@ const defaultLanguage = 'en';
 export default class JGIDigiTiki extends Component {
 
   state = {
-    language: null,
+    language: defaultLanguage,
     localizedStrings: new LocalizedStrings(defaultStrings),
     enStrings: defaultStrings.en,
     swStrings: defaultStrings.sw
@@ -48,17 +48,11 @@ export default class JGIDigiTiki extends Component {
   }
 
   async _updateLocalizedString(language, key, newString) {
-    console.log("Update", language, key, newString);
-
-    console.log("Before set");
     await AsyncStorage.setItem(`@JGIDigiTiki:strings_${language}_${key}`, newString);
-    console.log("After set");
-
     this._loadLocalizedStrings();
   }
 
   async _loadDefaultLanguage() {
-    console.log("_getDefaultLanguage");
     try {
       const language = await AsyncStorage.getItem('@JGIDigiTiki:language');
       if (language !== null) {
@@ -73,7 +67,6 @@ export default class JGIDigiTiki extends Component {
   }
 
   async _loadLocalizedStrings() {
-    console.log("_getLocalizedStrings");
     try {
       let enStrings = {};
       for (const key in defaultStrings.en) {
@@ -186,6 +179,7 @@ export default class JGIDigiTiki extends Component {
                       navigator={navigator}
                       language={this.state.language}
                       onLanguageChanged={(language)=> {
+                        console.log('index get new language:', language);
                         this._setLanguage(language);
                       }}
                       strings={this.state.localizedStrings}

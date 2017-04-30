@@ -24,12 +24,14 @@ class LocalizedTextSettingRow extends Component {
           <Text>{this.props.localizedStringKey}</Text>
           <View style={styles.localizedTextSettingRowItemGroup}>
             <TextInput
+                autoCorrect={false}
                 style={styles.localizedTextSettingRowItem}
                 onEndEditing={(event) => {this._onEndEditingHandler('en', event.nativeEvent.text)}}
             >
               {this.props.enString}
             </TextInput>
             <TextInput
+                autoCorrect={false}
                 style={styles.localizedTextSettingRowItem}
                 onEndEditing={(event) => {this._onEndEditingHandler('sw', event.nativeEvent.text)}}
             >
@@ -42,14 +44,17 @@ class LocalizedTextSettingRow extends Component {
 }
 
 export default class SettingsScreen extends Component {
-
-  state = {
-    selectedOption: 'en'
-  };
+  
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectedLanguage: this.props.language
+    }
+  }
 
   componentWillReceiveProps(nextProps) {
     this.setState({
-      selectedOption: this.props.language
+      selectedLanguage: nextProps.language
     });
   }
 
@@ -68,13 +73,10 @@ export default class SettingsScreen extends Component {
     const languageOptions = ["en", "sw"];
 
     function setSelectedOption(selectedOption){
-      // this.setState({selectedOption: selectedOption});
-      console.log("setSelectionOption:", selectedOption);
       this.props.onLanguageChanged(selectedOption);
     }
 
     function renderOption(option, selected, onSelect, index){
-      console.log("renderOption", option, selected);
       let optionStyles = [styles.languageOption];
       if (selected) {
         optionStyles.push(SharedStyles.btnPrimary, {color: 'white'});
@@ -109,13 +111,12 @@ export default class SettingsScreen extends Component {
          <Text>Language: </Text>
          <RadioButtons
              options={ languageOptions }
-             onSelection={ setSelectedOption.bind(this) }
-             selectedOption={ this.state.selectedOption }
+             onSelection={setSelectedOption.bind(this) }
+             selectedOption={ this.state.selectedLanguage }
              renderOption={ renderOption }
              renderContainer={ renderContainer }
          />
        </View>
-       <Text>Selected option: {this.state.selectedOption || 'none'}</Text>
        <ScrollView style={styles.localizedTextSettingRows}>
         {localizedTextSettingRows}
        </ScrollView>
