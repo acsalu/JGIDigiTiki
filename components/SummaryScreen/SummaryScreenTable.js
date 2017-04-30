@@ -111,13 +111,15 @@ export default class SummaryScreenTable extends Component {
     );
   }
 
-  createTimeRow(dbTime, i, onTimeSelected) {
+  createTimeRow(dbTime, i, onTimeSelected, shouldAllowAction) {
     return (
         <TouchableHighlight
             key={i}
             style={styles.timeRow}
             onPress={()=>{
-              onTimeSelected(dbTime);
+              if (shouldAllowAction === true) {
+                onTimeSelected(dbTime);
+              }
             }}
         >
           <Text style={styles.timeRowText}>{Util.dbTime2UserTime(dbTime)}</Text>
@@ -129,8 +131,13 @@ export default class SummaryScreenTable extends Component {
 
     const startTimeIndex = this.props.times.indexOf(this.props.followStartTime);
     const endTimeIndex = this.props.times.indexOf(this.props.followEndTime);
+    const timeLength = endTimeIndex - startTimeIndex + 1;
     const timeCol = this.props.times.slice(startTimeIndex, endTimeIndex + 2)
-        .map((t, i) => this.createTimeRow(t, i, this.props.onFollowTimeSelected));
+        .map((t, i) => {
+          const isLast = i === (timeLength);
+          // Disable action for the last time.
+          return this.createTimeRow(t, i, this.props.onFollowTimeSelected, !isLast);
+        });
 
     const intervals = endTimeIndex - startTimeIndex + 1;
     const maleChimpCols = this.props.chimps.filter((c) => c.sex == 'M')
