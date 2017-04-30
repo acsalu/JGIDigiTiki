@@ -42,7 +42,6 @@ export default class SummaryScreen extends Component {
     const followDate = this.props.follow.FOL_date;
 
     let followArrivalSummary = {};
-    let swelledChimps = new Set();
     for (let i = 0; i < this.props.chimps.length; ++i) {
       const c = this.props.chimps[i];
       followArrivalSummary[c.name] = [];
@@ -52,9 +51,6 @@ export default class SummaryScreen extends Component {
       const fa = followArrivals[i];
       assert(fa.chimpId in followArrivalSummary);
       followArrivalSummary[fa.chimpId].push(fa);
-      if (fa.estrus == 100) {
-        swelledChimps.add(fa.chimpId);
-      }
     }
 
 
@@ -81,7 +77,6 @@ export default class SummaryScreen extends Component {
               });
             }}
             followArrivalSummary={followArrivalSummary}
-            swelledChimps={swelledChimps}
           />
         </View>
     );
