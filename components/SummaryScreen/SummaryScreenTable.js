@@ -4,12 +4,10 @@ import {
   BackAndroid,
   Dimensions,
   Image,
-  StyleSheet,
+  ScrollView,
   TouchableHighlight,
   Text,
   TextInput,
-  Navigator,
-  NativeModules,
   View
 } from 'react-native';
 import assert from 'assert';
@@ -150,24 +148,29 @@ export default class SummaryScreenTable extends Component {
 
     return(
         <View style={styles.container}>
-          <View style={styles.timeGroups}>
-            {timeCol}
-          </View>
-          <View style={styles.colGroup}>
-            {maleChimpCols}
-          </View>
-          <View style={styles.colGroup}>
-            {foodCol}
-          </View>
-          <View style={styles.colGroup}>
-            {femaleChimpCols}
-          </View>
-          <View style={styles.colGroup}>
-            {speciesCol}
-          </View>
-          <View style={styles.timeGroups}>
-            {timeCol}
-          </View>
+          <ScrollView
+            style={styles.scrollView}
+            horizontal={true}
+          >
+            <View style={styles.timeGroups}>
+              {timeCol}
+            </View>
+            <View style={styles.colGroup}>
+              {maleChimpCols}
+            </View>
+            <View style={styles.colGroup}>
+              {foodCol}
+            </View>
+            <View style={styles.colGroup}>
+              {femaleChimpCols}
+            </View>
+            <View style={styles.colGroup}>
+              {speciesCol}
+            </View>
+            <View style={styles.timeGroups}>
+              {timeCol}
+            </View>
+          </ScrollView>
         </View>
     );
   }
@@ -179,9 +182,12 @@ const styles = {
     alignSelf: 'stretch',
     paddingTop: 10
   },
+  scrollView: {
+    paddingBottom: 30
+  },
   chimpColTitle: {
     borderBottomWidth: 1,
-    height: 40,
+    height: 50,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 0,
@@ -189,35 +195,36 @@ const styles = {
   },
   chimpColTitleText: {
     transform: [{ rotate: '90deg'}],
-    width: 23,
-    fontSize: 8,
-    color: 'black'
+    width: 32,
+    fontSize: 11,
+    color: 'black',
+    fontWeight: 'bold'
   },
   colGroup: {
     flexDirection: 'row',
-
   },
   chimpCol: {
     alignSelf: 'stretch',
     flexDirection: 'column',
-    width: 15,
+    width: 30,
   },
   itemCol: {
-    width: 45,
+    width: 100,
   },
   itemColTitleText: {
-    fontSize: 10,
+    fontSize: 14,
+    fontWeight: 'bold',
     textAlign: 'center',
   },
   timeRow: {
-    marginBottom: 3,
+    marginBottom: 13,
   },
   timeRowText: {
     fontSize: 12,
     textAlign: 'center'
   },
   cell: {
-    height: 20,
+    height: 30,
     borderWidth: 0.5,
   },
   cellHighlight: {
@@ -227,7 +234,7 @@ const styles = {
     backgroundColor: '#F48FB1',
   },
   timeGroups: {
-    paddingTop: 32,
+    paddingTop: 42,
     width: 40
   },
   cellCertaintyText: {
