@@ -73,7 +73,7 @@ const styles = {
     flexDirection: 'column',
     justifyContent: 'space-between',
     alignItems: 'center',
-    height: 150,
+    height: 145,
     paddingLeft: 12,
     paddingRight: 12,
     paddingTop: 8

@@ -36,8 +36,7 @@ export default class FollowListScreen extends Component {
           onPress={() => {
             this.props.navigator.push({
                 id: 'SummaryScreen',
-                follow: f,
-                followTime: f.FOL_time_begin,
+                follow: f
               });
           }}
           follow={f}

@@ -18,6 +18,9 @@ export default sharedStyles = {
   btnDisabled: {
     backgroundColor: '#B0BEC5',
   },
+  btnSpecial: {
+    backgroundColor: '#EF6C00'
+  },
   hidden: {
     opacity: 0.0
   },

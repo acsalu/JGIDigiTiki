@@ -70,7 +70,7 @@ export default class SummaryScreen extends Component {
             followEndTime={lastFollowStartTime}
             times={this.props.times}
             onFollowTimeSelected={(t) => {
-              this.props.navigator.push({
+              this.props.navigator.replace({
                 id: 'FollowScreen',
                 follow: this.props.follow,
                 followTime: t,

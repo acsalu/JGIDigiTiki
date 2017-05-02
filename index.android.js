@@ -167,7 +167,6 @@ export default class JGIDigiTiki extends Component {
               return (
                   <SummaryScreen navigator={navigator}
                      follow={route.follow}
-                     followTime={route.followTime}
                      chimps={cs}
                      times={times}
                      strings={this.state.localizedStrings}

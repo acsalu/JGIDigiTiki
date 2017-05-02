@@ -7,9 +7,10 @@ import Orientation from 'react-native-orientation';
 import BusyIndicator from 'react-native-busy-indicator';
 import loaderHandler from 'react-native-busy-indicator/LoaderHandler';
 import _ from 'lodash';
-
 import realm from '../../models/realm';
 import Util from '../util';
+import sharedStyles from '../SharedStyles';
+import Button from 'react-native-button';
 
 import FollowArrivalTable from './FollowArrivalTable';
 import FollowScreenHeader from './FollowScreenHeader';
@@ -384,6 +385,16 @@ export default class FollowScreen extends Component {
               this.editSpecies(s, this.state.finishedSpecies);
             }}
         />
+
+        <Button
+          onPress={()=>{
+            this.props.navigator.replace({
+              id: 'SummaryScreen',
+              follow: this.props.follow
+            });
+          }}>
+            {strings.Follow_SeeSummaryButtonTitle}
+          </Button>
 
          <FollowArrivalTable
             styles={styles.followArrivalTable}
