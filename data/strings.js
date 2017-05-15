@@ -26,6 +26,7 @@ export default defaultStrings = {
     ItemTracker_Cancel: "Cancel",
     ItemTracker_TimeTo: "to",
     ExportData_ExportButtonTitle: "Export Data",
+    ExportData_SetUpEmailPrompt: "Please set up an email account on this device",
   },
   'sw':{
     TimeFormat: "(s:dk)",
@@ -54,5 +55,6 @@ export default defaultStrings = {
     ItemTracker_Cancel: "Cancel",
     ItemTracker_TimeTo: "hadi",
     ExportData_ExportButtonTitle: "Export Data",
+    ExportData_SetUpEmailPrompt: "Please set up an email account on this device",
   }
 };

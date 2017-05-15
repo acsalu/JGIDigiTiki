@@ -3,6 +3,7 @@ import {
   BackAndroid,
   DatePickerAndroid,
   NativeModules,
+  ToastAndroid,
   TouchableHighlight,
   Text,
   View
@@ -30,6 +31,11 @@ export default class ExportDataScreen extends Component {
   componentDidMount() {
     Orientation.lockToPortrait();
   };
+
+  constructor(props) {
+    super(props);
+    
+  }
 
   render() {
     const strings = this.props.strings;
@@ -313,7 +319,7 @@ export default class ExportDataScreen extends Component {
       }
     }, (error, event) => {
       if(error) {
-        console.log("bla, no email supported");
+        ToastAndroid.show(this.props.strings.ExportData_SetUpEmailPrompt, ToastAndroid.SHORT);
         console.log(error);
       }
     });
