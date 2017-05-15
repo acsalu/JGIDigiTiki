@@ -58,22 +58,36 @@ export default class FollowScreen extends Component {
 
     if (this.props.followArrivals !== undefined && this.props.followArrivals !== null) {
       // Write follows from previous into db
-
+      console.log("Got follow arrival from previous", this.props.followArrivals);
       realm.write(() => {
         Object.keys(this.props.followArrivals).forEach((key, index) => {
           const fa = this.props.followArrivals[key];
-          const newArrival = realm.create('FollowArrival', {
-            date: this.props.follow.FOL_date,
-            followStartTime: this.props.followTime,
-            focalId: this.props.follow.FOL_B_AnimID,
-            chimpId: fa.chimpId,
-            time: fa.time,
-            certainty: fa.certainty,
-            estrus: fa.estrus,
-            isWithin5m: fa.isWithin5m,
-            isNearestNeighbor: fa.isNearestNeighbor,
-            grooming: fa.grooming
-          });
+          
+          const followArrivals = realm.objects('FollowArrival')
+            .filtered('focalId = $0 AND date = $1 AND followStartTime = $2 AND chimpId = $3', 
+              focalId, date, this.props.followTime, fa.chimpId);
+          if (followArrivals.length === 0) {
+            const newArrival = realm.create('FollowArrival', {
+              date: this.props.follow.FOL_date,
+              followStartTime: this.props.followTime,
+              focalId: this.props.follow.FOL_B_AnimID,
+              chimpId: fa.chimpId,
+              time: fa.time,
+              certainty: fa.certainty,
+              estrus: fa.estrus,
+              isWithin5m: fa.isWithin5m,
+              isNearestNeighbor: fa.isNearestNeighbor,
+              grooming: fa.grooming
+            });
+          } else {
+            const followArrival = followArrivals[0];
+            followArrival.time = fa.time;
+            followArrival.certainty = fa.certainty;
+            followArrival.estrus = fa.estrus;
+            followArrival.isWithin5m = fa.isWithin5m;
+            followArrival.isNearestNeighbor = fa.isNearestNeighbor;
+            followArrival.grooming = followArrival.grooming;
+          }
         });
       });
     }
@@ -209,6 +223,7 @@ export default class FollowScreen extends Component {
           newFa.isWithin5m = false;
           newFa.isNearestNeighbor = false;
           newFa.grooming = 'none';
+          newFa.certainty = Util.getCertaintyLabelWithoutNesting(newFa.certainty);
           updatedFollowArrivals[k] = newFa;
         }
 

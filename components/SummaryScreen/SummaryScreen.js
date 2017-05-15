@@ -28,6 +28,10 @@ export default class SummaryScreen extends Component {
     Orientation.lockToLandscapeLeft();
   }
 
+  componentWillUnmount() {
+    Orientation.lockToPortrait();
+  }
+
   render() {
 
     const followArrivals = realm.objects('FollowArrival')
