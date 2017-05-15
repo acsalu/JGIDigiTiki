@@ -63,6 +63,15 @@ export default class Util {
     '100': '1.0'
   }
 
+  static getCertaintyOutput(certaintyLabel) {
+    return certaintyLabel == this.certaintyLabels.certain || 
+      certaintyLabel == this.certaintyLabels.nestCertain ? 1 : 0;
+  }
+
+  static getTimeOutput(dbTime) {
+    return this.dbTime2UserTime(dbTime);
+  }
+
   static dbTime2UserTime = (dbTime) => {
     // We expect something like 01-12:00J, so find the first - and take
     // everything after that.
@@ -107,5 +116,47 @@ export default class Util {
     }
 
     return t1.localeCompare(t2);
+  }
+
+  static getDbTimeIndex(dbTime) {
+    return parseInt(dbTime.substring(0, 2));
+  }
+
+  static getDbTimeOffset(dbTime) {
+    let minutes = parseInt(dbTime.substring(dbTime.length - 3, dbTime.length - 1));
+    return minutes % 15;
+  }
+
+  static getTimeDifference(dbTimeLatter, dbTimeFormer) {
+    const baseDifference = this.getDbTimeIndex(dbTimeLatter) - this.getDbTimeIndex(dbTimeFormer);
+    return baseDifference * 15 + this.getDbTimeOffset(dbTimeLatter) - this.getDbTimeOffset(dbTimeFormer);
+  }
+  
+  static getFollowArrivalTime(dbTime, part) {
+    const prefix = dbTime.substring(0, dbTime.length - 3);
+    let minutes = parseInt(dbTime.substring(dbTime.length - 3, dbTime.length - 1));
+    const suffix = dbTime.substring(dbTime.length - 1);
+    let offset = 0;
+    switch(part) {
+      case 'First':
+        offset = 4;
+        break;
+      case 'Second':
+        offset = 8;
+        break;
+      case 'Third':
+        offset = 12;
+        break;
+    }
+    minutes += offset;
+    return prefix + this.formatNumberLength(minutes, 2) + suffix;
+  }
+
+  static formatNumberLength(num, length) {
+    var r = "" + num;
+    while (r.length < length) {
+        r = "0" + r;
+    }
+    return r;
   }
 }

@@ -18,6 +18,8 @@ import { zip } from 'react-native-zip-archive';
 import Orientation from 'react-native-orientation';
 import Util from './util';
 
+import assert from 'assert';
+
 export default class ExportDataScreen extends Component {
 
   state = {
@@ -104,6 +106,7 @@ export default class ExportDataScreen extends Component {
   }
 
   async exportButtonPressed(follows, dirPath, zipPath) {
+    console.log("exportButtonPressed");
     if (await RNFS.exists(dirPath)) {
       await RNFS.unlink(dirPath);
     }
@@ -111,7 +114,9 @@ export default class ExportDataScreen extends Component {
       await RNFS.unlink(zipPath);
     }
 
+    console.log("finish cleaning");
     RNFS.mkdir(dirPath);
+    console.log("exportFollows");
     await this.exportFollows(follows, dirPath);
     let result = await RNFS.readDir(`${dirPath}`);
 
@@ -127,8 +132,8 @@ export default class ExportDataScreen extends Component {
   }
 
   async exportFollows(follows, path) {
-    for (let follow of follows) {
-      await this.exportFollow(follow, path);
+    for (let i = 0; i < follows.length; ++i) {
+      await this.exportFollow(follows[i], path);
     }
   }
 
@@ -139,10 +144,55 @@ export default class ExportDataScreen extends Component {
     const foods = this._getFoods(follow);
     const species = this._getSpecies(follow);
 
+    followArrivalsByChimpId = {}
+    for (let i = 0; i < followArrivals.length; ++i) {
+      const fa = followArrivals[i];
+      const chimpId = fa.chimpId;
+      if (!followArrivalsByChimpId.hasOwnProperty(chimpId)) {
+        followArrivalsByChimpId[chimpId] = [];
+      }
+      followArrivalsByChimpId[chimpId].push(fa);
+    }
+    
+    let followIntervals = [];
+    for (const chimpId in followArrivalsByChimpId) {
+      arrivals = followArrivalsByChimpId[chimpId];
+      let intervals = []
+      let isArrivalContinues = false;
+      let lastStartTime = null;
+      for (const arrival of arrivals) {
+        if (!isArrivalContinues) {
+          if (arrival.time.startsWith("arrive")) {
+            const timePart = arrival.time.substring("arrive".length);
+            lastStartTime = Util.getFollowArrivalTime(arrival.followStartTime, timePart);
+            isArrivalContinues = true;
+          }
+        } else if (arrival.time.startsWith("depart")) {
+          const timePart = arrival.time.substring("depart".length);
+          const intervalEndTime = Util.getFollowArrivalTime(arrival.followStartTime, timePart);
+          const duration = Util.getTimeDifference(intervalEndTime, lastStartTime);
+          intervals.push({
+            date: Util.getDateString(arrival.date),
+            focalId: arrival.focalId,
+            chimpId: arrival.chimpId,
+            seqNum: intervals.length + 1,
+            certainty: Util.getCertaintyOutput(arrival.certainty),
+            nesting: arrival.certainty, // TODO
+            cycle: arrival.estrus,
+            startTime: Util.getTimeOutput(lastStartTime), 
+            endTime: Util.getTimeOutput(intervalEndTime),
+            duration: duration,
+          });
+          isArrivalContinues = false;
+        }
+      }
+      followIntervals = followIntervals.concat(intervals);
+    }
+
     console.log(format("{0} follow arrivals / {1} foods / {2} species", followArrivals.length, foods.length, species.length));
 
     await this._exportFollow(follow, path, prefix);
-    await this._exportFollowArrivals(followArrivals, path, prefix);
+    await this._exportFollowArrivals(followIntervals, path, prefix);
     await this._exportFoods(foods, path, prefix);
     await this._exportSpecies(species, path, prefix);
   }
@@ -187,16 +237,17 @@ export default class ExportDataScreen extends Component {
       'FA_FOL_date',
       'FA_FOL_B_focal_AnimID',
       'FA_B_arr_AnimID',
+      'FA_seq_num',
       'FA_type_of_certainty',
       'FA_type_of_nesting',
       'FA_type_of_cycle',
-      'FA_type_of_grooming',
-      'FA_type_is_neareat_neighbor',
-      'FA_type_is_within_5m'
+      'FA_time_start',
+      'FA_time_end',
+      'FA_duration_of_obs',
     ];
     const objectFields = [
-      'date', 'focalId', 'chimpId', 'certainty',
-      'time', 'estrus', 'grooming', 'isNearestNeighbor', 'isWithin5m'
+      'date', 'focalId', 'chimpId', 'seqNum', 'certainty',
+      'nesting', 'cycle', 'startTime', 'endTime', 'duration'
     ];
 
     await this._exportObjectsToCsv(followArrivals, csvFilePath, csvFields, objectFields);
@@ -238,7 +289,9 @@ export default class ExportDataScreen extends Component {
 
   async _exportObjectsToCsv(objects, filePath, csvFields, objectFields) {
     var csvContent = csvFields.join(",");
-    for (const object of objects) {
+    assert(csvFields.length === objectFields.length);
+    for (let i = 0; i < objects.length; ++i) {
+      object = objects[i];
       const data = objectFields.map((of, i) => object[of].toString());
       csvContent += '\n' + data.join(",");
     }
