@@ -58,7 +58,6 @@ export default class FollowScreen extends Component {
 
     if (this.props.followArrivals !== undefined && this.props.followArrivals !== null) {
       // Write follows from previous into db
-
       realm.write(() => {
         Object.keys(this.props.followArrivals).forEach((key, index) => {
           const fa = this.props.followArrivals[key];
