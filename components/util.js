@@ -1,5 +1,7 @@
 import dateFormat from 'dateformat';
 
+import englishTimeList from '../data/english-time-list.json';
+
 Number.prototype.pad = function(size) {
   var s = String(this);
   while (s.length < (size || 2)) {s = "0" + s;}
@@ -80,7 +82,10 @@ export default class Util {
   }
 
   static getTimeOutput(dbTime) {
-    return this.dbTime2UserTime(dbTime);
+    const timeIndex = this.getDbTimeIndex(dbTime);
+    const englishTime = englishTimeList[timeIndex];
+    console.log(englishTime);
+    return englishTime.substring(0, englishTime.indexOf(':') + 1)+ dbTime.substring(dbTime.indexOf(':') + 1, dbTime.indexOf(':') + 3);
   }
 
   static dbTime2UserTime = (dbTime) => {
