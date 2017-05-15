@@ -223,6 +223,7 @@ export default class FollowScreen extends Component {
           newFa.isWithin5m = false;
           newFa.isNearestNeighbor = false;
           newFa.grooming = 'none';
+          newFa.certainty = Util.getCertaintyLabelWithoutNesting(newFa.certainty);
           updatedFollowArrivals[k] = newFa;
         }
 

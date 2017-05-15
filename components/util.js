@@ -68,6 +68,17 @@ export default class Util {
       certaintyLabel == this.certaintyLabels.nestCertain ? 1 : 0;
   }
 
+  static getCertaintyLabelWithoutNesting(certaintyLabel) {
+    switch (certaintyLabel) {
+      case this.certaintyLabels.nestCertain:
+        return this.certaintyLabels.certain;
+      case this.certaintyLabels.nestUncertain:
+        return this.certaintyLabels.uncertain;
+      default:
+        return certaintyLabel;
+    }
+  }
+
   static getTimeOutput(dbTime) {
     return this.dbTime2UserTime(dbTime);
   }
