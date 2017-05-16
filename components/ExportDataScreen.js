@@ -23,19 +23,34 @@ import assert from 'assert';
 
 export default class ExportDataScreen extends Component {
 
-  state = {
-    startDate: new Date(),
-    endDate: new Date()
-  };
+  constructor(props) {
+    super(props);
+
+    const defaultStartDate = new Date();
+    defaultStartDate.setHours(0, 0, 0, 0);
+
+    const defaultEndDate = new Date();
+    defaultEndDate.setHours(23, 59, 59, 999);
+
+    this.state = {
+      startDate: defaultStartDate,
+      endDate: defaultEndDate
+    };
+  }
+
+  setStartDate(date) {
+    date.setHours(0, 0, 0, 0);
+    this.setState({startDate: date});
+  }
+
+  setEndDate(date) {
+    date.setHours(23, 59, 59, 999);
+    this.setState({endDate: date});
+  }
 
   componentDidMount() {
     Orientation.lockToPortrait();
   };
-
-  constructor(props) {
-    super(props);
-    
-  }
 
   render() {
     const strings = this.props.strings;
@@ -104,8 +119,12 @@ export default class ExportDataScreen extends Component {
         let date = new Date(year, month, day);
         // newState[stateKey + 'Text'] = date.toLocaleDateString();
         newState[stateKey] = date;
+        if (stateKey === 'startDate') {
+          this.setStartDate(date);
+        } else if (stateKey === 'endDate') {
+          this.setEndDate(date);
+        }
       }
-      this.setState(newState);
     } catch ({code, message}) {
       console.warn(`Error in example '${stateKey}': `, message);
     }
