@@ -9,6 +9,7 @@ import {
   View
 } from 'react-native';
 import Button from 'react-native-button';
+import _ from 'lodash';
 import format from 'string-format';
 import sharedStyles from './SharedStyles';
 import RNFS from 'react-native-fs';
@@ -262,6 +263,8 @@ export default class ExportDataScreen extends Component {
   }
 
   async _exportFollow(follow, path, prefix) {
+    let followOutput = _.extend({}, follow);
+    followOutput.FOL_CL_community_id = Util.getCommunityIdOutput(followOutput.FOL_CL_community_id);
     const csvFilePath = `${path}/${prefix}-follow.csv`;
     const csvFields = [
       'FOL_date',
@@ -274,7 +277,7 @@ export default class ExportDataScreen extends Component {
       'FOL_year'
     ];
 
-    await this._exportObjectsToCsv([follow], csvFilePath, csvFields, csvFields);
+    await this._exportObjectsToCsv([followOutput], csvFilePath, csvFields, csvFields);
   }
 
   async _exportFollowArrivals(followArrivals, path, prefix) {

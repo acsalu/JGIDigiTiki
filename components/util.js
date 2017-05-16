@@ -71,6 +71,17 @@ export default class Util {
       certaintyLabel == this.certaintyLabels.nestCertain ? 1 : 0;
   }
 
+  static getCommunityIdOutput(communityId) {
+    switch (communityId) {
+      case 'kasekela':
+        return 'KK';
+      case 'mitumba':
+        return 'MT';
+      default:
+        return '';
+    }
+  }
+
   static getCertaintyLabelWithoutNesting(certaintyLabel) {
     switch (certaintyLabel) {
       case this.certaintyLabels.nestCertain:
