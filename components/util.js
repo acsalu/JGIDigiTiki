@@ -1,5 +1,6 @@
 import dateFormat from 'dateformat';
 
+import timeList from '../data/time-list.json';
 import englishTimeList from '../data/english-time-list.json';
 
 Number.prototype.pad = function(size) {
@@ -84,7 +85,6 @@ export default class Util {
   static getTimeOutput(dbTime) {
     const timeIndex = this.getDbTimeIndex(dbTime);
     const englishTime = englishTimeList[timeIndex];
-    console.log(englishTime);
     return englishTime.substring(0, englishTime.indexOf(':') + 1)+ dbTime.substring(dbTime.indexOf(':') + 1, dbTime.indexOf(':') + 3);
   }
 
@@ -138,6 +138,19 @@ export default class Util {
     return parseInt(dbTime.substring(0, 2));
   }
 
+  static getPreviousDbTime(dbTime) {
+    const dbTimeIndex = this.getDbTimeIndex(dbTime);
+    return timeList[dbTimeIndex - 1];
+  }
+
+  static getIntervalLastMinuteDbTime(dbTime) {
+    const prefix = dbTime.substring(0, dbTime.length - 3);
+    let minutes = parseInt(dbTime.substring(dbTime.length - 3, dbTime.length - 1));
+    const suffix = dbTime.substring(dbTime.length - 1);
+    minutes += 14;
+    return prefix + this.formatNumberLength(minutes, 2) + suffix;
+  }
+
   static getDbTimeOffset(dbTime) {
     let minutes = parseInt(dbTime.substring(dbTime.length - 3, dbTime.length - 1));
     return minutes % 15;
@@ -158,10 +171,10 @@ export default class Util {
         offset = 4;
         break;
       case 'Second':
-        offset = 8;
+        offset = 9;
         break;
       case 'Third':
-        offset = 12;
+        offset = 14;
         break;
     }
     minutes += offset;

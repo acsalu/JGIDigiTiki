@@ -130,7 +130,7 @@ export default class ExportDataScreen extends Component {
     await zip(dirPath, zipPath)
       .then((path) => {
         console.log(`zip completed at ${path}`)
-        this.openEmailClient(path);
+        // this.openEmailClient(path);
       })
       .catch((error) => {
         console.log(error)
@@ -162,11 +162,14 @@ export default class ExportDataScreen extends Component {
     
     let followIntervals = [];
     for (const chimpId in followArrivalsByChimpId) {
+      console.log(chimpId);
       arrivals = followArrivalsByChimpId[chimpId];
       let intervals = []
       let isArrivalContinues = false;
       let lastStartTime = null;
+      let lastCertaintyOutput = Util.getCertaintyOutput(arrivals[0].certainty);
       for (const arrival of arrivals) {
+        // console.log(arrival);
         if (!isArrivalContinues) {
           if (arrival.time.startsWith("arrive")) {
             const timePart = arrival.time.substring("arrive".length);
@@ -190,6 +193,28 @@ export default class ExportDataScreen extends Component {
             duration: duration,
           });
           isArrivalContinues = false;
+        } else if (arrival.time === 'arriveContinues') {
+          console.log('arriveContinues');
+          const certaintyOutput = Util.getCertaintyOutput(arrival.certainty);
+          if (lastCertaintyOutput != certaintyOutput) {
+            const previousIntervalDbTime = Util.getPreviousDbTime(arrival.followStartTime);
+            const followEndTime = Util.getIntervalLastMinuteDbTime(previousIntervalDbTime);
+            const duration = Util.getTimeDifference(followEndTime, lastStartTime);
+            intervals.push({
+              date: Util.getDateString(arrival.date),
+              focalId: arrival.focalId,
+              chimpId: arrival.chimpId,
+              seqNum: intervals.length + 1,
+              certainty: lastCertaintyOutput,
+              nesting: arrival.certainty, // TODO
+              cycle: arrival.estrus,
+              startTime: Util.getTimeOutput(lastStartTime), 
+              endTime: Util.getTimeOutput(followEndTime),
+              duration: duration,
+            });
+            lastStartTime = arrival.followStartTime;
+            lastCertaintyOutput = certaintyOutput;
+          }
         }
       }
       followIntervals = followIntervals.concat(intervals);
