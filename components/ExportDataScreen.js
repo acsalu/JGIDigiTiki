@@ -76,9 +76,8 @@ export default class ExportDataScreen extends Component {
       exportButtonStyles.push(sharedStyles.btnDisabled);
     }
 
-    return(
+    return (
       <View style={styles.container}>
-
         <View style={styles.dateInputGroup}>
           <TouchableHighlight
               onPress={this.showDatePicker.bind(this, 'startDate', {date: this.state.startDate})}>
@@ -139,9 +138,7 @@ export default class ExportDataScreen extends Component {
       await RNFS.unlink(zipPath);
     }
 
-    console.log("finish cleaning");
     RNFS.mkdir(dirPath);
-    console.log("exportFollows");
     await this.exportFollows(follows, dirPath);
     let result = await RNFS.readDir(`${dirPath}`);
 
@@ -149,7 +146,7 @@ export default class ExportDataScreen extends Component {
     await zip(dirPath, zipPath)
       .then((path) => {
         console.log(`zip completed at ${path}`)
-        // this.openEmailClient(path);
+        this.openEmailClient(path);
       })
       .catch((error) => {
         console.log(error)
@@ -163,7 +160,7 @@ export default class ExportDataScreen extends Component {
   }
 
   async exportFollow(follow, path) {
-    const prefix = Util.getDateString(follow.FOL_date) + '-' + follow.FOL_B_AnimID;
+    const prefix = 'export';
 
     const followArrivals = this._getFollowArrivals(follow);
     const foods = this._getFoods(follow);
@@ -338,14 +335,23 @@ export default class ExportDataScreen extends Component {
   }
 
   async _exportObjectsToCsv(objects, filePath, csvFields, objectFields) {
-    var csvContent = csvFields.join(",");
+    const fileExists = await RNFS.exists(filePath);
+    
+    var csvContent = "";
+    if (!fileExists) {
+      csvContent += csvFields.join(",");
+    }
     assert(csvFields.length === objectFields.length);
     for (let i = 0; i < objects.length; ++i) {
       object = objects[i];
       const data = objectFields.map((of, i) => object[of].toString());
       csvContent += '\n' + data.join(",");
     }
-    await RNFS.writeFile(filePath, csvContent, 'utf8');
+    if (fileExists) {
+      await RNFS.appendFile(filePath, csvContent, 'utf8');
+    } else {
+      await RNFS.writeFile(filePath, csvContent, 'utf8');
+    }
   }
 
   openEmailClient(attachmentPath) {
