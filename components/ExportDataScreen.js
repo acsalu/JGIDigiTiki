@@ -184,6 +184,8 @@ export default class ExportDataScreen extends Component {
       let intervals = []
       let isArrivalContinues = false;
       let lastStartTime = null;
+      let lastStartFollowArrival = null;
+      let previousFollowArrival = null; // For certainty change
       let lastCertaintyOutput = Util.getCertaintyOutput(arrivals[0].certainty);
       for (const arrival of arrivals) {
         // console.log(arrival);
@@ -191,6 +193,7 @@ export default class ExportDataScreen extends Component {
           if (arrival.time.startsWith("arrive")) {
             const timePart = arrival.time.substring("arrive".length);
             lastStartTime = Util.getFollowArrivalTime(arrival.followStartTime, timePart);
+            lastStartFollowArrival = arrival;
             isArrivalContinues = true;
           }
         } else if (arrival.time.startsWith("depart")) {
@@ -203,7 +206,7 @@ export default class ExportDataScreen extends Component {
             chimpId: arrival.chimpId,
             seqNum: intervals.length + 1,
             certainty: Util.getCertaintyOutput(arrival.certainty),
-            nesting: arrival.certainty, // TODO
+            nesting: Util.getNestingOutput(lastStartFollowArrival.certainty, arrival.certainty),
             cycle: arrival.estrus,
             startTime: Util.getTimeOutput(lastStartTime), 
             endTime: Util.getTimeOutput(intervalEndTime),
@@ -223,19 +226,23 @@ export default class ExportDataScreen extends Component {
               chimpId: arrival.chimpId,
               seqNum: intervals.length + 1,
               certainty: lastCertaintyOutput,
-              nesting: arrival.certainty, // TODO
+              nesting: Util.getNestingOutput(lastStartFollowArrival.certainty, previousFollowArrival.certainty),
               cycle: arrival.estrus,
               startTime: Util.getTimeOutput(lastStartTime), 
               endTime: Util.getTimeOutput(followEndTime),
               duration: duration,
             });
+            lastStartFollowArrival = arrival;
             lastStartTime = arrival.followStartTime;
             lastCertaintyOutput = certaintyOutput;
           }
         }
+        previousFollowArrival = arrival;
       }
       followIntervals = followIntervals.concat(intervals);
     }
+
+    console.log(followIntervals);
 
     console.log(format("{0} follow arrivals / {1} foods / {2} species", followArrivals.length, foods.length, species.length));
 

@@ -93,6 +93,24 @@ export default class Util {
     }
   }
 
+  static isInNest(certaintyLabel) {
+    return (certaintyLabel == this.certaintyLabels.nestCertain) || (certaintyLabel == this.certaintyLabels.nestUncertain);
+  }
+
+  static getNestingOutput(arriveCertaintyLabel, departCertaintyLabel) {
+    const isArriveInNest = this.isInNest(arriveCertaintyLabel);
+    const isDepartInNest = this.isInNest(departCertaintyLabel);
+
+    /*
+     * 0: the row did NOT start in a nest and did NOT end in a nest
+     * 1: the row STARTED in a nest, but did NOT end in a nest
+     * 2: the row did NOT start in a nest, but ENDED in a nest
+     * 3: the row STARTED and ENDED in a nest.
+    */
+
+    return isDepartInNest * 2 + isArriveInNest;
+  }
+
   static getTimeOutput(dbTime) {
     const timeIndex = this.getDbTimeIndex(dbTime);
     const englishTime = englishTimeList[timeIndex];
