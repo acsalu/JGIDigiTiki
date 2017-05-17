@@ -207,7 +207,7 @@ export default class ExportDataScreen extends Component {
             seqNum: intervals.length + 1,
             certainty: Util.getCertaintyOutput(arrival.certainty),
             nesting: Util.getNestingOutput(lastStartFollowArrival.certainty, arrival.certainty),
-            cycle: arrival.estrus,
+            cycle: Util.getCycleOutput(arrival.estrus),
             startTime: Util.getTimeOutput(lastStartTime), 
             endTime: Util.getTimeOutput(intervalEndTime),
             duration: duration,
@@ -227,7 +227,7 @@ export default class ExportDataScreen extends Component {
               seqNum: intervals.length + 1,
               certainty: lastCertaintyOutput,
               nesting: Util.getNestingOutput(lastStartFollowArrival.certainty, previousFollowArrival.certainty),
-              cycle: arrival.estrus,
+              cycle: Util.getCycleOutput(lastStartFollowArrival.estrus),
               startTime: Util.getTimeOutput(lastStartTime), 
               endTime: Util.getTimeOutput(followEndTime),
               duration: duration,
@@ -241,8 +241,6 @@ export default class ExportDataScreen extends Component {
       }
       followIntervals = followIntervals.concat(intervals);
     }
-
-    console.log(followIntervals);
 
     console.log(format("{0} follow arrivals / {1} foods / {2} species", followArrivals.length, foods.length, species.length));
 

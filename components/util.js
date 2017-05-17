@@ -82,6 +82,10 @@ export default class Util {
     }
   }
 
+  static getCycleOutput(estrusLabel) {
+    return (estrusLabel / 100).toFixed(2);
+  }
+
   static getCertaintyLabelWithoutNesting(certaintyLabel) {
     switch (certaintyLabel) {
       case this.certaintyLabels.nestCertain:
