@@ -21,7 +21,7 @@ import SummaryScreen from './components/SummaryScreen/SummaryScreen';
 import times from './data/time-list.json';
 import defaultChimps from './data/chimp-list.json';
 import defaultFood from './data/food-list.json';
-import foodParts from './data/food-part-list.json';
+import defaultFoodParts from './data/food-part-list.json';
 import defaultSpecies from './data/species-list.json';
 import speciesNumbers from './data/species-number-list.json';
 import defaultStrings from './data/strings';
@@ -40,12 +40,14 @@ export default class JGIDigiTiki extends Component {
       swStrings: defaultStrings.sw,
       chimps: defaultChimps,
       food: defaultFood,
+      foodParts: defaultFoodParts,
       species: defaultSpecies
     };
 
     this._loadCustomData('chimp-list.json', 'chimps');
     this._loadCustomData('food-list.json', 'food');
     this._loadCustomData('species-list.json', 'species');
+    this._loadCustomData('food-part-list.json', 'foodParts');
   }
 
   componentWillMount() {
@@ -158,7 +160,7 @@ export default class JGIDigiTiki extends Component {
                   navigator={navigator}
                   chimps={chimpsInCommunity}
                   food={this.state.food}
-                  foodParts={foodParts}
+                  foodParts={this.state.foodParts}
                   species={this.state.species}
                   speciesNumbers={speciesNumbers}
                   follow={route.follow}
