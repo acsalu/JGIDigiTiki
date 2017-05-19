@@ -21,12 +21,7 @@ export default class MenuScreen extends Component {
     }
   }
 
-  componentWillMount() {
-    console.log("[MenuScreen] componentWillMount");
-  }
-
   componentDidMount() {
-    console.log("[MenuScreen] componentDidMount");
     Orientation.lockToPortrait();
     Orientation.addOrientationListener(this._orientationDidChange);
   }

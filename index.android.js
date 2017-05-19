@@ -8,6 +8,7 @@ import {
 import LocalizedStrings from 'react-native-localization';
 import assert from 'assert';
 import _ from 'lodash';
+import RNFS from 'react-native-fs';
 
 import ExportDataScreen from './components/ExportDataScreen';
 import FollowListScreen from './components/FollowListScreen';
@@ -17,29 +18,34 @@ import NewFollowScreen from './components/NewFollowScreen';
 import SettingsScreen from './components/SettingsScreen';
 import SummaryScreen from './components/SummaryScreen/SummaryScreen';
 
-import chimps from './data/chimp-list.json';
 import times from './data/time-list.json';
-import food from './data/food-list.json';
+import defaultChimps from './data/chimp-list.json';
+import defaultFood from './data/food-list.json';
 import foodParts from './data/food-part-list.json';
-import species from './data/species-list.json';
+import defaultSpecies from './data/species-list.json';
 import speciesNumbers from './data/species-number-list.json';
 import defaultStrings from './data/strings';
-
-
 
 const defaultLanguage = 'en';
 
 export default class JGIDigiTiki extends Component {
 
-  state = {
-    language: defaultLanguage,
-    localizedStrings: new LocalizedStrings(defaultStrings),
-    enStrings: defaultStrings.en,
-    swStrings: defaultStrings.sw
-  };
-
   constructor(props) {
     super(props);
+
+    this.state = {
+      language: defaultLanguage,
+      localizedStrings: new LocalizedStrings(defaultStrings),
+      enStrings: defaultStrings.en,
+      swStrings: defaultStrings.sw,
+      chimps: defaultChimps,
+      food: defaultFood,
+      species: defaultSpecies
+    };
+
+    this._loadCustomData('chimp-list.json', 'chimps');
+    this._loadCustomData('food-list.json', 'food');
+    this._loadCustomData('species-list.json', 'species');
   }
 
   componentWillMount() {
@@ -109,7 +115,21 @@ export default class JGIDigiTiki extends Component {
     }
   }
 
+  async _loadCustomData(fileName, fieldName) {
+    const filePath = RNFS.ExternalStorageDirectoryPath + '/Download/' + fileName;
+    if (await RNFS.exists(filePath)) {
+      console.log("custom data file for " + fieldName + " exists");
+      let customData = await RNFS.readFile(filePath);
+      customData = JSON.parse(customData);
+
+      let newState = {};
+      newState[fieldName] = customData;
+      this.setState(newState);
+    }
+  }
+
   render() {
+    console.log(this.state.chimps.length);
     return (
       <Navigator initialRoute={{id: 'MenuScreen', name: 'Index'}}
         renderScene={(route, navigator) => {
@@ -126,20 +146,20 @@ export default class JGIDigiTiki extends Component {
               return (
                 <NewFollowScreen
                     navigator={navigator}
-                    chimps={chimps}
+                    chimps={this.state.chimps}
                     times={times}
                     strings={this.state.localizedStrings}
                 />
               );
             case 'FollowScreen':
-              const chimpsInCommunity = chimps.filter((c) => c.community === route.follow.FOL_CL_community_id);
+              const chimpsInCommunity = this.state.chimps.filter((c) => c.community === route.follow.FOL_CL_community_id);
               return (
                 <FollowScreen
                   navigator={navigator}
                   chimps={chimpsInCommunity}
-                  food={food}
+                  food={this.state.food}
                   foodParts={foodParts}
-                  species={species}
+                  species={this.state.species}
                   speciesNumbers={speciesNumbers}
                   follow={route.follow}
                   followTime={route.followTime}
