@@ -59,12 +59,6 @@ export default class MenuScreen extends Component {
         </Button>
 
         <Button
-            onPress={() => {}}
-            style={[sharedStyles.btn, styles.menuBtn]}>
-          Endelea na ufuataji ulipoachia
-        </Button>
-
-        <Button
             onPress={() => {this.props.navigator.push({id: 'ExportDataScreen'});}}
             style={[sharedStyles.btn, styles.menuBtn]}>
           {strings.Menu_ExportData}
