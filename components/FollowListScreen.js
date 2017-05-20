@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {
     BackAndroid,
     Image,
+    ScrollView,
     TouchableHighlight,
     Text,
     View
@@ -46,7 +47,9 @@ export default class FollowListScreen extends Component {
 
     return(
       <View style={styles.container}>
+        <ScrollView style={styles.scrollView}>
         {rows}
+        </ScrollView>
       </View>
     );
   }
@@ -89,6 +92,10 @@ var styles = {
     flexDirection: 'column',
     backgroundColor:'white',
     alignItems: 'center'
+  },
+  scrollView: {
+    marginBottom: 20,
+    alignSelf: 'stretch'
   },
   followRow: {
     alignSelf: 'stretch',
