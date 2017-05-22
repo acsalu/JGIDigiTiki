@@ -149,27 +149,28 @@ export default class SummaryScreenTable extends Component {
     return(
         <View style={styles.container}>
           <ScrollView
-            style={styles.scrollView}
-            horizontal={true}
-          >
-            <View style={styles.timeGroups}>
-              {timeCol}
-            </View>
-            <View style={styles.colGroup}>
-              {maleChimpCols}
-            </View>
-            <View style={styles.colGroup}>
-              {foodCol}
-            </View>
-            <View style={styles.colGroup}>
-              {femaleChimpCols}
-            </View>
-            <View style={styles.colGroup}>
-              {speciesCol}
-            </View>
-            <View style={styles.timeGroups}>
-              {timeCol}
-            </View>
+            style={styles.verticalScrollView}>
+            <ScrollView
+              horizontal={true}>
+              <View style={styles.timeGroups}>
+                {timeCol}
+              </View>
+              <View style={styles.colGroup}>
+                {maleChimpCols}
+              </View>
+              <View style={styles.colGroup}>
+                {foodCol}
+              </View>
+              <View style={styles.colGroup}>
+                {femaleChimpCols}
+              </View>
+              <View style={styles.colGroup}>
+                {speciesCol}
+              </View>
+              <View style={styles.timeGroups}>
+                {timeCol}
+              </View>
+            </ScrollView>
           </ScrollView>
         </View>
     );
@@ -180,10 +181,11 @@ const styles = {
   container: {
     flexDirection: 'row',
     alignSelf: 'stretch',
-    paddingTop: 10
-  },
-  scrollView: {
+    paddingTop: 10,
     paddingBottom: 30
+  },
+  verticalScrollView: {
+    marginBottom: 30
   },
   chimpColTitle: {
     borderBottomWidth: 1,
