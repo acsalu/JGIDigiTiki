@@ -315,8 +315,8 @@ export default class ExportDataScreen extends Component {
       'FB_FOL_B_AnimId',
       'FB_begin_feed_time',
       'FB_end_feed_time',
-      'FB_FPL_local_food_part',
-      'FB_FL_local_food_name'
+      'FB_FL_local_food_name',
+      'FB_FPL_local_food_part'
     ];
     const objectFields = [
       'date', 'focalId', 'startTime', 'endTime', 'foodName', 'foodPart'
