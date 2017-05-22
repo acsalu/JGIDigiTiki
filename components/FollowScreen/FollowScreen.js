@@ -222,7 +222,7 @@ export default class FollowScreen extends Component {
           newFa.time = 'arriveContinues';
           newFa.isWithin5m = false;
           newFa.isNearestNeighbor = false;
-          newFa.grooming = 'none';
+          newFa.grooming = 'N';
           newFa.certainty = Util.getCertaintyLabelWithoutNesting(newFa.certainty);
           updatedFollowArrivals[k] = newFa;
         }
@@ -433,7 +433,7 @@ export default class FollowScreen extends Component {
                   estrus: parseInt(Util.estrusLabels.a),
                   isWithin5m: false,
                   isNearestNeighbor: false,
-                  grooming: 'none'
+                  grooming: 'N'
                 });
                 let newFollowArrivals = this.state.followArrivals;
                 newFollowArrivals[chimpId] = newArrival;

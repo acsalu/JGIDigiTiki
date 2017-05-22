@@ -116,7 +116,7 @@ export default class FollowArrivalTable extends Component {
         (<Panel
             title={"Grooming:"}
             options={['None', 'Give', 'Receive', 'Mutual']}
-            values={['none', 'give', 'receive', 'mutual']}
+            values={['N', 'G', 'R', 'M']}
             onValueChange={(v) => {this.props.updateArrival('grooming', v)}}
         />);
 
@@ -184,7 +184,7 @@ export default class FollowArrivalTable extends Component {
     const estrusLabel = Util.estrusLabelsDb2UserMap[followArrival.estrus];
     const isWithin5mLabel = followArrival.isWithin5m ? '✓' : '';
     const isNearestNeighborLabel = followArrival.isNearestNeighbor ? '✓' : '';
-    const groomingLabel = followArrival.grooming === 'none' ? '' : followArrival.grooming.charAt(0);
+    const groomingLabel = followArrival.grooming === 'N' ? '' : followArrival.grooming.charAt(0);
 
     if (isMale) {
       return (

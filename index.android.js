@@ -185,7 +185,7 @@ export default class JGIDigiTiki extends Component {
                   />
               );
             case 'SummaryScreen':
-              const cs = chimps.filter((c) => c.community === route.follow.FOL_CL_community_id);
+              const cs = this.state.chimps.filter((c) => c.community === route.follow.FOL_CL_community_id);
               return (
                   <SummaryScreen navigator={navigator}
                      follow={route.follow}

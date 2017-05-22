@@ -221,4 +221,8 @@ export default class Util {
     }
     return r;
   }
+
+  static hasGrooming(grooming) {
+    return grooming !== 'N';
+  }
 }

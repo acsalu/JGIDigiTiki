@@ -167,7 +167,45 @@ export default class ExportDataScreen extends Component {
     const foods = this._getFoods(follow);
     const species = this._getSpecies(follow);
 
-    followArrivalsByChimpId = {}
+    const followArrivalsByChimpId = this._groupFollowArrivalsByChimpId(followArrivals);
+    const followIntervals = this._getFollowIntervals(followArrivalsByChimpId);
+    const groomingFollowArrivals = this._getGroomingFollowArrivals(followArrivals);
+    const armsReachFollowArrivals = this._getArmsReachFollowArrivals(followArrivals);
+    const fiveMeterFollowArrivals = this._getFiveMeterFollowArrivals(followArrivals);
+
+    await this._exportFollow(follow, path, prefix);
+    await this._exportFollowArrivals(followIntervals, path, prefix);
+    await this._exportFoods(foods, path, prefix);
+    await this._exportSpecies(species, path, prefix);
+    await this._exportGrooming(groomingFollowArrivals, path, prefix);
+    await this._exportArmsReach(armsReachFollowArrivals, path, prefix);
+    await this._exportFiveMeter(fiveMeterFollowArrivals, path, prefix);
+  }
+
+  _getFollowArrivals(follow) {
+    let data = this._getFollowData(follow, 'FollowArrival');
+    let followArrivals = [];
+    for (let i = 0; i < data.length; ++i) {
+      followArrivals.push(data[i]);
+    }
+    return followArrivals;
+  }
+
+  _getFoods(follow) {
+    return this._getFollowData(follow, 'Food');
+  }
+
+  _getSpecies(follow) {
+    return this._getFollowData(follow, 'Species');
+  }
+
+  _getFollowData(follow, className) {
+    return realm.objects(className)
+        .filtered('focalId = $0 AND date = $1', follow.FOL_B_AnimID, follow.FOL_date);
+  }
+
+  _groupFollowArrivalsByChimpId(followArrivals) {
+    let followArrivalsByChimpId = {}
     for (let i = 0; i < followArrivals.length; ++i) {
       const fa = followArrivals[i];
       const chimpId = fa.chimpId;
@@ -176,10 +214,12 @@ export default class ExportDataScreen extends Component {
       }
       followArrivalsByChimpId[chimpId].push(fa);
     }
-    
+    return followArrivalsByChimpId;
+  }
+
+  _getFollowIntervals(followArrivalsByChimpId) {
     let followIntervals = [];
     for (const chimpId in followArrivalsByChimpId) {
-      console.log(chimpId);
       arrivals = followArrivalsByChimpId[chimpId];
       let intervals = []
       let isArrivalContinues = false;
@@ -241,30 +281,41 @@ export default class ExportDataScreen extends Component {
       }
       followIntervals = followIntervals.concat(intervals);
     }
-
-    console.log(format("{0} follow arrivals / {1} foods / {2} species", followArrivals.length, foods.length, species.length));
-
-    await this._exportFollow(follow, path, prefix);
-    await this._exportFollowArrivals(followIntervals, path, prefix);
-    await this._exportFoods(foods, path, prefix);
-    await this._exportSpecies(species, path, prefix);
+    return followIntervals;
   }
 
-  _getFollowArrivals(follow) {
-    return this._getFollowData(follow, 'FollowArrival');
+  _getGroomingFollowArrivals(followArrivals) {
+    return followArrivals
+      .filter((fa) => Util.hasGrooming(fa.grooming))
+      .map((fa, i) => ({
+        date: Util.getDateString(fa.date),
+        focalId: fa.focalId,
+        startTime: Util.getTimeOutput(fa.followStartTime),
+        chimpId: fa.chimpId,
+        grooming: fa.grooming
+      }));
   }
 
-  _getFoods(follow) {
-    return this._getFollowData(follow, 'Food');
+  _getArmsReachFollowArrivals(followArrivals) {
+    return followArrivals
+      .filter((fa) => fa.isNearestNeighbor)
+      .map((fa, i) => ({
+        date: Util.getDateString(fa.date),
+        focalId: fa.focalId,
+        startTime: Util.getTimeOutput(fa.followStartTime),
+        chimpId: fa.chimpId
+      }));
   }
 
-  _getSpecies(follow) {
-    return this._getFollowData(follow, 'Species');
-  }
-
-  _getFollowData(follow, className) {
-    return realm.objects(className)
-        .filtered('focalId = $0 AND date = $1', follow.FOL_B_AnimID, follow.FOL_date);
+  _getFiveMeterFollowArrivals(followArrivals) {
+    return followArrivals
+      .filter((fa) => fa.isWithin5m)
+      .map((fa, i) => ({
+        date: Util.getDateString(fa.date),
+        focalId: fa.focalId,
+        startTime: Util.getTimeOutput(fa.followStartTime),
+        chimpId: fa.chimpId
+      }));
   }
 
   async _exportFollow(follow, path, prefix) {
@@ -340,6 +391,52 @@ export default class ExportDataScreen extends Component {
     ];
 
     await this._exportObjectsToCsv(species, csvFilePath, csvFields, objectFields);
+  }
+
+  async _exportGrooming(followArrivals, path, prefix) {
+    const csvFilePath = `${path}/${prefix}-groom-scan-15.csv`;
+    const csvFields = [
+      'GRM15_date',
+      'GRM15_focal',
+      'GRM15_scan_time',
+      'GRM15_partner_ID',
+      'GRM15_direction'
+    ];
+    const objectFields = [
+      'date', 'focalId', 'startTime', 'chimpId', 'grooming'
+    ];
+
+    await this._exportObjectsToCsv(followArrivals, csvFilePath, csvFields, objectFields);
+  }
+
+  async _exportArmsReach(followArrivals, path, prefix) {
+    const csvFilePath = `${path}/${prefix}-arms-reach.csv`;
+    const csvFields = [
+      'AR_date',
+      'AR_focal',
+      'AR_scan_time',
+      'AR_partner_ID'
+    ];
+    const objectFields = [
+      'date', 'focalId', 'startTime', 'chimpId'
+    ];
+
+    await this._exportObjectsToCsv(followArrivals, csvFilePath, csvFields, objectFields);
+  }
+
+  async _exportFiveMeter(followArrivals, path, prefix) {
+    const csvFilePath = `${path}/${prefix}-five-meter.csv`;
+    const csvFields = [
+      '5M_date',
+      '5M_focal',
+      '5M_scan_time',
+      '5M_partner_ID'
+    ];
+    const objectFields = [
+      'date', 'focalId', 'startTime', 'chimpId'
+    ];
+
+    await this._exportObjectsToCsv(followArrivals, csvFilePath, csvFields, objectFields);
   }
 
   async _exportObjectsToCsv(objects, filePath, csvFields, objectFields) {
