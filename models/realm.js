@@ -49,7 +49,9 @@ class Species {}
 Species.className = 'Species';
 Species.schema = {
   name: Species.className,
+  primaryKey: 'id',
   properties: {
+    id: 'int',
     date: 'date', // date
     startTime: 'string', // startTime
     endTime: 'string', // endTime
@@ -63,7 +65,9 @@ class Food {}
 Food.className = 'Food';
 Food.schema = {
   name: Food.className,
+  primaryKey: 'id',
   properties: {
+    id: 'int',
     date: 'date',
     startTime: 'string',
     endTime: 'string',

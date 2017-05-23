@@ -16,20 +16,18 @@ export default class ItemTrackerModal extends Component {
     endTime: this.props.endTime,
     mainSelection: this.props.mainSelection,
     secondarySelection: this.props.secondarySelection,
-    isEditing: this.props.startTime !== null
+    isEditing: this.props.startTime !== null,
+    itemId: this.props.itemId ? this.props.itemId : null
   };
 
   componentWillReceiveProps(nextProps) {
-    // You don't have to do this check first, but it can help prevent an unneeded render
-    // if (nextProps.startTime !== this.state.startTime) {
-    //   this.setState({ startTime: nextProps.startTime });
-    //
     this.setState({
       startTime: nextProps.initialStartTime,
       endTime: nextProps.initialEndTime,
       mainSelection: nextProps.initialMainSelection,
       secondarySelection: nextProps.initialSecondarySelection,
-      isEditing: nextProps.initialStartTime !== null
+      isEditing: nextProps.initialStartTime !== null,
+      itemId: nextProps.itemId ? nextProps.itemId : null
     });
   }
 
@@ -76,6 +74,7 @@ export default class ItemTrackerModal extends Component {
                   }
                   onPress={() => {
                     const data = {
+                      itemId: this.state.itemId,
                       mainSelection: this.state.mainSelection,
                       secondarySelection: this.state.secondarySelection,
                       startTime: this.state.startTime,

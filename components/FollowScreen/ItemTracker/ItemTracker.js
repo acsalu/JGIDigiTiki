@@ -19,13 +19,20 @@ export default class ItemTracker extends Component {
   render() {
 
     const activePickerItems = [this.props.activeListTitle].concat(this.props.activeItems)
-        .map((name, i) => {
-          return (<Picker.Item key={i} label={name} value={i !== 0 ? name : null} />);
+        .map((item, i) => {
+          console.log(item);
+          return (<Picker.Item 
+            key={i} 
+            label={i !== 0 ? item.name : item} 
+            value={i !== 0 ? item.id : null} />);
         });
 
     const finishedPickerItems = [this.props.finishedListTitle].concat(this.props.finishedItems)
-        .map((name, i) => {
-          return (<Picker.Item key={i} label={name} value={i !== 0 ? name : null} />);
+        .map((item, i) => {
+          return (<Picker.Item 
+            key={i} 
+            label={i !== 0 ? item.name : item} 
+            value={i !== 0 ? item.id : null} />);
         });
 
     return (

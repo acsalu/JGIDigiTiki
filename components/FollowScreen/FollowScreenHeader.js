@@ -19,6 +19,7 @@ import util from '../util';
 
 export default class FollowScreenHeader extends Component {
   render() {
+
     const strings = this.props.strings;
     const isFirstFollow = this.props.followTime === this.props.follow.FOL_time_begin;
 
