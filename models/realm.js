@@ -82,11 +82,15 @@ Location.className = 'Location';
 Location.schema = {
   name: Location.className,
   properties: {
+    date: 'date',
+    focalId: 'string',
+    followStartTime: 'string',
     timestamp: 'int',
     longitude: 'float',
     latitude: 'float',
     altitude: 'float',
-    accuracy: 'float'
+    accuracy: 'float',
+    community: 'string'
   }
 }
 

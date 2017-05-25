@@ -14,6 +14,7 @@ import format from 'string-format';
 import sharedStyles from './SharedStyles';
 import RNFS from 'react-native-fs';
 import realm from '../models/realm';
+import distance from 'gps-distance';
 
 const Mailer = NativeModules.RNMail;
 import { zip } from 'react-native-zip-archive';
@@ -166,12 +167,16 @@ export default class ExportDataScreen extends Component {
     const followArrivals = this._getFollowArrivals(follow);
     const foods = this._getFoods(follow);
     const species = this._getSpecies(follow);
+    const locations = this._getLocations(follow);
 
     const followArrivalsByChimpId = this._groupFollowArrivalsByChimpId(followArrivals);
     const followIntervals = this._getFollowIntervals(followArrivalsByChimpId);
     const groomingFollowArrivals = this._getGroomingFollowArrivals(followArrivals);
     const armsReachFollowArrivals = this._getArmsReachFollowArrivals(followArrivals);
     const fiveMeterFollowArrivals = this._getFiveMeterFollowArrivals(followArrivals);
+    const locationOutputs = this._getLocationOutputs(locations);
+
+    console.log(locationOutputs);
 
     await this._exportFollow(follow, path, prefix);
     await this._exportFollowArrivals(followIntervals, path, prefix);
@@ -180,6 +185,7 @@ export default class ExportDataScreen extends Component {
     await this._exportGrooming(groomingFollowArrivals, path, prefix);
     await this._exportArmsReach(armsReachFollowArrivals, path, prefix);
     await this._exportFiveMeter(fiveMeterFollowArrivals, path, prefix);
+    await this._exportMapLocation(locationOutputs, path, prefix);
   }
 
   _getFollowArrivals(follow) {
@@ -197,6 +203,10 @@ export default class ExportDataScreen extends Component {
 
   _getSpecies(follow) {
     return this._getFollowData(follow, 'Species');
+  }
+
+  _getLocations(follow) {
+    return this._getFollowData(follow, 'Location');
   }
 
   _getFollowData(follow, className) {
@@ -318,6 +328,34 @@ export default class ExportDataScreen extends Component {
       }));
   }
 
+  _getLocationOutputs(locations) {
+    locations = _.values(locations);
+    const dists = [];
+    for (let i = 0; i < locations.length; ++i) {
+      if (i === locations.length - 1) {
+        dists.push(0.0);
+        break;
+      }
+      const from = locations[i];
+      const to = locations[i + 1];
+      const d = distance(from.latitude, from.longitude, to.latitude, to.longitude);
+      dists.push(d * 1000.0);
+    }
+
+    return locations.map((loc, i) =>
+      ({
+        date: Util.getDateString(loc.date),
+        focalId: loc.focalId,
+        followStartTime: Util.getTimeOutput(loc.followStartTime),
+        seqNum: i + 1,
+        distanceToNext: dists[i],
+        x: loc.longitude,
+        y: loc.latitude,
+        communityId: Util.getCommunityIdOutput(loc.community)
+      })
+    );
+  }
+
   async _exportFollow(follow, path, prefix) {
     let followOutput = _.extend({}, follow);
     followOutput.FOL_CL_community_id = Util.getCommunityIdOutput(followOutput.FOL_CL_community_id);
@@ -437,6 +475,25 @@ export default class ExportDataScreen extends Component {
     ];
 
     await this._exportObjectsToCsv(followArrivals, csvFilePath, csvFields, objectFields);
+  }
+
+  async _exportMapLocation(locationOutputs, path, prefix) {
+    const csvFilePath = `${path}/${prefix}-map-location.csv`;
+    const csvFields = [
+      'FML_FOL_date',
+      'FML_FOL_B_focal_AnimID',
+      'FML_time',
+      'FML_seq_num',
+      'FML_x_coord',
+      'FML_y_coord',
+      'FML_meters_to_next_seq_num',
+      'FML_community_id',
+    ];
+    const objectFields = [
+      'date', 'focalId', 'followStartTime', 'seqNum', 'x', 'y', 'distanceToNext','communityId'
+    ];
+
+    await this._exportObjectsToCsv(locationOutputs, csvFilePath, csvFields, objectFields);
   }
 
   async _exportObjectsToCsv(objects, filePath, csvFields, objectFields) {

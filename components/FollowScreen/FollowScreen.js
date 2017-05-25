@@ -28,21 +28,6 @@ export default class FollowScreen extends Component {
 
   componentDidMount() {
     Orientation.lockToPortrait();
-    navigator.geolocation.getCurrentPosition(
-        (position) => {
-          realm.write(() => {
-            const newLocation = realm.create('Location', {
-              timestamp: position.timestamp,
-              longitude: position.coords.longitude,
-              latitude: position.coords.latitude,
-              altitude: position.coords.altitude,
-              accuracy: position.coords.accuracy
-            });
-          });
-        },
-        (error) => alert(JSON.stringify(error)),
-        {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
-    );
   }
 
   componentWillUnmount() {
@@ -55,6 +40,34 @@ export default class FollowScreen extends Component {
 
     const focalId = this.props.follow.FOL_B_AnimID;
     const date = this.props.follow.FOL_date;
+    const community = this.props.follow.FOL_CL_community_id;
+    const followStartTime = this.props.followTime;
+
+    const existingLocations = realm.objects('Location')
+            .filtered('focalId = $0 AND date = $1 AND followStartTime = $2', 
+              focalId, date, followStartTime);
+
+    if (existingLocations.length === 0) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          realm.write(() => {
+            const newLocation = realm.create('Location', {
+              date: date,
+              focalId: focalId,
+              followStartTime: followStartTime,
+              community: community,
+              timestamp: position.timestamp,
+              longitude: position.coords.longitude,
+              latitude: position.coords.latitude,
+              altitude: position.coords.altitude,
+              accuracy: position.coords.accuracy
+            });
+          });
+        },
+        (error) => alert(JSON.stringify(error)),
+        {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
+      );
+    }
 
     if (this.props.followArrivals !== undefined && this.props.followArrivals !== null) {
       // Write follows from previous into db
@@ -65,7 +78,7 @@ export default class FollowScreen extends Component {
           
           const followArrivals = realm.objects('FollowArrival')
             .filtered('focalId = $0 AND date = $1 AND followStartTime = $2 AND chimpId = $3', 
-              focalId, date, this.props.followTime, fa.chimpId);
+              focalId, date, followStartTime, fa.chimpId);
           if (followArrivals.length === 0) {
             const newArrival = realm.create('FollowArrival', {
               date: this.props.follow.FOL_date,
