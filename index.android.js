@@ -10,12 +10,12 @@ import assert from 'assert';
 import _ from 'lodash';
 import RNFS from 'react-native-fs';
 
-import ExportDataScreen from './components/ExportDataScreen';
-import FollowListScreen from './components/FollowListScreen';
+import ExportDataScreen from './components/ExportDataScreen/ExportDataScreen';
+import FollowListScreen from './components/FollowListScreen/FollowListScreen';
 import FollowScreen from './components/FollowScreen/FollowScreen';
-import MenuScreen from './components/MenuScreen';
-import NewFollowScreen from './components/NewFollowScreen';
-import SettingsScreen from './components/SettingsScreen';
+import MenuScreen from './components/MenuScreen/MenuScreen';
+import NewFollowScreen from './components/NewFollowScreen/NewFollowScreen';
+import SettingsScreen from './components/SettingsScreen/SettingsScreen';
 import SummaryScreen from './components/SummaryScreen/SummaryScreen';
 
 import times from './data/time-list.json';

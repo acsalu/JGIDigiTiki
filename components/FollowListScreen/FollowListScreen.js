@@ -9,9 +9,9 @@ import {
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 
-import realm from '../models/realm';
-import strings from '../data/strings';
-import Util from './util';
+import realm from '../../models/realm';
+import strings from '../../data/strings';
+import Util from '../util';
 
 export default class FollowListScreen extends Component {
 
@@ -79,7 +79,7 @@ class FollowListRow extends Component {
                 <Text style={styles.followRowDescriptionText}>{strings.NewFollow_ResearcherName}: {researcherName}</Text>
               </View>
             </View>
-            <Image style={styles.followRowArrow} source={require('../img/right-arrow.png')} />
+            <Image style={styles.followRowArrow} source={require('../../img/right-arrow.png')} />
           </View>
         </TouchableHighlight>
     );
@@ -130,6 +130,5 @@ var styles = {
   },
   followRowArrow: {
     marginTop: 20
-  }
-
+  },
 };

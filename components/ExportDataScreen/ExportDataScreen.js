@@ -11,15 +11,15 @@ import {
 import Button from 'react-native-button';
 import _ from 'lodash';
 import format from 'string-format';
-import sharedStyles from './SharedStyles';
+import sharedStyles from '../SharedStyles';
 import RNFS from 'react-native-fs';
-import realm from '../models/realm';
+import realm from '../../models/realm';
 import distance from 'gps-distance';
 
 const Mailer = NativeModules.RNMail;
 import { zip } from 'react-native-zip-archive';
 import Orientation from 'react-native-orientation';
-import Util from './util';
+import Util from '../util';
 
 import assert from 'assert';
 

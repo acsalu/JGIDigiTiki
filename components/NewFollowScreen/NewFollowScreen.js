@@ -13,9 +13,9 @@ import {
 import Button from 'react-native-button';
 import Orientation from 'react-native-orientation';
 
-import realm from '../models/realm';
-import sharedStyles from './SharedStyles';
-import Util from './util';
+import realm from '../../models/realm';
+import sharedStyles from '../SharedStyles';
+import Util from '../util';
 
 export default class NewFollowScreen extends Component {
 

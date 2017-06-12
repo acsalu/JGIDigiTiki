@@ -10,7 +10,7 @@ import {
 import { RadioButtons } from 'react-native-radio-buttons'
 import assert from 'assert';
 
-import SharedStyles from './SharedStyles';
+import SharedStyles from '../SharedStyles';
 
 class LocalizedTextSettingRow extends Component {
 

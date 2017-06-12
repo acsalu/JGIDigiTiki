@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import Button from 'react-native-button';
 
-import sharedStyles from '../../SharedStyles';
+import sharedStyles from '../SharedStyles';
 
 export default class ItemTracker extends Component {
   state = {
