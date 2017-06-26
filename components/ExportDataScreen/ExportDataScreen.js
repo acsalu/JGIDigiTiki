@@ -11,15 +11,15 @@ import {
 import Button from 'react-native-button';
 import _ from 'lodash';
 import format from 'string-format';
-import sharedStyles from './SharedStyles';
+import sharedStyles from '../SharedStyles';
 import RNFS from 'react-native-fs';
-import realm from '../models/realm';
+import realm from '../../models/realm';
 import distance from 'gps-distance';
 
 const Mailer = NativeModules.RNMail;
 import { zip } from 'react-native-zip-archive';
 import Orientation from 'react-native-orientation';
-import Util from './util';
+import Util from '../util';
 
 import assert from 'assert';
 
@@ -57,7 +57,7 @@ export default class ExportDataScreen extends Component {
   render() {
     const strings = this.props.strings;
     const follows = realm.objects('Follow')
-        .filtered('FOL_date >= $0 AND FOL_date <= $1', this.state.startDate, this.state.endDate);
+        .filtered('date >= $0 AND date <= $1', this.state.startDate, this.state.endDate);
 
     // create a path you want to write to
     const dirPath = RNFS.ExternalDirectoryPath + '/follow-data';
@@ -211,7 +211,7 @@ export default class ExportDataScreen extends Component {
 
   _getFollowData(follow, className) {
     return realm.objects(className)
-        .filtered('focalId = $0 AND date = $1', follow.FOL_B_AnimID, follow.FOL_date);
+        .filtered('focalId = $0 AND date = $1', follow.focalId, follow.date);
   }
 
   _groupFollowArrivalsByChimpId(followArrivals) {
@@ -358,7 +358,7 @@ export default class ExportDataScreen extends Component {
 
   async _exportFollow(follow, path, prefix) {
     let followOutput = _.extend({}, follow);
-    followOutput.FOL_CL_community_id = Util.getCommunityIdOutput(followOutput.FOL_CL_community_id);
+    followOutput.communityId = Util.getCommunityIdOutput(followOutput.community);
     const csvFilePath = `${path}/${prefix}-follow.csv`;
     const csvFields = [
       'FOL_date',
@@ -369,6 +369,10 @@ export default class ExportDataScreen extends Component {
       'FOL_day',
       'FOL_month',
       'FOL_year'
+    ];
+
+    const objectFields = [
+      'date', 'focalId', 'communityId', 'startTime', 'researcher', 'day', 'month', 'year'
     ];
 
     await this._exportObjectsToCsv([followOutput], csvFilePath, csvFields, csvFields);

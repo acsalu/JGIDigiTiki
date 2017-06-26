@@ -9,9 +9,9 @@ import {
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 
-import realm from '../models/realm';
-import strings from '../data/strings';
-import Util from './util';
+import realm from '../../models/realm';
+import strings from '../../data/strings';
+import Util from '../util';
 
 export default class FollowListScreen extends Component {
 
@@ -59,10 +59,10 @@ class FollowListRow extends Component {
   render() {
     const strings = this.props.strings;
     const follow = this.props.follow;
-    const focalChimpId = follow.FOL_B_AnimID;
-    const researcherName = follow.FOL_am_observer1;
-    const date = this.props.follow.FOL_date;
-    const beginTime = this.props.follow.FOL_time_begin;
+    const focalChimpId = follow.focalId;
+    const researcherName = follow.amObserver1;
+    const date = this.props.follow.date;
+    const timeStart = this.props.follow.timeStart;
 
     const dateString = Util.getDateString(date);
 
@@ -73,13 +73,13 @@ class FollowListRow extends Component {
         >
           <View style={styles.followRowInnerWrap}>
             <View style={styles.followRowTextBlock}>
-              <Text style={styles.followRowMainText}>{dateString} {beginTime}</Text>
+              <Text style={styles.followRowMainText}>{dateString} {timeStart}</Text>
               <View style={styles.followRowDescriptionGroup}>
                 <Text style={styles.followRowDescriptionText}>{strings.NewFollow_Target}: {focalChimpId}</Text>
                 <Text style={styles.followRowDescriptionText}>{strings.NewFollow_ResearcherName}: {researcherName}</Text>
               </View>
             </View>
-            <Image style={styles.followRowArrow} source={require('../img/right-arrow.png')} />
+            <Image style={styles.followRowArrow} source={require('../../img/right-arrow.png')} />
           </View>
         </TouchableHighlight>
     );
@@ -130,6 +130,5 @@ var styles = {
   },
   followRowArrow: {
     marginTop: 20
-  }
-
+  },
 };

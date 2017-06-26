@@ -8,7 +8,7 @@ import {
 import Orientation from 'react-native-orientation';
 import Button from 'react-native-button';
 
-import sharedStyles from './SharedStyles';
+import sharedStyles from '../SharedStyles';
 
 export default class MenuScreen extends Component {
 
@@ -30,13 +30,13 @@ export default class MenuScreen extends Component {
     const strings = this.props.strings;
 
     return(
-      <Image source={require('../img/chimp.png')} style={styles.container}>
+      <Image source={require('../../img/chimp.png')} style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.headerText}>Jane Goodall Institute</Text>
           <TouchableHighlight
             onPress={() => {this.props.navigator.push({id: 'SettingsScreen'});}}>
             <View style={styles.settingsButtonWrapper}>
-              <Image source={require('../img/settings.png')}></Image>
+              <Image source={require('../../img/settings.png')}></Image>
             </View>
           </TouchableHighlight>
         </View>

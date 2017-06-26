@@ -38,9 +38,9 @@ export default class FollowScreen extends Component {
 
     super(props);
 
-    const focalId = this.props.follow.FOL_B_AnimID;
-    const date = this.props.follow.FOL_date;
-    const community = this.props.follow.FOL_CL_community_id;
+    const focalId = this.props.follow.focalId;
+    const date = this.props.follow.date;
+    const community = this.props.follow.community;
     const followStartTime = this.props.followTime;
 
     const existingLocations = realm.objects('Location')
@@ -81,9 +81,9 @@ export default class FollowScreen extends Component {
               focalId, date, followStartTime, fa.chimpId);
           if (followArrivals.length === 0) {
             const newArrival = realm.create('FollowArrival', {
-              date: this.props.follow.FOL_date,
+              date: this.props.follow.date,
               followStartTime: this.props.followTime,
-              focalId: this.props.follow.FOL_B_AnimID,
+              focalId: this.props.follow.focalId,
               chimpId: fa.chimpId,
               time: fa.time,
               certainty: fa.certainty,
@@ -261,7 +261,7 @@ export default class FollowScreen extends Component {
 
   render() {
     const strings = this.props.strings;
-    const beginFollowTime = this.props.follow.FOL_time_begin;
+    const beginFollowTime = this.props.follow.startTime;
     const beginFollowTimeIndex = this.props.times.indexOf(beginFollowTime);
     const followTimeIndex = this.props.times.indexOf(this.props.followTime);
     const previousFollowTime = followTimeIndex !== beginFollowTimeIndex ? this.props.times[followTimeIndex - 1] : null;
@@ -293,8 +293,8 @@ export default class FollowScreen extends Component {
               realm.write(() => {
                 if (!isEditing) {
                   let objectDict = {
-                    date: this.props.follow.FOL_date,
-                    focalId: this.props.follow.FOL_B_AnimID,
+                    date: this.props.follow.date,
+                    focalId: this.props.follow.focalId,
                     startTime: data.startTime,
                     endTime: data.endTime,
                     id: new Date().getUTCMilliseconds()
@@ -429,17 +429,17 @@ export default class FollowScreen extends Component {
             chimps={this.props.chimps}
             maleChimpsSorted={this.state.maleChimpsSorted}
             femaleChimpsSorted={this.state.femaleChimpsSorted}
-            focalChimpId={this.props.follow.FOL_B_AnimID}
-            followDate={this.props.follow.FOL_date}
+            focalChimpId={this.props.follow.focalId}
+            followDate={this.props.follow.date}
             followArrivals={this.state.followArrivals}
             selectedChimp={this.state.selectedChimp}
             onSelectChimp={(c) => {this.setState({selectedChimp: c});}}
             createNewArrival={(chimpId, time) => {
               realm.write(() => {
                 const newArrival = realm.create('FollowArrival', {
-                  date: this.props.follow.FOL_date,
+                  date: this.props.follow.date,
                   followStartTime: this.props.followTime,
-                  focalId: this.props.follow.FOL_B_AnimID,
+                  focalId: this.props.follow.focalId,
                   chimpId: chimpId,
                   time: time,
                   certainty: parseInt(Util.certaintyLabels.certain),

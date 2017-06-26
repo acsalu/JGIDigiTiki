@@ -13,9 +13,9 @@ import {
 import Button from 'react-native-button';
 import Orientation from 'react-native-orientation';
 
-import realm from '../models/realm';
-import sharedStyles from './SharedStyles';
-import Util from './util';
+import realm from '../../models/realm';
+import sharedStyles from '../SharedStyles';
+import Util from '../util';
 
 export default class NewFollowScreen extends Component {
 
@@ -102,6 +102,19 @@ export default class NewFollowScreen extends Component {
     return [defaultPickerItem].concat(chimpPickerItems);
   }
 
+  packChimps = (chimps) => {
+    return chimps.map((c, i) => realm.create('Chimp', {name: c.name, sex: c.sex}));
+  }
+
+  packValuePairs = (valuePairs) => {
+    console.log('*******');
+    console.log(valuePairs);
+    return valuePairs.map((p, i) => realm.create('ValuePairObject', {
+      dbValue: p[0] === null ? 'NULL' : p[0],
+      userValue: p[1]
+    }));
+  }
+
   render() {
     const strings = this.props.strings;
     const communityPickerItems = this.getCommunityPickerItems();
@@ -180,16 +193,26 @@ export default class NewFollowScreen extends Component {
                 const year = this.state.date.getYear() + 1900;
                 const month = this.state.date.getMonth() + 1;
                 const day = this.state.date.getDate();
+
                 realm.write(() => {
+                  const chimps = this.packChimps(this.props.chimps.filter((c) => c.community === this.state.community));
+                  const food = this.packValuePairs(this.props.food);
+                  const foodParts = this.packValuePairs(this.props.foodParts);
+                  const species = this.packValuePairs(this.props.species);
+
                   const newFollow = realm.create('Follow', {
-                     FOL_date: this.state.date,
-                     FOL_B_AnimID: this.state.focalChimpId,
-                     FOL_CL_community_id: this.state.community,
-                     FOL_time_begin: this.state.beginTime,
-                     FOL_am_observer1: this.state.researcher,
-                     FOL_day: day,
-                     FOL_month: month,
-                     FOL_year: year
+                     date: this.state.date,
+                     focalId: this.state.focalChimpId,
+                     community: this.state.community,
+                     startTime: this.state.beginTime,
+                     amObserver1: this.state.researcher,
+                     chimps: chimps,
+                     food: food,
+                     foodParts: foodParts,
+                     species: species,
+                     day: day,
+                     month: month,
+                     year: year
                   });
                 });
 

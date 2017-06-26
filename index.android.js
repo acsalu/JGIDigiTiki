@@ -10,12 +10,12 @@ import assert from 'assert';
 import _ from 'lodash';
 import RNFS from 'react-native-fs';
 
-import ExportDataScreen from './components/ExportDataScreen';
-import FollowListScreen from './components/FollowListScreen';
+import ExportDataScreen from './components/ExportDataScreen/ExportDataScreen';
+import FollowListScreen from './components/FollowListScreen/FollowListScreen';
 import FollowScreen from './components/FollowScreen/FollowScreen';
-import MenuScreen from './components/MenuScreen';
-import NewFollowScreen from './components/NewFollowScreen';
-import SettingsScreen from './components/SettingsScreen';
+import MenuScreen from './components/MenuScreen/MenuScreen';
+import NewFollowScreen from './components/NewFollowScreen/NewFollowScreen';
+import SettingsScreen from './components/SettingsScreen/SettingsScreen';
 import SummaryScreen from './components/SummaryScreen/SummaryScreen';
 
 import times from './data/time-list.json';
@@ -130,6 +130,20 @@ export default class JGIDigiTiki extends Component {
     }
   }
 
+  _unpackChimps(chimps) {
+    return chimps.map((c, i) => ({
+     name: c.name,
+     sex: c.sex
+    }));
+  }
+
+  _unpackValuePairs(valuePairs) {
+    return valuePairs.map((vp, i) => [
+      vp.dbValue === 'NULL' ? null : vp.dbValue,
+      vp.userValue
+    ]);
+  }
+
   render() {
     console.log(this.state.chimps.length);
     return (
@@ -151,17 +165,23 @@ export default class JGIDigiTiki extends Component {
                     chimps={this.state.chimps}
                     times={times}
                     strings={this.state.localizedStrings}
+                    food={this.state.food}
+                    foodParts={this.state.foodParts}
+                    species={this.state.species}
                 />
               );
             case 'FollowScreen':
-              const chimpsInCommunity = this.state.chimps.filter((c) => c.community === route.follow.FOL_CL_community_id);
+              const chimps = this._unpackChimps(route.follow.chimps);
+              const food = this._unpackValuePairs(route.follow.food);
+              const foodParts = this._unpackValuePairs(route.follow.foodParts);
+              const species = this._unpackValuePairs(route.follow.chimps);
               return (
                 <FollowScreen
                   navigator={navigator}
-                  chimps={chimpsInCommunity}
-                  food={this.state.food}
-                  foodParts={this.state.foodParts}
-                  species={this.state.species}
+                  chimps={chimps}
+                  food={food}
+                  foodParts={foodParts}
+                  species={species}
                   speciesNumbers={speciesNumbers}
                   follow={route.follow}
                   followTime={route.followTime}
@@ -185,7 +205,7 @@ export default class JGIDigiTiki extends Component {
                   />
               );
             case 'SummaryScreen':
-              const cs = this.state.chimps.filter((c) => c.community === route.follow.FOL_CL_community_id);
+              const cs = this._unpackChimps(route.follow.chimps);
               return (
                   <SummaryScreen navigator={navigator}
                      follow={route.follow}
