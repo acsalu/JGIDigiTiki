@@ -35,15 +35,15 @@ export default class SummaryScreen extends Component {
   render() {
 
     const followArrivals = realm.objects('FollowArrival')
-        .filtered('focalId = $0 AND date = $1', this.props.follow.FOL_B_AnimID, this.props.follow.FOL_date);
+        .filtered('focalId = $0 AND date = $1', this.props.follow.focalId, this.props.follow.date);
 
-    let followStartTimes = [this.props.follow.FOL_time_begin];
+    let followStartTimes = [this.props.follow.startTime];
     followStartTimes = followStartTimes.concat(followArrivals.map((fa, i) => fa.followStartTime));
     followStartTimes.sort();
-    const lastFollowStartTime = followStartTimes.length === 0 ? this.props.follow.FOL_time_begin : followStartTimes.pop();
+    const lastFollowStartTime = followStartTimes.length === 0 ? this.props.follow.startTime : followStartTimes.pop();
 
-    const followStartTime = this.props.follow.FOL_time_begin;
-    const followDate = this.props.follow.FOL_date;
+    const followStartTime = this.props.follow.startTime;
+    const followDate = this.props.follow.date;
 
     let followArrivalSummary = {};
     for (let i = 0; i < this.props.chimps.length; ++i) {
@@ -61,14 +61,14 @@ export default class SummaryScreen extends Component {
     return(
         <View style={styles.container}>
           <SummaryScreenHeader
-            focalChimpId={this.props.follow.FOL_B_AnimID}
-            researcherName={this.props.follow.FOL_am_observer1}
+            focalChimpId={this.props.follow.focalId}
+            researcherName={this.props.follow.amObserver1}
             followDate={followDate}
             followStartTime={followStartTime}
             followEndTime={lastFollowStartTime}
           />
           <SummaryScreenTable
-            focalChimpId={this.props.follow.FOL_B_AnimID}
+            focalChimpId={this.props.follow.focalId}
             chimps={this.props.chimps}
             followStartTime={followStartTime}
             followEndTime={lastFollowStartTime}

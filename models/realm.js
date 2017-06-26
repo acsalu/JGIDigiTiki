@@ -1,28 +1,46 @@
 import Realm from 'realm';
 
+let Chimp = {
+  name: 'Chimp',
+  properties: {
+    'name': 'string',
+    'sex': 'string'
+  }
+}
+
+let ValuePairObjectSchema = {
+    name: 'ValuePairObject',
+    properties: { 
+      dbValue: 'string',
+      userValue: 'string'
+    }
+};
+
 class Follow {}
 Follow.className = 'Follow';
 Follow.schema = {
   name: Follow.className,
   properties: {
-    FOL_date: 'date',
-    FOL_B_AnimID: 'string',
-    FOL_CL_community_id: 'string',
-    FOL_time_begin: 'string',
-    FOL_time_end: {type: 'string', optional: true},
-    FOL_flag_begin_in_nest: {type: 'bool', optional: true},
-    FOL_flag_end_in_nest: {type: 'bool', optional: true},
-    FOL_duration: {type: 'int', optional: true},
-    FOL_distance_traveled: {type: 'int', optional: true},
-    FOL_am_observer1: 'string',
-    FOL_am_observer2: {type: 'string', optional: true},
-    FOL_pm_observer1: {type: 'string', optional: true},
-    FOL_pm_observer2: {type: 'string', optional: true},
-    FOL_study_code1: {type: 'string', optional: true},
-    FOL_study_code2: {type: 'string', optional: true},
-    FOL_day: 'int',
-    FOL_month: 'int',
-    FOL_year: 'int'
+    date: 'date',
+    focalId: 'string',
+    community: 'string',
+    startTime: 'string',
+    endTime: {type: 'string', optional: true},
+    day: 'int',
+    month: 'int',
+    year: 'int',
+    chimps: {type: 'list', objectType: 'Chimp'},
+    food: {type: 'list', objectType: 'ValuePairObject'},
+    foodParts: {type: 'list', objectType: 'ValuePairObject'},
+    species: {type: 'list', objectType: 'ValuePairObject'},
+    isBeginInNest: {type: 'bool', optional: true},
+    isEndInNest: {type: 'bool', optional: true},
+    duration: {type: 'int', optional: true},
+    distance_traveled: {type: 'int', optional: true},
+    amObserver1: 'string',
+    amObserver2: {type: 'string', optional: true},
+    pmObserver1: {type: 'string', optional: true},
+    pmObserver2: {type: 'string', optional: true},
   }
 };
 
@@ -52,12 +70,12 @@ Species.schema = {
   primaryKey: 'id',
   properties: {
     id: 'int',
-    date: 'date', // date
-    startTime: 'string', // startTime
-    endTime: 'string', // endTime
-    focalId: 'string', // focalId
-    speciesName: 'string', // speciesName
-    speciesCount: 'int', // speciesCount
+    date: 'date',
+    startTime: 'string',
+    endTime: 'string',
+    focalId: 'string',
+    speciesName: 'string',
+    speciesCount: 'int',
   }
 };
 
@@ -95,5 +113,5 @@ Location.schema = {
 }
 
 export default new Realm({
-  schema: [Follow, FollowArrival, Species, Food, Location]
+  schema: [Follow, FollowArrival, Species, Food, Location, Chimp, ValuePairObjectSchema]
 });
