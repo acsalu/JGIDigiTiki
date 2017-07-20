@@ -145,7 +145,6 @@ export default class JGIDigiTiki extends Component {
   }
 
   render() {
-    console.log(this.state.chimps.length);
     return (
       <Navigator initialRoute={{id: 'MenuScreen', name: 'Index'}}
         renderScene={(route, navigator) => {
@@ -220,7 +219,6 @@ export default class JGIDigiTiki extends Component {
                       navigator={navigator}
                       language={this.state.language}
                       onLanguageChanged={(language)=> {
-                        console.log('index get new language:', language);
                         this._setLanguage(language);
                       }}
                       strings={this.state.localizedStrings}

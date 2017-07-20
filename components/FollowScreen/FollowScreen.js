@@ -11,6 +11,7 @@ import realm from '../../models/realm';
 import Util from '../util';
 import sharedStyles from '../SharedStyles';
 import Button from 'react-native-button';
+import BackgroundTimer from 'react-native-background-timer';
 
 import FollowArrivalTable from './FollowArrivalTable';
 import FollowScreenHeader from './FollowScreenHeader';
@@ -44,29 +45,28 @@ export default class FollowScreen extends Component {
     const followStartTime = this.props.followTime;
 
     const existingLocations = realm.objects('Location')
-            .filtered('focalId = $0 AND date = $1 AND followStartTime = $2', 
-              focalId, date, followStartTime);
+            .filtered('focalId = $0 AND date = $1', 
+              focalId, date);
 
     if (existingLocations.length === 0) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          realm.write(() => {
-            const newLocation = realm.create('Location', {
-              date: date,
-              focalId: focalId,
-              followStartTime: followStartTime,
-              community: community,
-              timestamp: position.timestamp,
-              longitude: position.coords.longitude,
-              latitude: position.coords.latitude,
-              altitude: position.coords.altitude,
-              accuracy: position.coords.accuracy
-            });
-          });
-        },
-        (error) => alert(JSON.stringify(error)),
-        {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
-      );
+      this.saveLocation(navigator.geolocation);
+      const now = new Date();
+      const minutes = now.getMinutes();
+      const seconds = now.getSeconds();
+      const secondsToGo = (15 * 60) - (minutes * 60 + seconds) % (15 * 60);
+
+      const timeoutId = BackgroundTimer.setTimeout(() => {
+        const intervalId = BackgroundTimer.setInterval(() => {
+          this.saveLocation(navigator.geolocation);
+        }, 15 * 60 * 1000);
+        realm.write(() => {
+          this.props.follow.gpsIntervalId = intervalId;
+        });
+      }, secondsToGo * 1000);
+
+      realm.write(() => {
+        this.props.follow.gpsFirstTimeoutId = timeoutId;
+      });
     }
 
     if (this.props.followArrivals !== undefined && this.props.followArrivals !== null) {
@@ -259,6 +259,63 @@ export default class FollowScreen extends Component {
     }
   }
 
+  presentEndFollowAlert() {
+    const strings = this.props.strings;
+    Alert.alert(
+        strings.Follow_EndFollowAlertTitle,
+        strings.Follow_EndFollowAlertMessage,
+        [
+          {text: strings.Follow_EndFollowActionNo, onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+          {text: strings.Follow_EndFollowActionYes, onPress: this.endFollow.bind(this)}
+        ],
+        { cancelable: false }
+      );
+  }
+
+  endFollow() {
+    realm.write(() => {
+      this.props.follow.endTime = this.props.followTime;
+    });
+    if (this.props.follow.gpsFirstTimeoutId !== undefined) {
+      console.log("stop gps timeout");
+      BackgroundTimer.clearTimeout(this.props.follow.gpsFirstTimeoutId);
+    }
+    if (this.props.follow.gpsIntervalId !== undefined) {
+      console.log("stop gps interval timer");
+      BackgroundTimer.clearInterval(this.props.follow.gpsIntervalId);
+    }
+    
+    // Go back to Menu
+    this.props.navigator.pop();
+  }
+
+  saveLocation(geolocation) {
+    const focalId = this.props.follow.focalId;
+    const date = this.props.follow.date;
+    const community = this.props.follow.community;
+    const followStartTime = this.props.followTime;
+
+    geolocation.getCurrentPosition(
+        (position) => {
+          realm.write(() => {
+            const newLocation = realm.create('Location', {
+              date: date,
+              focalId: focalId,
+              followStartTime: followStartTime,
+              community: community,
+              timestamp: position.timestamp,
+              longitude: position.coords.longitude,
+              latitude: position.coords.latitude,
+              altitude: position.coords.altitude,
+              accuracy: position.coords.accuracy
+            });
+          });
+        },
+        (error) => alert(JSON.stringify(error)),
+        {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
+    );
+  }
+
   render() {
     const strings = this.props.strings;
     const beginFollowTime = this.props.follow.startTime;
@@ -341,6 +398,24 @@ export default class FollowScreen extends Component {
             }}
         />
 
+        <View style={styles.mainMenu}>
+          <Button
+            style={[sharedStyles.btn, sharedStyles.btnSpecial, {marginRight: 8}]}
+            onPress={()=>{
+              this.props.navigator.replace({
+                id: 'SummaryScreen',
+                follow: this.props.follow
+              });
+            }}>
+              {strings.Follow_SeeSummaryButtonTitle}
+          </Button>
+          <Button
+            style={[sharedStyles.btn, sharedStyles.btnSpecial]}
+            onPress={this.presentEndFollowAlert.bind(this)}>
+              {strings.Follow_EndFollowButtonTitle}
+          </Button>
+        </View>
+
         <FollowScreenHeader
             styles={styles.followScreenHeader}
             strings={strings}
@@ -414,16 +489,6 @@ export default class FollowScreen extends Component {
             }}
         />
 
-        <Button
-          onPress={()=>{
-            this.props.navigator.replace({
-              id: 'SummaryScreen',
-              follow: this.props.follow
-            });
-          }}>
-            {strings.Follow_SeeSummaryButtonTitle}
-          </Button>
-
          <FollowArrivalTable
             styles={styles.followArrivalTable}
             chimps={this.props.chimps}
@@ -481,6 +546,16 @@ const styles = {
     flexDirection: 'column',
     justifyContent: 'flex-start',
     backgroundColor:'white',
+  },
+  mainMenu: {
+    alignSelf: 'stretch',
+    flexDirection: 'row',
+    paddingTop: 6,
+    paddingBottom: 6,
+    marginLeft: 12,
+    marginRight: 12,
+    borderBottomWidth: 2,
+    borderBottomColor: 'gray',
   },
   followScreenHeader: {
     alignSelf: 'stretch',

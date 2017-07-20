@@ -107,8 +107,6 @@ export default class NewFollowScreen extends Component {
   }
 
   packValuePairs = (valuePairs) => {
-    console.log('*******');
-    console.log(valuePairs);
     return valuePairs.map((p, i) => realm.create('ValuePairObject', {
       dbValue: p[0] === null ? 'NULL' : p[0],
       userValue: p[1]
