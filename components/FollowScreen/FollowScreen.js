@@ -11,6 +11,7 @@ import realm from '../../models/realm';
 import Util from '../util';
 import sharedStyles from '../SharedStyles';
 import Button from 'react-native-button';
+import BackgroundTimer from 'react-native-background-timer';
 
 import FollowArrivalTable from './FollowArrivalTable';
 import FollowScreenHeader from './FollowScreenHeader';
@@ -37,6 +38,19 @@ export default class FollowScreen extends Component {
   constructor(props) {
 
     super(props);
+
+    // Start a timer that runs continuous after X milliseconds
+    const intervalId = BackgroundTimer.setInterval(() => {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          // console.log(position);
+        },
+        (error) => alert(JSON.stringify(error)),
+        {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
+      );
+      const now = new Date();
+      console.log(now);
+    }, 1000);
 
     const focalId = this.props.follow.focalId;
     const date = this.props.follow.date;
@@ -259,6 +273,27 @@ export default class FollowScreen extends Component {
     }
   }
 
+  presentEndFollowAlert() {
+    const strings = this.props.strings;
+    Alert.alert(
+        strings.Follow_EndFollowAlertTitle,
+        strings.Follow_EndFollowAlertMessage,
+        [
+          {text: strings.Follow_EndFollowActionNo, onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+          {text: strings.Follow_EndFollowActionYes, onPress: this.endFollow.bind(this)}
+        ],
+        { cancelable: false }
+      );
+  }
+
+  endFollow() {
+    realm.write(() => {
+      this.props.follow.endTime = this.props.followTime;
+    });
+    // Go back to Menu
+    this.props.navigator.pop();
+  }
+
   render() {
     const strings = this.props.strings;
     const beginFollowTime = this.props.follow.startTime;
@@ -341,6 +376,24 @@ export default class FollowScreen extends Component {
             }}
         />
 
+        <View style={styles.mainMenu}>
+          <Button
+            style={[sharedStyles.btn, sharedStyles.btnSpecial, {marginRight: 8}]}
+            onPress={()=>{
+              this.props.navigator.replace({
+                id: 'SummaryScreen',
+                follow: this.props.follow
+              });
+            }}>
+              {strings.Follow_SeeSummaryButtonTitle}
+          </Button>
+          <Button
+            style={[sharedStyles.btn, sharedStyles.btnSpecial]}
+            onPress={this.presentEndFollowAlert.bind(this)}>
+              {strings.Follow_EndFollowButtonTitle}
+          </Button>
+        </View>
+
         <FollowScreenHeader
             styles={styles.followScreenHeader}
             strings={strings}
@@ -414,16 +467,6 @@ export default class FollowScreen extends Component {
             }}
         />
 
-        <Button
-          onPress={()=>{
-            this.props.navigator.replace({
-              id: 'SummaryScreen',
-              follow: this.props.follow
-            });
-          }}>
-            {strings.Follow_SeeSummaryButtonTitle}
-          </Button>
-
          <FollowArrivalTable
             styles={styles.followArrivalTable}
             chimps={this.props.chimps}
@@ -481,6 +524,16 @@ const styles = {
     flexDirection: 'column',
     justifyContent: 'flex-start',
     backgroundColor:'white',
+  },
+  mainMenu: {
+    alignSelf: 'stretch',
+    flexDirection: 'row',
+    paddingTop: 6,
+    paddingBottom: 6,
+    marginLeft: 12,
+    marginRight: 12,
+    borderBottomWidth: 2,
+    borderBottomColor: 'gray',
   },
   followScreenHeader: {
     alignSelf: 'stretch',

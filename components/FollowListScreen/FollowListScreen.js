@@ -28,14 +28,15 @@ export default class FollowListScreen extends Component {
       return false;
     });
 
-    const follows = realm.objects('Follow');
+    const follows = realm.objects('Follow')
+      .filtered('endTime = $0', undefined);
     const rows = follows.map((f, i) => {
       return (
         <FollowListRow 
           key={i}
           strings={this.props.strings}
           onPress={() => {
-            this.props.navigator.push({
+            this.props.navigator.replace({
                 id: 'SummaryScreen',
                 follow: f
               });
