@@ -39,48 +39,34 @@ export default class FollowScreen extends Component {
 
     super(props);
 
-    // Start a timer that runs continuous after X milliseconds
-    const intervalId = BackgroundTimer.setInterval(() => {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          // console.log(position);
-        },
-        (error) => alert(JSON.stringify(error)),
-        {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
-      );
-      const now = new Date();
-      console.log(now);
-    }, 1000);
-
     const focalId = this.props.follow.focalId;
     const date = this.props.follow.date;
     const community = this.props.follow.community;
     const followStartTime = this.props.followTime;
 
     const existingLocations = realm.objects('Location')
-            .filtered('focalId = $0 AND date = $1 AND followStartTime = $2', 
-              focalId, date, followStartTime);
+            .filtered('focalId = $0 AND date = $1', 
+              focalId, date);
 
     if (existingLocations.length === 0) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          realm.write(() => {
-            const newLocation = realm.create('Location', {
-              date: date,
-              focalId: focalId,
-              followStartTime: followStartTime,
-              community: community,
-              timestamp: position.timestamp,
-              longitude: position.coords.longitude,
-              latitude: position.coords.latitude,
-              altitude: position.coords.altitude,
-              accuracy: position.coords.accuracy
-            });
-          });
-        },
-        (error) => alert(JSON.stringify(error)),
-        {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
-      );
+      this.saveLocation(navigator.geolocation);
+      const now = new Date();
+      const minutes = now.getMinutes();
+      const seconds = now.getSeconds();
+      const secondsToGo = (15 * 60) - (minutes * 60 + seconds) % (15 * 60);
+
+      const timeoutId = BackgroundTimer.setTimeout(() => {
+        const intervalId = BackgroundTimer.setInterval(() => {
+          this.saveLocation(navigator.geolocation);
+        }, 15 * 60 * 1000);
+        realm.write(() => {
+          this.props.follow.gpsIntervalId = intervalId;
+        });
+      }, secondsToGo * 1000);
+
+      realm.write(() => {
+        this.props.follow.gpsFirstTimeoutId = timeoutId;
+      });
     }
 
     if (this.props.followArrivals !== undefined && this.props.followArrivals !== null) {
@@ -290,8 +276,44 @@ export default class FollowScreen extends Component {
     realm.write(() => {
       this.props.follow.endTime = this.props.followTime;
     });
+    if (this.props.follow.gpsFirstTimeoutId !== undefined) {
+      console.log("stop gps timeout");
+      BackgroundTimer.clearTimeout(this.props.follow.gpsFirstTimeoutId);
+    }
+    if (this.props.follow.gpsIntervalId !== undefined) {
+      console.log("stop gps interval timer");
+      BackgroundTimer.clearInterval(this.props.follow.gpsIntervalId);
+    }
+    
     // Go back to Menu
     this.props.navigator.pop();
+  }
+
+  saveLocation(geolocation) {
+    const focalId = this.props.follow.focalId;
+    const date = this.props.follow.date;
+    const community = this.props.follow.community;
+    const followStartTime = this.props.followTime;
+
+    geolocation.getCurrentPosition(
+        (position) => {
+          realm.write(() => {
+            const newLocation = realm.create('Location', {
+              date: date,
+              focalId: focalId,
+              followStartTime: followStartTime,
+              community: community,
+              timestamp: position.timestamp,
+              longitude: position.coords.longitude,
+              latitude: position.coords.latitude,
+              altitude: position.coords.altitude,
+              accuracy: position.coords.accuracy
+            });
+          });
+        },
+        (error) => alert(JSON.stringify(error)),
+        {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
+    );
   }
 
   render() {

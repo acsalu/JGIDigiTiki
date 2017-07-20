@@ -20,7 +20,6 @@ export default class ItemTracker extends Component {
 
     const activePickerItems = [this.props.activeListTitle].concat(this.props.activeItems)
         .map((item, i) => {
-          console.log(item);
           return (<Picker.Item 
             key={i} 
             label={i !== 0 ? item.name : item} 

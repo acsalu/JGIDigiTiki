@@ -41,6 +41,8 @@ Follow.schema = {
     amObserver2: {type: 'string', optional: true},
     pmObserver1: {type: 'string', optional: true},
     pmObserver2: {type: 'string', optional: true},
+    gpsIntervalId: {type: 'int', optional: true},
+    gpsFirstTimeoutId: {type: 'int', optional: true}
   }
 };
 

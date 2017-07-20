@@ -176,8 +176,6 @@ export default class ExportDataScreen extends Component {
     const fiveMeterFollowArrivals = this._getFiveMeterFollowArrivals(followArrivals);
     const locationOutputs = this._getLocationOutputs(locations);
 
-    console.log(locationOutputs);
-
     await this._exportFollow(follow, path, prefix);
     await this._exportFollowArrivals(followIntervals, path, prefix);
     await this._exportFoods(foods, path, prefix);
@@ -206,6 +204,7 @@ export default class ExportDataScreen extends Component {
   }
 
   _getLocations(follow) {
+    console.log('_getLocations');
     return this._getFollowData(follow, 'Location');
   }
 
@@ -238,7 +237,6 @@ export default class ExportDataScreen extends Component {
       let previousFollowArrival = null; // For certainty change
       let lastCertaintyOutput = Util.getCertaintyOutput(arrivals[0].certainty);
       for (const arrival of arrivals) {
-        // console.log(arrival);
         if (!isArrivalContinues) {
           if (arrival.time.startsWith("arrive")) {
             const timePart = arrival.time.substring("arrive".length);
@@ -264,7 +262,6 @@ export default class ExportDataScreen extends Component {
           });
           isArrivalContinues = false;
         } else if (arrival.time === 'arriveContinues') {
-          console.log('arriveContinues');
           const certaintyOutput = Util.getCertaintyOutput(arrival.certainty);
           if (lastCertaintyOutput != certaintyOutput) {
             const previousIntervalDbTime = Util.getPreviousDbTime(arrival.followStartTime);
@@ -329,6 +326,7 @@ export default class ExportDataScreen extends Component {
   }
 
   _getLocationOutputs(locations) {
+
     locations = _.values(locations);
     const dists = [];
     for (let i = 0; i < locations.length; ++i) {
@@ -372,10 +370,10 @@ export default class ExportDataScreen extends Component {
     ];
 
     const objectFields = [
-      'date', 'focalId', 'communityId', 'startTime', 'researcher', 'day', 'month', 'year'
+      'date', 'focalId', 'communityId', 'startTime', 'amObserver1', 'day', 'month', 'year'
     ];
 
-    await this._exportObjectsToCsv([followOutput], csvFilePath, csvFields, csvFields);
+    await this._exportObjectsToCsv([followOutput], csvFilePath, csvFields, objectFields);
   }
 
   async _exportFollowArrivals(followArrivals, path, prefix) {
