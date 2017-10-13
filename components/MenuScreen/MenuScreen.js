@@ -27,23 +27,19 @@ export default class MenuScreen extends Component {
   }
 
   render() {
-    //const strings = this.props.strings;
-    const strings = this.props.screenProps.enStrings;
 
-    console.log(this.props.screenProps.language);
-    // if(this.props.language == "en") {
-    //   const strings = this.props.enStrings;
-    // } elif (this.props.language == "sw") {
-    //   const strings = this.props.swStrings;
-    // }
-    console.log(strings);
+    const strings = this.props.screenProps.enStrings; // default = "en"
+
+    if (this.props.screenProps.language == "sw") {
+      const strings = this.props.screenProps.swStrings;
+    }
 
     return(
       <Image source={require('../../img/chimp.png')} style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.headerText}>Jane Goodall Institute</Text>
           <TouchableHighlight
-            onPress={() => {this.props.navigator.push({id: 'SettingsScreen'});}}>
+            onPress={() => {this.props.navigation.navigate('SettingsScreen');}}>
             <View style={styles.settingsButtonWrapper}>
               <Image source={require('../../img/settings.png')}></Image>
             </View>
@@ -54,21 +50,21 @@ export default class MenuScreen extends Component {
         <Text style={styles.description}>{strings.Menu_Title}</Text>
 
         <Button
-            onPress={() => {this.props.navigator.push({id: 'NewFollowScreen'});}}
+            onPress={() => {this.props.navigation.navigate('NewFollowScreen');}}
             style={[sharedStyles.btn, styles.menuBtn]} title={strings.Menu_NewFollow}
         >
 
         </Button>
 
         <Button
-            onPress={() => {this.props.navigator.push({id: 'FollowListScreen'});}}
+            onPress={() => {this.props.navigation.navigate('FollowListScreen');}}
             style={[sharedStyles.btn, styles.menuBtn]} title={strings.Menu_ContinueFollow}
         >
 
         </Button>
 
         <Button
-            onPress={() => {this.props.navigator.push({id: 'ExportDataScreen'});}}
+            onPress={() => {this.props.navigation.navigate('ExportDataScreen');}}
             style={[sharedStyles.btn, styles.menuBtn]} title={strings.Menu_ExportData}>
 
         </Button>
