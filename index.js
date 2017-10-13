@@ -4,7 +4,9 @@ import {
   AppRegistry,
   StyleSheet,
 } from 'react-native';
-import { Navigator } from 'react-native-deprecated-custom-components';
+//import { Navigator } from 'react-native-deprecated-custom-components';
+import { StackNavigator } from 'react-navigation';
+
 import LocalizedStrings from 'react-native-localization';
 import assert from 'assert';
 import _ from 'lodash';
@@ -142,107 +144,93 @@ export default class JGIDigiTiki extends Component {
       vp.dbValue === 'NULL' ? null : vp.dbValue,
       vp.userValue
     ]);
-  }
+  };
+
+
+  // <Navigator initialRoute={{id: 'MenuScreen', name: 'Index'}}
+  //   renderScene={(route, navigator) => {
+  //     const routeId = route.id;
+  //     switch (routeId) {
+  //       case 'MenuScreen':
+  //         return (
+  //           <MenuScreen
+  //               navigator={navigator}
+  //               strings={this.state.localizedStrings}
+  //           />
+  //         );
+  //       case 'NewFollowScreen':
+  //         return (
+  //           <NewFollowScreen
+  //               navigator={navigator}
+  //               chimps={this.state.chimps}
+  //               times={times}
+  //               strings={this.state.localizedStrings}
+  //               food={this.state.food}
+  //               foodParts={this.state.foodParts}
+  //               species={this.state.species}
+  //           />
+  //         );
+  //       case 'FollowScreen':
+  //         const chimps = this._unpackChimps(route.follow.chimps);
+  //         const food = this._unpackValuePairs(route.follow.food);
+  //         const foodParts = this._unpackValuePairs(route.follow.foodParts);
+  //         const species = this._unpackValuePairs(route.follow.chimps);
+  //         return (
+  //           <FollowScreen
+  //             navigator={navigator}
+  //             chimps={chimps}
+  //             food={food}
+  //             foodParts={foodParts}
+  //             species={species}
+  //             speciesNumbers={speciesNumbers}
+  //             follow={route.follow}
+  //             followTime={route.followTime}
+  //             followArrivals={route.followArrivals}
+  //             times={times}
+  //             strings={this.state.localizedStrings}
+  //           />
+  //         );
+  //       case 'FollowListScreen':
+  //         return (
+  //           <FollowListScreen
+  //               navigator={navigator}
+  //               strings={this.state.localizedStrings}
+  //           />
+  //         );
+  //       case 'ExportDataScreen':
+  //         return (
+  //             <ExportDataScreen
+  //                 navigator={navigator}
+  //                 strings={this.state.localizedStrings}
+  //             />
+  //         );
+  //       case 'SummaryScreen':
+  //         const cs = this._unpackChimps(route.follow.chimps);
+  //         return (
+  //             <SummaryScreen navigator={navigator}
+
 
   render() {
+    console.log("props passed to Navigator");
+    console.log(this.props);
+    console.log(this.state);
     return (
-      <Navigator initialRoute={{id: 'MenuScreen', name: 'Index'}}
-        renderScene={(route, navigator) => {
-          const routeId = route.id;
-          switch (routeId) {
-            case 'MenuScreen':
-              return (
-                <MenuScreen
-                    navigator={navigator}
-                    strings={this.state.localizedStrings}
-                />
-              );
-            case 'NewFollowScreen':
-              return (
-                <NewFollowScreen
-                    navigator={navigator}
-                    chimps={this.state.chimps}
-                    times={times}
-                    strings={this.state.localizedStrings}
-                    food={this.state.food}
-                    foodParts={this.state.foodParts}
-                    species={this.state.species}
-                />
-              );
-            case 'FollowScreen':
-              const chimps = this._unpackChimps(route.follow.chimps);
-              const food = this._unpackValuePairs(route.follow.food);
-              const foodParts = this._unpackValuePairs(route.follow.foodParts);
-              const species = this._unpackValuePairs(route.follow.chimps);
-              return (
-                <FollowScreen
-                  navigator={navigator}
-                  chimps={chimps}
-                  food={food}
-                  foodParts={foodParts}
-                  species={species}
-                  speciesNumbers={speciesNumbers}
-                  follow={route.follow}
-                  followTime={route.followTime}
-                  followArrivals={route.followArrivals}
-                  times={times}
-                  strings={this.state.localizedStrings}
-                />
-              );
-            case 'FollowListScreen':
-              return (
-                <FollowListScreen
-                    navigator={navigator}
-                    strings={this.state.localizedStrings}
-                />
-              );
-            case 'ExportDataScreen':
-              return (
-                  <ExportDataScreen
-                      navigator={navigator}
-                      strings={this.state.localizedStrings}
-                  />
-              );
-            case 'SummaryScreen':
-              const cs = this._unpackChimps(route.follow.chimps);
-              return (
-                  <SummaryScreen navigator={navigator}
-                     follow={route.follow}
-                     chimps={cs}
-                     times={times}
-                     strings={this.state.localizedStrings}
-                  />
-              );
-            case 'SettingsScreen':
-              return (
-                  <SettingsScreen
-                      navigator={navigator}
-                      language={this.state.language}
-                      onLanguageChanged={(language)=> {
-                        this._setLanguage(language);
-                      }}
-                      strings={this.state.localizedStrings}
-                      enStrings={this.state.enStrings}
-                      swStrings={this.state.swStrings}
-                      onLocalizedStringUpdated={this._updateLocalizedString.bind(this)}
-                  >
-
-                  </SettingsScreen>
-              );
-            default:
-              break;
-          }
-        }}
-        configureScene={(route) => {
-          if (route.sceneConfig) {
-            return route.sceneConfig;
-          }
-          return Navigator.SceneConfigs.FadeAndroid;
-        }}
-      />
+      <Navstack screenProps={this.state}/>
     );
   }
 }
+
+const Navstack = StackNavigator({
+  MenuScreen: { screen: MenuScreen },
+  NewFollowScreen: { screen: NewFollowScreen },
+  FollowScreen: { screen: FollowScreen },
+  FollowListScreen: { screen: FollowListScreen },
+  ExportDataScreen: { screen: ExportDataScreen },
+  SummaryScreen: { screen: SummaryScreen },
+  SettingsScreen: { screen: SettingsScreen },
+}, {
+  initialRouteName: 'MenuScreen',
+});
 
 const styles = StyleSheet.create({
   container: {
