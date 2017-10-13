@@ -3,8 +3,8 @@ import {
   AsyncStorage,
   AppRegistry,
   StyleSheet,
-  Navigator,
 } from 'react-native';
+import { Navigator } from 'react-native-deprecated-custom-components';
 import LocalizedStrings from 'react-native-localization';
 import assert from 'assert';
 import _ from 'lodash';

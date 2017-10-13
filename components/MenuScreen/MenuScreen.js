@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import {
+  Button,
   Image,
   TouchableHighlight,
   Text,
   View
 } from 'react-native';
 import Orientation from 'react-native-orientation';
-import Button from 'react-native-button';
 
 import sharedStyles from '../SharedStyles';
 
@@ -46,22 +46,22 @@ export default class MenuScreen extends Component {
 
         <Button
             onPress={() => {this.props.navigator.push({id: 'NewFollowScreen'});}}
-            style={[sharedStyles.btn, styles.menuBtn]}
+            style={[sharedStyles.btn, styles.menuBtn]} title={strings.Menu_NewFollow}
         >
-          {strings.Menu_NewFollow}
+
         </Button>
 
         <Button
             onPress={() => {this.props.navigator.push({id: 'FollowListScreen'});}}
-            style={[sharedStyles.btn, styles.menuBtn]}
+            style={[sharedStyles.btn, styles.menuBtn]} title={strings.Menu_ContinueFollow}
         >
-          {strings.Menu_ContinueFollow}
+
         </Button>
 
         <Button
             onPress={() => {this.props.navigator.push({id: 'ExportDataScreen'});}}
-            style={[sharedStyles.btn, styles.menuBtn]}>
-          {strings.Menu_ExportData}
+            style={[sharedStyles.btn, styles.menuBtn]} title={strings.Menu_ExportData}>
+
         </Button>
 
       </Image>

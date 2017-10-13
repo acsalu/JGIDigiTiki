@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
 import {
+  ActivityIndicator,
   Alert,
+  Button,
   View
 } from 'react-native';
 import Orientation from 'react-native-orientation';
-import BusyIndicator from 'react-native-busy-indicator';
 import loaderHandler from 'react-native-busy-indicator/LoaderHandler';
 import _ from 'lodash';
 import realm from '../../models/realm';
 import Util from '../util';
 import sharedStyles from '../SharedStyles';
-import Button from 'react-native-button';
 import BackgroundTimer from 'react-native-background-timer';
 
 import FollowArrivalTable from './FollowArrivalTable';
@@ -45,7 +45,7 @@ export default class FollowScreen extends Component {
     const followStartTime = this.props.followTime;
 
     const existingLocations = realm.objects('Location')
-            .filtered('focalId = $0 AND date = $1', 
+            .filtered('focalId = $0 AND date = $1',
               focalId, date);
 
     if (existingLocations.length === 0) {
@@ -75,9 +75,9 @@ export default class FollowScreen extends Component {
       realm.write(() => {
         Object.keys(this.props.followArrivals).forEach((key, index) => {
           const fa = this.props.followArrivals[key];
-          
+
           const followArrivals = realm.objects('FollowArrival')
-            .filtered('focalId = $0 AND date = $1 AND followStartTime = $2 AND chimpId = $3', 
+            .filtered('focalId = $0 AND date = $1 AND followStartTime = $2 AND chimpId = $3',
               focalId, date, followStartTime, fa.chimpId);
           if (followArrivals.length === 0) {
             const newArrival = realm.create('FollowArrival', {
@@ -284,7 +284,7 @@ export default class FollowScreen extends Component {
       console.log("stop gps interval timer");
       BackgroundTimer.clearInterval(this.props.follow.gpsIntervalId);
     }
-    
+
     // Go back to Menu
     this.props.navigator.pop();
   }
@@ -406,13 +406,12 @@ export default class FollowScreen extends Component {
                 id: 'SummaryScreen',
                 follow: this.props.follow
               });
-            }}>
-              {strings.Follow_SeeSummaryButtonTitle}
+            }} title={strings.Follow_SeeSummaryButtonTitle}>
           </Button>
           <Button
             style={[sharedStyles.btn, sharedStyles.btnSpecial]}
-            onPress={this.presentEndFollowAlert.bind(this)}>
-              {strings.Follow_EndFollowButtonTitle}
+            onPress={this.presentEndFollowAlert.bind(this)} title={strings.Follow_EndFollowButtonTitle} >
+
           </Button>
         </View>
 
@@ -531,7 +530,7 @@ export default class FollowScreen extends Component {
               }
             }}
         />
-        <BusyIndicator/>
+        <ActivityIndicator/>
       </View>
     );
   }

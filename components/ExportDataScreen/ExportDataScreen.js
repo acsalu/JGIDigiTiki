@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
   BackAndroid,
+  Button,
   DatePickerAndroid,
   NativeModules,
   ToastAndroid,
@@ -8,7 +9,6 @@ import {
   Text,
   View
 } from 'react-native';
-import Button from 'react-native-button';
 import _ from 'lodash';
 import format from 'string-format';
 import sharedStyles from '../SharedStyles';
@@ -102,9 +102,8 @@ export default class ExportDataScreen extends Component {
               disabled={follows.length === 0}
               onPress={() => {
                 this.exportButtonPressed(follows, dirPath, zipPath);
-              }}
+              }} title={strings.ExportData_ExportButtonTitle}
               style={exportButtonStyles}>
-            {strings.ExportData_ExportButtonTitle}
           </Button>
       </View>
     );
@@ -256,7 +255,7 @@ export default class ExportDataScreen extends Component {
             certainty: Util.getCertaintyOutput(arrival.certainty),
             nesting: Util.getNestingOutput(lastStartFollowArrival.certainty, arrival.certainty),
             cycle: Util.getCycleOutput(arrival.estrus),
-            startTime: Util.getTimeOutput(lastStartTime), 
+            startTime: Util.getTimeOutput(lastStartTime),
             endTime: Util.getTimeOutput(intervalEndTime),
             duration: duration,
           });
@@ -275,7 +274,7 @@ export default class ExportDataScreen extends Component {
               certainty: lastCertaintyOutput,
               nesting: Util.getNestingOutput(lastStartFollowArrival.certainty, previousFollowArrival.certainty),
               cycle: Util.getCycleOutput(lastStartFollowArrival.estrus),
-              startTime: Util.getTimeOutput(lastStartTime), 
+              startTime: Util.getTimeOutput(lastStartTime),
               endTime: Util.getTimeOutput(followEndTime),
               duration: duration,
             });
@@ -500,7 +499,7 @@ export default class ExportDataScreen extends Component {
 
   async _exportObjectsToCsv(objects, filePath, csvFields, objectFields) {
     const fileExists = await RNFS.exists(filePath);
-    
+
     var csvContent = "";
     if (!fileExists) {
       csvContent += csvFields.join(",");

@@ -1,42 +1,46 @@
 {
   "name": "JGIDigiTiki",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest"
   },
   "dependencies": {
-    "assert": "^1.4.1",
-    "babyparse": "^0.4.6",
-    "dateformat": "^2.0.0",
-    "gps-distance": "0.0.4",
-    "lodash": "^4.17.4",
-    "react": "^16.0.0-alpha.6",
-    "react-native": "^0.43.4",
-    "react-native-background-timer": "^1.1.0",
-    "react-native-busy-indicator": "^1.1.0",
-    "react-native-button": "^1.7.1",
-    "react-native-easy-grid": "^0.1.8",
-    "react-native-fs": "^2.0.1-rc.2",
-    "react-native-localization": "^0.1.26",
-    "react-native-mail": "^3.0.1",
+    "assert": "*",
+    "babyparse": "*",
+    "dateformat": "^3.0.2",
+    "gps-distance": "*",
+    "lodash": "*",
+    "react": "^16.0.0-beta.5",
+    "react-native": "*",
+    "react-native-background-timer": "*",
+    "react-native-busy-indicator": "*",
+    "react-native-button": "^2.1.0",
+    "react-native-deprecated-custom-components": "^0.1.1",
+    "react-native-easy-grid": "*",
+    "react-native-fs": "*",
+    "react-native-localization": "^0.2.1",
+    "react-native-mail": "*",
     "react-native-orientation": "git+https://git@github.com/yamill/react-native-orientation.git",
-    "react-native-radio-buttons": "^0.14.0",
-    "react-native-zip-archive": "^1.1.1",
+    "react-native-radio-buttons": "^1.0.0",
+    "react-native-zip-archive": "^2.1.0",
     "react-navigation": "git+https://github.com/react-community/react-navigation.git",
-    "realm": "1.0.0",
-    "string-format": "^0.5.0"
+    "react-redux": "^5.0.6",
+    "realm": "^1.13.0",
+    "redux": "^3.7.2",
+    "string-format": "*"
   },
   "jest": {
     "preset": "jest-react-native"
   },
   "devDependencies": {
-    "babel-jest": "16.0.0",
-    "babel-preset-react-native": "1.9.1",
-    "jest": "16.0.2",
-    "jest-react-native": "16.1.0",
-    "react-test-renderer": "15.3.2",
-    "whatwg-fetch": "1.0.0"
+    "babel-jest": "21.2.0",
+    "babel-preset-react-native": "4.0.0",
+    "jest": "21.2.1",
+    "jest-react-native": "18.0.0",
+    "react-test-renderer": "16.0.0",
+    "redux-devtools": "^3.4.0",
+    "whatwg-fetch": "2.0.3"
   }
 }

@@ -7,7 +7,7 @@ import {
   TouchableWithoutFeedback,
   View
 } from 'react-native';
-import { RadioButtons } from 'react-native-radio-buttons'
+import { RadioButtons } from 'react-native-radio-buttons';
 import assert from 'assert';
 
 import SharedStyles from '../SharedStyles';
@@ -44,7 +44,7 @@ class LocalizedTextSettingRow extends Component {
 }
 
 export default class SettingsScreen extends Component {
-  
+
   constructor(props) {
     super(props);
     this.state = {

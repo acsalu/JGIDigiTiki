@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {
   Alert,
   BackAndroid,
+  Button,
   DatePickerAndroid,
   Keyboard,
   Picker,
@@ -10,7 +11,6 @@ import {
   TextInput,
   View
 } from 'react-native';
-import Button from 'react-native-button';
 import Orientation from 'react-native-orientation';
 
 import realm from '../../models/realm';
@@ -159,7 +159,7 @@ export default class NewFollowScreen extends Component {
             onValueChange={(t) => this.setState({beginTime: t})}>
           {beginTimePickerItems}
         </Picker>
-        
+
         <TextInput
             style={[styles.inputField, styles.researcherNameTextInput]}
             onChangeText={(text) => this.setState({researcher: text})}
@@ -223,8 +223,8 @@ export default class NewFollowScreen extends Component {
                 });
               }
             }}
+          title="Begin"
         >
-          Begin
         </Button>
 
       </View>
