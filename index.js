@@ -43,7 +43,8 @@ export default class JGIDigiTiki extends Component {
       chimps: defaultChimps,
       food: defaultFood,
       foodParts: defaultFoodParts,
-      species: defaultSpecies
+      species: defaultSpecies,
+      times: times
     };
 
     this._loadCustomData('chimp-list.json', 'chimps');
@@ -147,29 +148,6 @@ export default class JGIDigiTiki extends Component {
   };
 
 
-  // <Navigator initialRoute={{id: 'MenuScreen', name: 'Index'}}
-  //   renderScene={(route, navigator) => {
-  //     const routeId = route.id;
-  //     switch (routeId) {
-  //       case 'MenuScreen':
-  //         return (
-  //           <MenuScreen
-  //               navigator={navigator}
-  //               strings={this.state.localizedStrings}
-  //           />
-  //         );
-  //       case 'NewFollowScreen':
-  //         return (
-  //           <NewFollowScreen
-  //               navigator={navigator}
-  //               chimps={this.state.chimps}
-  //               times={times}
-  //               strings={this.state.localizedStrings}
-  //               food={this.state.food}
-  //               foodParts={this.state.foodParts}
-  //               species={this.state.species}
-  //           />
-  //         );
   //       case 'FollowScreen':
   //         const chimps = this._unpackChimps(route.follow.chimps);
   //         const food = this._unpackValuePairs(route.follow.food);
@@ -186,24 +164,12 @@ export default class JGIDigiTiki extends Component {
   //             follow={route.follow}
   //             followTime={route.followTime}
   //             followArrivals={route.followArrivals}
-  //             times={times}
-  //             strings={this.state.localizedStrings}
   //           />
   //         );
   //       case 'FollowListScreen':
-  //         return (
-  //           <FollowListScreen
-  //               navigator={navigator}
-  //               strings={this.state.localizedStrings}
-  //           />
-  //         );
+  //
   //       case 'ExportDataScreen':
-  //         return (
-  //             <ExportDataScreen
-  //                 navigator={navigator}
-  //                 strings={this.state.localizedStrings}
-  //             />
-  //         );
+  //
   //       case 'SummaryScreen':
   //         const cs = this._unpackChimps(route.follow.chimps);
   //         return (
@@ -211,8 +177,6 @@ export default class JGIDigiTiki extends Component {
 
 
   render() {
-    console.log("props passed to Navigator");
-    console.log(this.props);
     console.log(this.state);
     return (
       <Navstack screenProps={this.state}/>

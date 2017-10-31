@@ -28,11 +28,7 @@ export default class MenuScreen extends Component {
 
   render() {
 
-    const strings = this.props.screenProps.enStrings; // default = "en"
-
-    if (this.props.screenProps.language == "sw") {
-      const strings = this.props.screenProps.swStrings;
-    }
+    const strings = this.props.screenProps.localizedStrings; // default = "en"
 
     return(
       <Image source={require('../../img/chimp.png')} style={styles.container}>

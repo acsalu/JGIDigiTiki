@@ -33,13 +33,13 @@ export default class NewFollowScreen extends Component {
   }
 
   getCommunities = () => {
-    return Array.from(new Set(this.props.chimps.map((c, i) => {
+    return Array.from(new Set(this.props.screenProps.chimps.map((c, i) => {
       return c.community;
     })));
   }
 
   getAllTimesForUser = () => {
-    return this.props.times.map((val, i) => {
+    return this.props.screenProps.times.map((val, i) => {
       return {
         dbTime: val,
         userTime: Util.dbTime2UserTime(val)
@@ -65,7 +65,7 @@ export default class NewFollowScreen extends Component {
   };
 
   getCommunityPickerItems = () => {
-    const strings = this.props.strings;
+    const strings = this.props.screenProps.localizedStrings;
     const communities = this.getCommunities();
     const communityPromptPickerItem = (
         <Picker.Item key="community-prompt" label={strings.NewFollow_Community} value={null} />
@@ -77,7 +77,7 @@ export default class NewFollowScreen extends Component {
   };
 
   getBeginTimePickerItems = () => {
-    const strings = this.props.strings;
+    const strings = this.props.screenProps.localizedStrings;
     const beginTimePromptPickerItem = (
         <Picker.Item key="begin-time-prompt" label={strings.NewFollow_BeginTime + " " + strings.TimeFormat} value={null} />
     );
@@ -88,13 +88,13 @@ export default class NewFollowScreen extends Component {
   }
 
   getChimpPickerItems = (community) => {
-    const strings = this.props.strings;
+    const strings = this.props.screenProps.localizedStrings;
     if (community === null) {
       return [];
     }
     const defaultPickerItem = (<Picker.Item key='Target' label={strings.NewFollow_Target} value={null}/>);
 
-    const chimpPickerItems = this.props.chimps
+    const chimpPickerItems = this.props.screenProps.chimps
         .filter((c) => c.community === community)
         .map((c, i) => {
           return (<Picker.Item key={c.name} label={c.name} value={c.name}/>);
@@ -114,17 +114,9 @@ export default class NewFollowScreen extends Component {
   }
 
   render() {
-    const strings = this.props.strings;
+    const strings = this.props.screenProps.localizedStrings;
     const communityPickerItems = this.getCommunityPickerItems();
     const beginTimePickerItems = this.getBeginTimePickerItems();
-
-    BackAndroid.addEventListener('hardwareBackPress', () => {
-      if (this.props.navigator && this.props.navigator.getCurrentRoutes().length > 1) {
-        this.props.navigator.pop();
-        return true;
-      }
-      return false;
-    });
 
     return(
       <View style={styles.container}>
@@ -193,10 +185,10 @@ export default class NewFollowScreen extends Component {
                 const day = this.state.date.getDate();
 
                 realm.write(() => {
-                  const chimps = this.packChimps(this.props.chimps.filter((c) => c.community === this.state.community));
-                  const food = this.packValuePairs(this.props.food);
-                  const foodParts = this.packValuePairs(this.props.foodParts);
-                  const species = this.packValuePairs(this.props.species);
+                  const chimps = this.packChimps(this.props.screenProps.chimps.filter((c) => c.community === this.state.community));
+                  const food = this.packValuePairs(this.props.screenProps.food);
+                  const foodParts = this.packValuePairs(this.props.screenProps.foodParts);
+                  const species = this.packValuePairs(this.props.screenProps.species);
 
                   const newFollow = realm.create('Follow', {
                      date: this.state.date,
@@ -216,11 +208,15 @@ export default class NewFollowScreen extends Component {
 
                 const follow = realm.objects('Follow').slice(-1).pop();
 
-                this.props.navigator.replace({
-                  id: 'FollowScreen',
+                this.props.navigation.navigate('FollowScreen', {
                   follow: follow,
-                  followTime: this.state.beginTime
+                  followTime: follow.startTime
                 });
+                // this.props.navigator.replace({
+                //   id: 'FollowScreen',
+                //   follow: follow,
+                //   followTime: this.state.beginTime
+                // });
               }
             }}
           title="Begin"

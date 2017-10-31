@@ -1,5 +1,5 @@
 export default defaultStrings = {
-  'en':{
+  en:{
     TimeFormat: "(h:mm)",
     Menu_Title: "Follow",
     Menu_NewFollow: "New Follow",
@@ -33,7 +33,7 @@ export default defaultStrings = {
     ExportData_ExportButtonTitle: "Export Data",
     ExportData_SetUpEmailPrompt: "Please set up an email account on this device",
   },
-  'sw':{
+  sw:{
     TimeFormat: "(s:dk)",
     Menu_Title: "Fuata",
     Menu_NewFollow: "Anza ufuataji",

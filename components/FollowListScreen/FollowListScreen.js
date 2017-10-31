@@ -20,21 +20,21 @@ export default class FollowListScreen extends Component {
   }
 
   render() {
-    BackAndroid.addEventListener('hardwareBackPress', () => {
-      if (this.props.navigator && this.props.navigator.getCurrentRoutes().length > 1) {
-        this.props.navigator.pop();
-        return true;
-      }
-      return false;
-    });
+    // BackAndroid.addEventListener('hardwareBackPress', () => {
+    //   if (this.props.navigator && this.props.navigator.getCurrentRoutes().length > 1) {
+    //     this.props.navigator.pop();
+    //     return true;
+    //   }
+    //   return false;
+    // });
 
     const follows = realm.objects('Follow')
       .filtered('endTime = $0', undefined);
     const rows = follows.map((f, i) => {
       return (
-        <FollowListRow 
+        <FollowListRow
           key={i}
-          strings={this.props.strings}
+          strings={this.props.screenProps.localizedStrings}
           onPress={() => {
             this.props.navigator.replace({
                 id: 'SummaryScreen',
@@ -58,7 +58,7 @@ export default class FollowListScreen extends Component {
 
 class FollowListRow extends Component {
   render() {
-    const strings = this.props.strings;
+    const strings = this.props.screenProps.localizedStrings;
     const follow = this.props.follow;
     const focalChimpId = follow.focalId;
     const researcherName = follow.amObserver1;

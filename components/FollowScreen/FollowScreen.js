@@ -39,10 +39,10 @@ export default class FollowScreen extends Component {
 
     super(props);
 
-    const focalId = this.props.follow.focalId;
-    const date = this.props.follow.date;
-    const community = this.props.follow.community;
-    const followStartTime = this.props.followTime;
+    const focalId = this.props.navigation.state.params.follow.focalId;
+    const date = this.props.navigation.state.params.follow.date;
+    const community = this.props.navigation.state.params.follow.community;
+    const followStartTime = this.props.navigation.state.params.followTime;
 
     const existingLocations = realm.objects('Location')
             .filtered('focalId = $0 AND date = $1',
@@ -60,12 +60,12 @@ export default class FollowScreen extends Component {
           this.saveLocation(navigator.geolocation);
         }, 15 * 60 * 1000);
         realm.write(() => {
-          this.props.follow.gpsIntervalId = intervalId;
+          this.props.navigation.state.params.follow.gpsIntervalId = intervalId;
         });
       }, secondsToGo * 1000);
 
       realm.write(() => {
-        this.props.follow.gpsFirstTimeoutId = timeoutId;
+        this.props.navigation.state.params.follow.gpsFirstTimeoutId = timeoutId;
       });
     }
 
@@ -81,9 +81,9 @@ export default class FollowScreen extends Component {
               focalId, date, followStartTime, fa.chimpId);
           if (followArrivals.length === 0) {
             const newArrival = realm.create('FollowArrival', {
-              date: this.props.follow.date,
+              date: this.props.navigation.state.params.follow.date,
               followStartTime: this.props.followTime,
-              focalId: this.props.follow.focalId,
+              focalId: this.props.navigation.state.params.follow.focalId,
               chimpId: fa.chimpId,
               time: fa.time,
               certainty: fa.certainty,
@@ -245,7 +245,7 @@ export default class FollowScreen extends Component {
 
         this.props.navigator.replace({
           id: 'FollowScreen',
-          follow: this.props.follow,
+          follow: this.props.navigation.state.params.follow,
           followTime: followTime,
           followArrivals: updatedFollowArrivals
         });
@@ -253,14 +253,14 @@ export default class FollowScreen extends Component {
     } else {
       this.props.navigator.replace({
         id: 'FollowScreen',
-        follow: this.props.follow,
+        follow: this.props.navigation.state.params.follow,
         followTime: followTime
       });
     }
   }
 
   presentEndFollowAlert() {
-    const strings = this.props.strings;
+    const strings = this.props.screenProps.localizedStrings;
     Alert.alert(
         strings.Follow_EndFollowAlertTitle,
         strings.Follow_EndFollowAlertMessage,
@@ -274,15 +274,15 @@ export default class FollowScreen extends Component {
 
   endFollow() {
     realm.write(() => {
-      this.props.follow.endTime = this.props.followTime;
+      this.props.navigation.state.params.follow.endTime = this.props.followTime;
     });
-    if (this.props.follow.gpsFirstTimeoutId !== undefined) {
+    if (this.props.navigation.state.params.follow.gpsFirstTimeoutId !== undefined) {
       console.log("stop gps timeout");
-      BackgroundTimer.clearTimeout(this.props.follow.gpsFirstTimeoutId);
+      BackgroundTimer.clearTimeout(this.props.navigation.state.params.follow.gpsFirstTimeoutId);
     }
-    if (this.props.follow.gpsIntervalId !== undefined) {
+    if (this.props.navigation.state.params.follow.gpsIntervalId !== undefined) {
       console.log("stop gps interval timer");
-      BackgroundTimer.clearInterval(this.props.follow.gpsIntervalId);
+      BackgroundTimer.clearInterval(this.props.navigation.state.params.follow.gpsIntervalId);
     }
 
     // Go back to Menu
@@ -290,9 +290,9 @@ export default class FollowScreen extends Component {
   }
 
   saveLocation(geolocation) {
-    const focalId = this.props.follow.focalId;
-    const date = this.props.follow.date;
-    const community = this.props.follow.community;
+    const focalId = this.props.navigation.state.params.follow.focalId;
+    const date = this.props.navigation.state.params.follow.date;
+    const community = this.props.navigation.state.params.follow.community;
     const followStartTime = this.props.followTime;
 
     geolocation.getCurrentPosition(
@@ -317,12 +317,12 @@ export default class FollowScreen extends Component {
   }
 
   render() {
-    const strings = this.props.strings;
-    const beginFollowTime = this.props.follow.startTime;
-    const beginFollowTimeIndex = this.props.times.indexOf(beginFollowTime);
-    const followTimeIndex = this.props.times.indexOf(this.props.followTime);
-    const previousFollowTime = followTimeIndex !== beginFollowTimeIndex ? this.props.times[followTimeIndex - 1] : null;
-    const nextFollowTime = followTimeIndex !== this.props.times.length - 1 ? this.props.times[followTimeIndex + 1] : null;
+    const strings = this.props.screenProps.localizedStrings;
+    const beginFollowTime = this.props.navigation.state.params.follow.startTime;
+    const beginFollowTimeIndex = this.props.screenProps.times.indexOf(beginFollowTime);
+    const followTimeIndex = this.props.screenProps.times.indexOf(this.props.followTime);
+    const previousFollowTime = followTimeIndex !== beginFollowTimeIndex ? this.props.screenProps.times[followTimeIndex - 1] : null;
+    const nextFollowTime = followTimeIndex !== this.props.screenProps.times.length - 1 ? this.props.screenProps.times[followTimeIndex + 1] : null;
 
     return(
       <View style={styles.container}>
@@ -350,8 +350,8 @@ export default class FollowScreen extends Component {
               realm.write(() => {
                 if (!isEditing) {
                   let objectDict = {
-                    date: this.props.follow.date,
-                    focalId: this.props.follow.focalId,
+                    date: this.props.navigation.state.params.follow.date,
+                    focalId: this.props.navigation.state.params.follow.focalId,
                     startTime: data.startTime,
                     endTime: data.endTime,
                     id: new Date().getUTCMilliseconds()
@@ -493,17 +493,17 @@ export default class FollowScreen extends Component {
             chimps={this.props.chimps}
             maleChimpsSorted={this.state.maleChimpsSorted}
             femaleChimpsSorted={this.state.femaleChimpsSorted}
-            focalChimpId={this.props.follow.focalId}
-            followDate={this.props.follow.date}
+            focalChimpId={this.props.navigation.state.params.follow.focalId}
+            followDate={this.props.navigation.state.params.follow.date}
             followArrivals={this.state.followArrivals}
             selectedChimp={this.state.selectedChimp}
             onSelectChimp={(c) => {this.setState({selectedChimp: c});}}
             createNewArrival={(chimpId, time) => {
               realm.write(() => {
                 const newArrival = realm.create('FollowArrival', {
-                  date: this.props.follow.date,
+                  date: this.props.navigation.state.params.follow.date,
                   followStartTime: this.props.followTime,
-                  focalId: this.props.follow.focalId,
+                  focalId: this.props.navigation.state.params.follow.focalId,
                   chimpId: chimpId,
                   time: time,
                   certainty: parseInt(Util.certaintyLabels.certain),
