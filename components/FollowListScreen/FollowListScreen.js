@@ -20,13 +20,6 @@ export default class FollowListScreen extends Component {
   }
 
   render() {
-    // BackAndroid.addEventListener('hardwareBackPress', () => {
-    //   if (this.props.navigator && this.props.navigator.getCurrentRoutes().length > 1) {
-    //     this.props.navigator.pop();
-    //     return true;
-    //   }
-    //   return false;
-    // });
 
     const follows = realm.objects('Follow')
       .filtered('endTime = $0', undefined);
@@ -36,10 +29,9 @@ export default class FollowListScreen extends Component {
           key={i}
           strings={this.props.screenProps.localizedStrings}
           onPress={() => {
-            this.props.navigator.replace({
-                id: 'SummaryScreen',
-                follow: f
-              });
+            this.props.navigation.navigate('SummaryScreen', {
+              follow: f
+            });
           }}
           follow={f}
         >
@@ -58,7 +50,7 @@ export default class FollowListScreen extends Component {
 
 class FollowListRow extends Component {
   render() {
-    const strings = this.props.screenProps.localizedStrings;
+    const strings = this.props.strings;
     const follow = this.props.follow;
     const focalChimpId = follow.focalId;
     const researcherName = follow.amObserver1;

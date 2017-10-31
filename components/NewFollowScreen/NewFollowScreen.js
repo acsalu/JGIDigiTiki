@@ -180,6 +180,8 @@ export default class NewFollowScreen extends Component {
                   ]
                 );
               } else {
+                console.log("Form inputs good");
+
                 const year = this.state.date.getYear() + 1900;
                 const month = this.state.date.getMonth() + 1;
                 const day = this.state.date.getDate();
@@ -208,15 +210,12 @@ export default class NewFollowScreen extends Component {
 
                 const follow = realm.objects('Follow').slice(-1).pop();
 
+                console.log("Navigate to FollowScreen");
+
                 this.props.navigation.navigate('FollowScreen', {
                   follow: follow,
                   followTime: follow.startTime
                 });
-                // this.props.navigator.replace({
-                //   id: 'FollowScreen',
-                //   follow: follow,
-                //   followTime: this.state.beginTime
-                // });
               }
             }}
           title="Begin"

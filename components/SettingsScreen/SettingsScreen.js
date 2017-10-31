@@ -48,7 +48,7 @@ export default class SettingsScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedLanguage: this.props.language
+      selectedLanguage: this.props.screenProps.language
     }
   }
 
@@ -59,13 +59,6 @@ export default class SettingsScreen extends Component {
   }
 
   componentWillMount() {
-    BackAndroid.addEventListener('hardwareBackPress', () => {
-      if (this.props.navigator && this.props.navigator.getCurrentRoutes().length > 1) {
-        this.props.navigator.pop();
-        return true;
-      }
-      return false;
-    });
   }
 
   render() {
@@ -94,13 +87,13 @@ export default class SettingsScreen extends Component {
     }
 
     let localizedTextSettingRows = [];
-    for (const key in this.props.enStrings) {
+    for (const key in this.props.screenProps.enStrings) {
       localizedTextSettingRows.push(<LocalizedTextSettingRow
           key={key}
           onLocalizedStringUpdated={this.props.onLocalizedStringUpdated}
           localizedStringKey={key}
-          enString={this.props.enStrings[key]}
-          swString={this.props.swStrings[key]}
+          enString={this.props.screenProps.enStrings[key]}
+          swString={this.props.screenProps.swStrings[key]}
       />);
     }
 

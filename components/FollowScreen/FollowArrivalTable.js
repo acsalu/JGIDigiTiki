@@ -65,7 +65,7 @@ export default class FollowArrivalTable extends Component {
     this.state = {
       selectedChimp: null,
       panelType: PanelType.time,
-      arrival: this.props.followArrivals
+      arrival: this.props.navigation.state.params.followArrivals
     };
 
     this.panels = {};
@@ -125,7 +125,7 @@ export default class FollowArrivalTable extends Component {
   _onPanelButtonPress = (time) => {
     const selectedChimp = this.props.selectedChimp;
     if (selectedChimp !== null) {
-      if (!(selectedChimp in this.props.followArrivals)) {
+      if (!(selectedChimp in this.props.navigation.state.params.followArrivals)) {
         if (time.startsWith('arrive')) { this.props.createNewArrival(selectedChimp, time); }
       } else {
         this.props.updateArrival('time', time)

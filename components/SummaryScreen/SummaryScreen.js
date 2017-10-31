@@ -35,19 +35,19 @@ export default class SummaryScreen extends Component {
   render() {
 
     const followArrivals = realm.objects('FollowArrival')
-        .filtered('focalId = $0 AND date = $1', this.props.follow.focalId, this.props.follow.date);
+        .filtered('focalId = $0 AND date = $1', this.props.navigation.state.params.follow.focalId, this.props.navigation.state.params.follow.date);
 
-    let followStartTimes = [this.props.follow.startTime];
+    let followStartTimes = [this.props.navigation.state.params.follow.startTime];
     followStartTimes = followStartTimes.concat(followArrivals.map((fa, i) => fa.followStartTime));
     followStartTimes.sort();
-    const lastFollowStartTime = followStartTimes.length === 0 ? this.props.follow.startTime : followStartTimes.pop();
+    const lastFollowStartTime = followStartTimes.length === 0 ? this.props.navigation.state.params.follow.startTime : followStartTimes.pop();
 
-    const followStartTime = this.props.follow.startTime;
-    const followDate = this.props.follow.date;
+    const followStartTime = this.props.navigation.state.params.follow.startTime;
+    const followDate = this.props.navigation.state.params.follow.date;
 
     let followArrivalSummary = {};
-    for (let i = 0; i < this.props.chimps.length; ++i) {
-      const c = this.props.chimps[i];
+    for (let i = 0; i < this.props.screenProps.chimps.length; ++i) {
+      const c = this.props.screenProps.chimps[i];
       followArrivalSummary[c.name] = [];
     }
 
@@ -61,23 +61,23 @@ export default class SummaryScreen extends Component {
     return(
         <View style={styles.container}>
           <SummaryScreenHeader
-            focalChimpId={this.props.follow.focalId}
-            researcherName={this.props.follow.amObserver1}
+            focalChimpId={this.props.navigation.state.params.follow.focalId}
+            researcherName={this.props.navigation.state.params.follow.amObserver1}
             followDate={followDate}
             followStartTime={followStartTime}
             followEndTime={lastFollowStartTime}
           />
           <SummaryScreenTable
-            focalChimpId={this.props.follow.focalId}
-            chimps={this.props.chimps}
+            focalChimpId={this.props.navigation.state.params.follow.focalId}
+            chimps={this.props.screenProps.chimps}
             followStartTime={followStartTime}
             followEndTime={lastFollowStartTime}
-            times={this.props.times}
+            times={this.props.screenProps.times}
             onFollowTimeSelected={(t) => {
-              this.props.navigator.replace({
-                id: 'FollowScreen',
-                follow: this.props.follow,
+              this.props.navigation.navigate('FollowScreen', {
+                follow: this.props.navigation.state.params.follow,
                 followTime: t,
+                followArrivals: updatedFollowArrivals
               });
             }}
             followArrivalSummary={followArrivalSummary}

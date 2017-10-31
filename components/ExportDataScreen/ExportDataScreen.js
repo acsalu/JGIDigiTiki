@@ -63,14 +63,6 @@ export default class ExportDataScreen extends Component {
     const dirPath = RNFS.ExternalDirectoryPath + '/follow-data';
     const zipPath = RNFS.ExternalDirectoryPath + '/follow-data.zip';
 
-    BackAndroid.addEventListener('hardwareBackPress', () => {
-      if (this.props.navigator && this.props.navigator.getCurrentRoutes().length > 1) {
-        this.props.navigator.pop();
-        return true;
-      }
-      return false;
-    });
-
     const totalFollows = follows.length;
 
     let exportButtonStyles = [sharedStyles.btn, styles.menuBtn];

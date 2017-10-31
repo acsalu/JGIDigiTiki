@@ -35,6 +35,20 @@ export default class FollowScreen extends Component {
     navigator.geolocation.clearWatch(this.watchID);
   }
 
+  _unpackChimps(chimps) {
+    return chimps.map((c, i) => ({
+     name: c.name,
+     sex: c.sex
+    }));
+  }
+
+  _unpackValuePairs(valuePairs) {
+    return valuePairs.map((vp, i) => [
+      vp.dbValue === 'NULL' ? null : vp.dbValue,
+      vp.userValue
+    ]);
+  }
+
   constructor(props) {
 
     super(props);
@@ -43,6 +57,10 @@ export default class FollowScreen extends Component {
     const date = this.props.navigation.state.params.follow.date;
     const community = this.props.navigation.state.params.follow.community;
     const followStartTime = this.props.navigation.state.params.followTime;
+    const chimps = this._unpackChimps(this.props.navigation.state.params.follow.chimps);
+    const food = this._unpackValuePairs(this.props.navigation.state.params.follow.food);
+    const foodParts = this._unpackValuePairs(this.props.navigation.state.params.follow.foodParts);
+    const species = this._unpackValuePairs(this.props.navigation.state.params.follow.chimps);
 
     const existingLocations = realm.objects('Location')
             .filtered('focalId = $0 AND date = $1',
@@ -69,12 +87,12 @@ export default class FollowScreen extends Component {
       });
     }
 
-    if (this.props.followArrivals !== undefined && this.props.followArrivals !== null) {
+    if (this.props.navigation.state.params.followArrivals !== undefined && this.props.navigation.state.params.followArrivals !== null) {
       // Write follows from previous into db
-      console.log("Got follow arrival from previous", this.props.followArrivals);
+      console.log("Got follow arrival from previous", this.props.navigation.state.params.followArrivals);
       realm.write(() => {
-        Object.keys(this.props.followArrivals).forEach((key, index) => {
-          const fa = this.props.followArrivals[key];
+        Object.keys(this.props.navigation.state.params.followArrivals).forEach((key, index) => {
+          const fa = this.props.navigation.state.params.followArrivals[key];
 
           const followArrivals = realm.objects('FollowArrival')
             .filtered('focalId = $0 AND date = $1 AND followStartTime = $2 AND chimpId = $3',
@@ -82,7 +100,7 @@ export default class FollowScreen extends Component {
           if (followArrivals.length === 0) {
             const newArrival = realm.create('FollowArrival', {
               date: this.props.navigation.state.params.follow.date,
-              followStartTime: this.props.followTime,
+              followStartTime: this.props.navigation.state.params.followTime,
               focalId: this.props.navigation.state.params.follow.focalId,
               chimpId: fa.chimpId,
               time: fa.time,
@@ -110,7 +128,7 @@ export default class FollowScreen extends Component {
     let followArrivals = {};
     // Populate followArrival in db
     const allFollowArrival = realm.objects('FollowArrival')
-        .filtered('focalId = $0 AND date = $1 AND followStartTime = $2', focalId, date, this.props.followTime);
+        .filtered('focalId = $0 AND date = $1 AND followStartTime = $2', focalId, date, this.props.navigation.state.params.followTime);
     for (let i = 0; i < allFollowArrival.length; i++) {
       const arrival = allFollowArrival[i];
       followArrivals[arrival.chimpId] = arrival;
@@ -148,8 +166,8 @@ export default class FollowScreen extends Component {
       }
     }
 
-    const maleChimpsSorted = this.getSortedChimps(this.props.chimps, 'M', followArrivals);
-    const femaleChimpsSorted = this.getSortedChimps(this.props.chimps, 'F', followArrivals);
+    const maleChimpsSorted = this.getSortedChimps(this.props.navigation.state.params.follow.chimps, 'M', followArrivals);
+    const femaleChimpsSorted = this.getSortedChimps(this.props.navigation.state.params.follow.chimps, 'F', followArrivals);
 
     this.state = {
       modalVisible: false,
@@ -190,8 +208,8 @@ export default class FollowScreen extends Component {
       case ModalType.food:
         this.setState({
           modalType: ModalType.food,
-          modalMainList: this.props.food,
-          modalSubList: this.props.foodParts,
+          modalMainList: this.props.screenProps.food,
+          modalSubList: this.props.screenProps.foodParts,
           itemTrackerInitialStartTime: data ? data.startTime : null,
           itemTrackerInitialEndTime: data ? data.endTime : null,
           itemTrackerInitialMainSelection: data ? data.foodName : null,
@@ -243,16 +261,15 @@ export default class FollowScreen extends Component {
           updatedFollowArrivals[k] = newFa;
         }
 
-        this.props.navigator.replace({
-          id: 'FollowScreen',
+        this.props.navigation.navigate('FollowScreen', {
           follow: this.props.navigation.state.params.follow,
           followTime: followTime,
           followArrivals: updatedFollowArrivals
         });
+
       }
     } else {
-      this.props.navigator.replace({
-        id: 'FollowScreen',
+      this.props.navigation.navigate('FollowScreen', {
         follow: this.props.navigation.state.params.follow,
         followTime: followTime
       });
@@ -274,7 +291,7 @@ export default class FollowScreen extends Component {
 
   endFollow() {
     realm.write(() => {
-      this.props.navigation.state.params.follow.endTime = this.props.followTime;
+      this.props.navigation.state.params.follow.endTime = this.props.navigation.state.params.followTime;
     });
     if (this.props.navigation.state.params.follow.gpsFirstTimeoutId !== undefined) {
       console.log("stop gps timeout");
@@ -286,14 +303,14 @@ export default class FollowScreen extends Component {
     }
 
     // Go back to Menu
-    this.props.navigator.pop();
+    this.props.navigation.navigate('MenuScreen');
   }
 
   saveLocation(geolocation) {
     const focalId = this.props.navigation.state.params.follow.focalId;
     const date = this.props.navigation.state.params.follow.date;
     const community = this.props.navigation.state.params.follow.community;
-    const followStartTime = this.props.followTime;
+    const followStartTime = this.props.navigation.state.params.followTime;
 
     geolocation.getCurrentPosition(
         (position) => {
@@ -317,10 +334,11 @@ export default class FollowScreen extends Component {
   }
 
   render() {
+    console.log("Rendering FollowScreen");
     const strings = this.props.screenProps.localizedStrings;
     const beginFollowTime = this.props.navigation.state.params.follow.startTime;
     const beginFollowTimeIndex = this.props.screenProps.times.indexOf(beginFollowTime);
-    const followTimeIndex = this.props.screenProps.times.indexOf(this.props.followTime);
+    const followTimeIndex = this.props.screenProps.times.indexOf(this.props.navigation.state.params.followTime);
     const previousFollowTime = followTimeIndex !== beginFollowTimeIndex ? this.props.screenProps.times[followTimeIndex - 1] : null;
     const nextFollowTime = followTimeIndex !== this.props.screenProps.times.length - 1 ? this.props.screenProps.times[followTimeIndex + 1] : null;
 
@@ -328,12 +346,12 @@ export default class FollowScreen extends Component {
       <View style={styles.container}>
 
         <ItemTrackerModal
-            title={this.state.modalMainList == this.props.food ? "Food" : "Species"}
+            title={this.state.modalMainList == this.props.screenProps.food ? "Food" : "Species"}
             strings={strings}
             visible={this.state.modalVisible}
             mainList={this.state.modalMainList}
             secondaryList={this.state.modalSubList}
-            beginFollowTime={this.props.followTime}
+            beginFollowTime={this.props.navigation.state.params.followTime}
             initialStartTime={this.state.itemTrackerInitialStartTime}
             initialEndTime={this.state.itemTrackerInitialEndTime}
             initialMainSelection={this.state.itemTrackerInitialMainSelection}
@@ -402,9 +420,8 @@ export default class FollowScreen extends Component {
           <Button
             style={[sharedStyles.btn, sharedStyles.btnSpecial, {marginRight: 8}]}
             onPress={()=>{
-              this.props.navigator.replace({
-                id: 'SummaryScreen',
-                follow: this.props.follow
+              this.props.navigation.navigate('SummaryScreen', {
+                follow: this.props.navigation.state.params.follow
               });
             }} title={strings.Follow_SeeSummaryButtonTitle}>
           </Button>
@@ -418,8 +435,8 @@ export default class FollowScreen extends Component {
         <FollowScreenHeader
             styles={styles.followScreenHeader}
             strings={strings}
-            follow={this.props.follow}
-            followTime={this.props.followTime}
+            follow={this.props.navigation.state.params.follow}
+            followTime={this.props.navigation.state.params.followTime}
             activeFood={this.state.activeFood.map((f, i) => {return {id: f.id, name: f.foodName + ' ' + f.foodPart}})}
             finishedFood={this.state.finishedFood.map((f, i) => ({id: f.id, name: f.foodName + ' ' + f.foodPart}))}
             activeSpecies={this.state.activeSpecies.map((s, i) => ({id: s.id, name: s.speciesName}))}
@@ -490,7 +507,7 @@ export default class FollowScreen extends Component {
 
          <FollowArrivalTable
             styles={styles.followArrivalTable}
-            chimps={this.props.chimps}
+            chimps={this.props.navigation.state.params.follow.chimps}
             maleChimpsSorted={this.state.maleChimpsSorted}
             femaleChimpsSorted={this.state.femaleChimpsSorted}
             focalChimpId={this.props.navigation.state.params.follow.focalId}
@@ -502,7 +519,7 @@ export default class FollowScreen extends Component {
               realm.write(() => {
                 const newArrival = realm.create('FollowArrival', {
                   date: this.props.navigation.state.params.follow.date,
-                  followStartTime: this.props.followTime,
+                  followStartTime: this.props.navigation.state.params.followTime,
                   focalId: this.props.navigation.state.params.follow.focalId,
                   chimpId: chimpId,
                   time: time,

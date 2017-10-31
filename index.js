@@ -147,25 +147,6 @@ export default class JGIDigiTiki extends Component {
     ]);
   };
 
-
-  //       case 'FollowScreen':
-  //         const chimps = this._unpackChimps(route.follow.chimps);
-  //         const food = this._unpackValuePairs(route.follow.food);
-  //         const foodParts = this._unpackValuePairs(route.follow.foodParts);
-  //         const species = this._unpackValuePairs(route.follow.chimps);
-  //         return (
-  //           <FollowScreen
-  //             navigator={navigator}
-  //             chimps={chimps}
-  //             food={food}
-  //             foodParts={foodParts}
-  //             species={species}
-  //             speciesNumbers={speciesNumbers}
-  //             follow={route.follow}
-  //             followTime={route.followTime}
-  //             followArrivals={route.followArrivals}
-  //           />
-  //         );
   //       case 'FollowListScreen':
   //
   //       case 'ExportDataScreen':

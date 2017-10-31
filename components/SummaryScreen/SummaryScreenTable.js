@@ -46,8 +46,8 @@ class SummaryScreenTableChimpCol extends Component {
     const cells = ([...Array(this.props.rows||0)])
         .map((v, i) => {
             const index = this.props.timeIndices.indexOf(i);
-            return (<SummaryScreenTableCell 
-              key={i} 
+            return (<SummaryScreenTableCell
+              key={i}
               shouldHighlight={index !== -1}
               certaintyText={this.props.certaintyTexts[index]}
               isSwelled={this.props.isSwelleds[index]}

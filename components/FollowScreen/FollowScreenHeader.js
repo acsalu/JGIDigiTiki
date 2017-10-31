@@ -21,7 +21,7 @@ export default class FollowScreenHeader extends Component {
   render() {
 
     const strings = this.props.strings;
-    const isFirstFollow = this.props.followTime === this.props.follow.startTime;
+    const isFirstFollow = this.props.navigation.state.params.followTime === this.props.navigation.state.params.follow.startTime;
 
     return (
         <View style={styles.followScreenHeader}>
@@ -34,7 +34,7 @@ export default class FollowScreenHeader extends Component {
               {strings.Follow_PreviousTimeInterval}
             </Button>
             <Text style={styles.followScreenHeaderMainText}>
-              {util.dbTime2UserTime(this.props.followTime)}
+              {util.dbTime2UserTime(this.props.navigation.state.params.followTime)}
             </Text>
             <Button
                 style={sharedStyles.btn}
