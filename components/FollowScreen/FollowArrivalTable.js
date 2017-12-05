@@ -65,11 +65,11 @@ export default class FollowArrivalTable extends Component {
     this.state = {
       selectedChimp: null,
       panelType: PanelType.time,
-      arrival: this.props.navigation.state.params.followArrivals
+      arrival: this.props.followArrivals
     };
 
     this.panels = {};
-    const arrivalButtons = ['arriveEmpty', 'arriveFirst', 'arriveSecond', 'arriveThird']
+    const arrivalButtons = ['arriveEmpty', 'arriveFirst', 'arriveSecond', 'arriveThird', 'arriveContinues']
         .map((t, i) => this.createInfoPanelButton(t, i, false));
     const departureButtons = ['departFirst', 'departSecond', 'departThird']
         .map((t, i) => this.createInfoPanelButton(t, i, true));
@@ -125,7 +125,7 @@ export default class FollowArrivalTable extends Component {
   _onPanelButtonPress = (time) => {
     const selectedChimp = this.props.selectedChimp;
     if (selectedChimp !== null) {
-      if (!(selectedChimp in this.props.navigation.state.params.followArrivals)) {
+      if (!(selectedChimp in this.props.followArrivals)) {
         if (time.startsWith('arrive')) { this.props.createNewArrival(selectedChimp, time); }
       } else {
         this.props.updateArrival('time', time)

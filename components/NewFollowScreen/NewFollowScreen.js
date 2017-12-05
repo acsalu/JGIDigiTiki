@@ -25,11 +25,12 @@ export default class NewFollowScreen extends Component {
     community: null,
     focalChimpId: null,
     date: new Date(),
-    researcher: ''
+    researcher: '',
+    locationInterval: 15,
   };
 
   componentDidMount() {
-    Orientation.lockToPortrait();
+    //Orientation.lockToPortrait(); // TODO: lockToPortrait
   }
 
   getCommunities = () => {
@@ -159,6 +160,18 @@ export default class NewFollowScreen extends Component {
             placeholder={strings.NewFollow_ResearcherName}
         />
 
+        <Picker
+            style={styles.inputField}
+            selectedValue={this.state.locationInterval}
+            onValueChange={(t) => this.setState({locationInterval: t})}>
+            <Picker.Item label = "15 min (default)" value = "15" />
+            <Picker.Item label = "15 sec" value = "0.25" />
+            <Picker.Item label = "30 sec" value = "0.5" />
+            <Picker.Item label = "1 min" value = "1" />
+            <Picker.Item label = "2 min" value = "2" />
+            <Picker.Item label = "5 min" value = "5" />
+        </Picker>
+
         <Button
             style={[styles.beginBtn, sharedStyles.btn, sharedStyles.btnSuccess]}
             onPress={() => {
@@ -169,7 +182,7 @@ export default class NewFollowScreen extends Component {
               const hasSetBeginTime = this.state.beginTime !== null;
               const hasSetCommunity = this.state.community != null;
               const hasSetFocalChimpId = this.state.focalChimpId != null;
-              const hasSetResearcher = this.state.researcher != null
+              const hasSetResearcher = this.state.researcher != '';
 
               if ([hasSetBeginTime, hasSetCommunity, hasSetFocalChimpId, hasSetResearcher].some(e => !e)) {
                 Alert.alert(
@@ -180,11 +193,13 @@ export default class NewFollowScreen extends Component {
                   ]
                 );
               } else {
-                console.log("Form inputs good");
+                //console.log("Form inputs good");
 
                 const year = this.state.date.getYear() + 1900;
                 const month = this.state.date.getMonth() + 1;
                 const day = this.state.date.getDate();
+
+                //console.log(this.state);
 
                 realm.write(() => {
                   const chimps = this.packChimps(this.props.screenProps.chimps.filter((c) => c.community === this.state.community));
@@ -210,11 +225,12 @@ export default class NewFollowScreen extends Component {
 
                 const follow = realm.objects('Follow').slice(-1).pop();
 
-                console.log("Navigate to FollowScreen");
+                //console.log("Navigate to FollowScreen");
 
                 this.props.navigation.navigate('FollowScreen', {
                   follow: follow,
-                  followTime: follow.startTime
+                  followTime: follow.startTime,
+                  locationInterval: this.state.locationInterval,
                 });
               }
             }}

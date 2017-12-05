@@ -7,6 +7,7 @@ import {
   View
 } from 'react-native';
 import Orientation from 'react-native-orientation';
+import deviceLog, {LogView, InMemoryAdapter} from 'react-native-device-log';
 
 import sharedStyles from '../SharedStyles';
 
@@ -64,6 +65,8 @@ export default class MenuScreen extends Component {
             style={[sharedStyles.btn, styles.menuBtn]} title={strings.Menu_ExportData}>
 
         </Button>
+
+        <Text>Version: 0.3.2</Text>
 
       </Image>
     );

@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Alert,
   Button,
+  Text,
   View
 } from 'react-native';
 import Orientation from 'react-native-orientation';
@@ -53,6 +54,8 @@ export default class FollowScreen extends Component {
 
     super(props);
 
+    let currentGeolocation = null;
+
     const focalId = this.props.navigation.state.params.follow.focalId;
     const date = this.props.navigation.state.params.follow.date;
     const community = this.props.navigation.state.params.follow.community;
@@ -67,24 +70,7 @@ export default class FollowScreen extends Component {
               focalId, date);
 
     if (existingLocations.length === 0) {
-      this.saveLocation(navigator.geolocation);
-      const now = new Date();
-      const minutes = now.getMinutes();
-      const seconds = now.getSeconds();
-      const secondsToGo = (15 * 60) - (minutes * 60 + seconds) % (15 * 60);
-
-      const timeoutId = BackgroundTimer.setTimeout(() => {
-        const intervalId = BackgroundTimer.setInterval(() => {
-          this.saveLocation(navigator.geolocation);
-        }, 15 * 60 * 1000);
-        realm.write(() => {
-          this.props.navigation.state.params.follow.gpsIntervalId = intervalId;
-        });
-      }, secondsToGo * 1000);
-
-      realm.write(() => {
-        this.props.navigation.state.params.follow.gpsFirstTimeoutId = timeoutId;
-      });
+      this.recordLocation();
     }
 
     if (this.props.navigation.state.params.followArrivals !== undefined && this.props.navigation.state.params.followArrivals !== null) {
@@ -189,7 +175,32 @@ export default class FollowScreen extends Component {
       lastPosition: 'unknown',
       maleChimpsSorted: maleChimpsSorted,
       femaleChimpsSorted: femaleChimpsSorted,
+      currentGeolocation: [0, 0],
     };
+  };
+
+  recordLocation() {
+    const saveLocationInterval = Number.parseFloat(this.props.navigation.state.params.locationInterval);
+    this.saveLocation(navigator.geolocation);
+    const now = new Date();
+    const minutes = now.getMinutes();
+    const seconds = now.getSeconds();
+    const secondsToGo = (saveLocationInterval * 60) - (minutes * 60 + seconds) % (saveLocationInterval * 60);
+    console.log(secondsToGo);
+
+    const timeoutId = BackgroundTimer.setTimeout(() => {
+      const intervalId = BackgroundTimer.setInterval(() => {
+        console.log("Get location");
+        this.saveLocation(navigator.geolocation);
+      }, saveLocationInterval * 60 * 1000);
+      realm.write(() => {
+        this.props.navigation.state.params.follow.gpsIntervalId = intervalId;
+      });
+    }, secondsToGo * 1000);
+
+    realm.write(() => {
+      this.props.navigation.state.params.follow.gpsFirstTimeoutId = timeoutId;
+    });
   };
 
   getSortedChimps(chimps, sex, followArrivals) {
@@ -197,7 +208,7 @@ export default class FollowScreen extends Component {
     const presentChimps = sexChimps.filter((c) => followArrivals[c.name] !== undefined);
     const unpresentChimps = sexChimps.filter((c) => followArrivals[c.name] === undefined);
     return presentChimps.sort(Util.compareChimp).concat(unpresentChimps.sort((Util.compareChimp)));
-  }
+  };
 
   setModalVisible(visible) {
     this.setState({modalVisible: visible});
@@ -220,8 +231,8 @@ export default class FollowScreen extends Component {
       case ModalType.species:
         this.setState({
           modalType: ModalType.species,
-          modalMainList: this.props.species,
-          modalSubList: this.props.speciesNumbers,
+          modalMainList: this.props.screenProps.species,
+          modalSubList: this.props.screenProps.speciesNumbers,
           itemTrackerInitialStartTime: data ? data.startTime : null,
           itemTrackerInitialEndTime: data ? data.endTime : null,
           itemTrackerInitialMainSelection: data ? data.speciesName : null,
@@ -314,6 +325,8 @@ export default class FollowScreen extends Component {
 
     geolocation.getCurrentPosition(
         (position) => {
+          this.setState({ currentGeolocation: [position.coords.longitude, position.coords.latitude] });
+          alert('${position.coords.longitude}, ${position.coords.latitude}');
           realm.write(() => {
             const newLocation = realm.create('Location', {
               date: date,
@@ -328,13 +341,18 @@ export default class FollowScreen extends Component {
             });
           });
         },
-        (error) => alert(JSON.stringify(error)),
-        {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
+        (error) => {
+          alert(JSON.stringify(error));
+          console.log("Couldn't get lock");
+          this.setState({ currentGeolocation: ['x', 'x']});
+          this.recordLocation();
+        },
+        {enableHighAccuracy: true, timeout: 10000, maximumAge: 1000}
     );
   }
 
   render() {
-    console.log("Rendering FollowScreen");
+    //console.log("Rendering FollowScreen");
     const strings = this.props.screenProps.localizedStrings;
     const beginFollowTime = this.props.navigation.state.params.follow.startTime;
     const beginFollowTimeIndex = this.props.screenProps.times.indexOf(beginFollowTime);
@@ -428,8 +446,8 @@ export default class FollowScreen extends Component {
           <Button
             style={[sharedStyles.btn, sharedStyles.btnSpecial]}
             onPress={this.presentEndFollowAlert.bind(this)} title={strings.Follow_EndFollowButtonTitle} >
-
           </Button>
+          <Text>You are at: {this.state.currentGeolocation[0]}, {this.state.currentGeolocation[1]}</Text>
         </View>
 
         <FollowScreenHeader

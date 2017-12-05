@@ -4,7 +4,9 @@ import {
   AppRegistry,
   StyleSheet,
 } from 'react-native';
-//import { Navigator } from 'react-native-deprecated-custom-components';
+
+import deviceLog, {LogView, InMemoryAdapter} from 'react-native-device-log';
+
 import { StackNavigator } from 'react-navigation';
 
 import LocalizedStrings from 'react-native-localization';
@@ -30,6 +32,17 @@ import defaultStrings from './data/strings';
 
 const defaultLanguage = 'en';
 
+deviceLog.init(AsyncStorage, {
+  //Options (all optional):
+  logToConsole : false, //Send logs to console as well as device-log
+  logRNErrors : true, // Will pick up RN-errors and send them to the device log
+}).then(() => {
+  //When the deviceLog has been initialized we can clear it if we want to:
+  deviceLog.clear();
+});
+//The device-log contains a timer for measuring performance:
+deviceLog.startTimer('start-up');
+
 export default class JGIDigiTiki extends Component {
 
   constructor(props) {
@@ -44,12 +57,14 @@ export default class JGIDigiTiki extends Component {
       food: defaultFood,
       foodParts: defaultFoodParts,
       species: defaultSpecies,
+      speciesNumbers: speciesNumbers,
       times: times
     };
 
     this._loadCustomData('chimp-list.json', 'chimps');
     this._loadCustomData('food-list.json', 'food');
     this._loadCustomData('species-list.json', 'species');
+    this._loadCustomData('species-number.json', 'species');
     this._loadCustomData('food-part-list.json', 'foodParts');
   }
 
@@ -147,18 +162,10 @@ export default class JGIDigiTiki extends Component {
     ]);
   };
 
-  //       case 'FollowListScreen':
-  //
-  //       case 'ExportDataScreen':
-  //
   //       case 'SummaryScreen':
   //         const cs = this._unpackChimps(route.follow.chimps);
-  //         return (
-  //             <SummaryScreen navigator={navigator}
-
 
   render() {
-    console.log(this.state);
     return (
       <Navstack screenProps={this.state}/>
     );
@@ -168,7 +175,11 @@ export default class JGIDigiTiki extends Component {
 const Navstack = StackNavigator({
   MenuScreen: { screen: MenuScreen },
   NewFollowScreen: { screen: NewFollowScreen },
-  FollowScreen: { screen: FollowScreen },
+  FollowScreen: { screen: FollowScreen,
+    navigationOptions:  {
+      headerLeft: null
+    }
+  },
   FollowListScreen: { screen: FollowListScreen },
   ExportDataScreen: { screen: ExportDataScreen },
   SummaryScreen: { screen: SummaryScreen },
