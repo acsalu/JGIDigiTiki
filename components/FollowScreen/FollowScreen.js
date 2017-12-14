@@ -326,7 +326,6 @@ export default class FollowScreen extends Component {
     geolocation.getCurrentPosition(
         (position) => {
           this.setState({ currentGeolocation: [position.coords.longitude, position.coords.latitude] });
-          alert('${position.coords.longitude}, ${position.coords.latitude}');
           realm.write(() => {
             const newLocation = realm.create('Location', {
               date: date,
