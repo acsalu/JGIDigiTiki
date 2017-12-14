@@ -1,4 +1,4 @@
-rootProject.name = 'JGIDigiTiki'
+rootProject.name = 'JGIDigiTiki 2'
 include ':react-native-background-timer'
 project(':react-native-background-timer').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-background-timer/android')
 include ':react-native-default-preference'
