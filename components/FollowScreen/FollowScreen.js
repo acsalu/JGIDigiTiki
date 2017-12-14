@@ -346,7 +346,7 @@ export default class FollowScreen extends Component {
           this.setState({ currentGeolocation: ['x', 'x']});
           this.recordLocation();
         },
-        {enableHighAccuracy: true, timeout: 10000, maximumAge: 1000}
+        {enableHighAccuracy: true, timeout: 10000}
     );
   }
 
