@@ -30,6 +30,7 @@ export default class FollowScreen extends Component {
 
   componentDidMount() {
     Orientation.lockToPortrait();
+    this.restartTimer();
   }
 
   componentWillUnmount() {
@@ -54,8 +55,6 @@ export default class FollowScreen extends Component {
 
     super(props);
 
-    let currentGeolocation = null;
-
     const focalId = this.props.navigation.state.params.follow.focalId;
     const date = this.props.navigation.state.params.follow.date;
     const community = this.props.navigation.state.params.follow.community;
@@ -70,7 +69,11 @@ export default class FollowScreen extends Component {
               focalId, date);
 
     if (existingLocations.length === 0) {
-      this.recordLocation();
+      console.log("Not GPS locations in Realm");
+      //this.recordLocation();
+    } else {
+      console.log("Existing location records");
+      console.log(existingLocations);
     }
 
     if (this.props.navigation.state.params.followArrivals !== undefined && this.props.navigation.state.params.followArrivals !== null) {
@@ -175,33 +178,53 @@ export default class FollowScreen extends Component {
       lastPosition: 'unknown',
       maleChimpsSorted: maleChimpsSorted,
       femaleChimpsSorted: femaleChimpsSorted,
+      GPSStatus: 'Not found',
       currentGeolocation: [0, 0],
+      timerInterval: 5*1000,
     };
   };
 
-  recordLocation() {
-    const saveLocationInterval = Number.parseFloat(this.props.navigation.state.params.locationInterval);
-    this.saveLocation(navigator.geolocation);
-    const now = new Date();
-    const minutes = now.getMinutes();
-    const seconds = now.getSeconds();
-    const secondsToGo = (saveLocationInterval * 60) - (minutes * 60 + seconds) % (saveLocationInterval * 60);
-    console.log(secondsToGo);
+  restartTimer() {
+    console.log("Timer started for: ", this.state.timerInterval);
+    this.getGPSnow();
+    const timeoutId = BackgroundTimer.setInterval(() => {
+        this.getGPSnow();
+      }, this.state.timerInterval);
+  }
 
-    const timeoutId = BackgroundTimer.setTimeout(() => {
-      const intervalId = BackgroundTimer.setInterval(() => {
-        console.log("Get location");
-        this.saveLocation(navigator.geolocation);
-      }, saveLocationInterval * 60 * 1000);
+  getGPSnow() {
+    console.log("Get GPS now");
+    var timeout = this.state.timerInterval;
+
+    const focalId = this.props.navigation.state.params.follow.focalId;
+    const date = this.props.navigation.state.params.follow.date;
+    const community = this.props.navigation.state.params.follow.community;
+    const followStartTime = this.props.navigation.state.params.followTime;
+
+    navigator.geolocation.getCurrentPosition((position) => {
+      this.setState({ currentGeolocation: [position.coords.longitude, position.coords.latitude] });
+      this.setState({ GPSStatus: 'OK' });
+
       realm.write(() => {
-        this.props.navigation.state.params.follow.gpsIntervalId = intervalId;
+        const newLocation = realm.create('Location', {
+          date: date,
+          focalId: focalId,
+          followStartTime: followStartTime,
+          community: community,
+          timestamp: position.timestamp,
+          longitude: position.coords.longitude,
+          latitude: position.coords.latitude,
+          altitude: position.coords.altitude,
+          accuracy: position.coords.accuracy
+        });
       });
-    }, secondsToGo * 1000);
-
-    realm.write(() => {
-      this.props.navigation.state.params.follow.gpsFirstTimeoutId = timeoutId;
-    });
-  };
+    }, (error) => {
+      //alert(JSON.stringify(error));
+      console.log("Couldn't get lock");
+      this.setState({ GPSStatus: 'Not found' });
+    },
+    { enableHighAccuracy: true, timeout: timeout });
+  }
 
   getSortedChimps(chimps, sex, followArrivals) {
     const sexChimps = chimps.filter((c) => c.sex === sex);
@@ -317,39 +340,6 @@ export default class FollowScreen extends Component {
     this.props.navigation.navigate('MenuScreen');
   }
 
-  saveLocation(geolocation) {
-    const focalId = this.props.navigation.state.params.follow.focalId;
-    const date = this.props.navigation.state.params.follow.date;
-    const community = this.props.navigation.state.params.follow.community;
-    const followStartTime = this.props.navigation.state.params.followTime;
-
-    geolocation.getCurrentPosition(
-        (position) => {
-          this.setState({ currentGeolocation: [position.coords.longitude, position.coords.latitude] });
-          realm.write(() => {
-            const newLocation = realm.create('Location', {
-              date: date,
-              focalId: focalId,
-              followStartTime: followStartTime,
-              community: community,
-              timestamp: position.timestamp,
-              longitude: position.coords.longitude,
-              latitude: position.coords.latitude,
-              altitude: position.coords.altitude,
-              accuracy: position.coords.accuracy
-            });
-          });
-        },
-        (error) => {
-          alert(JSON.stringify(error));
-          console.log("Couldn't get lock");
-          this.setState({ currentGeolocation: ['x', 'x']});
-          this.recordLocation();
-        },
-        {enableHighAccuracy: true, timeout: 10000}
-    );
-  }
-
   render() {
     //console.log("Rendering FollowScreen");
     const strings = this.props.screenProps.localizedStrings;
@@ -446,7 +436,7 @@ export default class FollowScreen extends Component {
             style={[sharedStyles.btn, sharedStyles.btnSpecial]}
             onPress={this.presentEndFollowAlert.bind(this)} title={strings.Follow_EndFollowButtonTitle} >
           </Button>
-          <Text>You are at: {this.state.currentGeolocation[0]}, {this.state.currentGeolocation[1]}</Text>
+          <Text>GPS: { this.state.GPSStatus }</Text>
         </View>
 
         <FollowScreenHeader
@@ -606,3 +596,59 @@ const styles = {
     marginRight: 8
   }
 };
+
+// recordLocation() {
+//   this.saveLocation(navigator.geolocation);
+//   const now = new Date();
+//   const minutes = now.getMinutes();
+//   const seconds = now.getSeconds();
+//   const secondsToGo = (saveLocationInterval * 60) - (minutes * 60 + seconds) % (saveLocationInterval * 60);
+//   console.log(secondsToGo);
+//
+//   const timeoutId = BackgroundTimer.setTimeout(() => {
+//     const intervalId = BackgroundTimer.setInterval(() => {
+//       console.log("Get location");
+//       this.saveLocation(navigator.geolocation);
+//     }, saveLocationInterval * 60 * 1000);
+//     realm.write(() => {
+//       this.props.navigation.state.params.follow.gpsIntervalId = intervalId;
+//     });
+//   }, secondsToGo * 1000);
+//
+//   realm.write(() => {
+//     this.props.navigation.state.params.follow.gpsFirstTimeoutId = timeoutId;
+//   });
+// };
+
+// saveLocation(geolocation) {
+//   const focalId = this.props.navigation.state.params.follow.focalId;
+//   const date = this.props.navigation.state.params.follow.date;
+//   const community = this.props.navigation.state.params.follow.community;
+//   const followStartTime = this.props.navigation.state.params.followTime;
+//
+//   geolocation.getCurrentPosition(
+//       (position) => {
+//         this.setState({ currentGeolocation: [position.coords.longitude, position.coords.latitude] });
+//         realm.write(() => {
+//           const newLocation = realm.create('Location', {
+//             date: date,
+//             focalId: focalId,
+//             followStartTime: followStartTime,
+//             community: community,
+//             timestamp: position.timestamp,
+//             longitude: position.coords.longitude,
+//             latitude: position.coords.latitude,
+//             altitude: position.coords.altitude,
+//             accuracy: position.coords.accuracy
+//           });
+//         });
+//       },
+//       (error) => {
+//         alert(JSON.stringify(error));
+//         console.log("Couldn't get lock");
+//         this.setState({ currentGeolocation: ['x', 'x']});
+//         this.recordLocation();
+//       },
+//       {enableHighAccuracy: true, timeout: 10000}
+//   );
+// }

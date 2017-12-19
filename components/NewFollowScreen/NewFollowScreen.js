@@ -26,7 +26,6 @@ export default class NewFollowScreen extends Component {
     focalChimpId: null,
     date: new Date(),
     researcher: '',
-    locationInterval: 15,
   };
 
   componentDidMount() {
@@ -160,18 +159,6 @@ export default class NewFollowScreen extends Component {
             placeholder={strings.NewFollow_ResearcherName}
         />
 
-        <Picker
-            style={styles.inputField}
-            selectedValue={this.state.locationInterval}
-            onValueChange={(t) => this.setState({locationInterval: t})}>
-            <Picker.Item label = "15 min (default)" value = "15" />
-            <Picker.Item label = "15 sec" value = "0.25" />
-            <Picker.Item label = "30 sec" value = "0.5" />
-            <Picker.Item label = "1 min" value = "1" />
-            <Picker.Item label = "2 min" value = "2" />
-            <Picker.Item label = "5 min" value = "5" />
-        </Picker>
-
         <Button
             style={[styles.beginBtn, sharedStyles.btn, sharedStyles.btnSuccess]}
             onPress={() => {
@@ -184,9 +171,17 @@ export default class NewFollowScreen extends Component {
               const hasSetFocalChimpId = this.state.focalChimpId != null;
               const hasSetResearcher = this.state.researcher != '';
 
-              if ([hasSetBeginTime, hasSetCommunity, hasSetFocalChimpId, hasSetResearcher].some(e => !e)) {
+              if ([hasSetBeginTime, hasSetCommunity, hasSetFocalChimpId].some(e => !e)) {
                 Alert.alert(
                   'Invalid Input',
+                  'My Alert Msg',
+                  [
+                    {text: 'OK', onPress: () => console.log('OK Pressed')},
+                  ]
+                );
+              } else if(!hasSetResearcher) {
+                Alert.alert(
+                  'Please enter name of Researcher',
                   'My Alert Msg',
                   [
                     {text: 'OK', onPress: () => console.log('OK Pressed')},

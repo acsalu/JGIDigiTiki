@@ -17,6 +17,7 @@ import RNFS from 'react-native-fs';
 import ExportDataScreen from './components/ExportDataScreen/ExportDataScreen';
 import FollowListScreen from './components/FollowListScreen/FollowListScreen';
 import FollowScreen from './components/FollowScreen/FollowScreen';
+import GPSTestScreen from './components/GPSTestScreen';
 import MenuScreen from './components/MenuScreen/MenuScreen';
 import NewFollowScreen from './components/NewFollowScreen/NewFollowScreen';
 import SettingsScreen from './components/SettingsScreen/SettingsScreen';
@@ -184,6 +185,7 @@ const Navstack = StackNavigator({
   ExportDataScreen: { screen: ExportDataScreen },
   SummaryScreen: { screen: SummaryScreen },
   SettingsScreen: { screen: SettingsScreen },
+  GPSTestScreen: { screen: GPSTestScreen },
 }, {
   initialRouteName: 'MenuScreen',
 });

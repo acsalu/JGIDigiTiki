@@ -66,7 +66,8 @@ export default class SettingsScreen extends Component {
     const languageOptions = ["en", "sw"];
 
     function setSelectedOption(selectedOption){
-      this.props.onLanguageChanged(selectedOption);
+      //this.props.onLanguageChanged(selectedOption);
+      this.props.screenProps.language = selectedOption;
     }
 
     function renderOption(option, selected, onSelect, index){

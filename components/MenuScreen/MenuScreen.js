@@ -3,6 +3,7 @@ import {
   Button,
   Image,
   TouchableHighlight,
+  TouchableOpacity,
   Text,
   View
 } from 'react-native';
@@ -46,27 +47,27 @@ export default class MenuScreen extends Component {
 
         <Text style={styles.description}>{strings.Menu_Title}</Text>
 
-        <Button
-            onPress={() => {this.props.navigation.navigate('NewFollowScreen');}}
-            style={[sharedStyles.btn, styles.menuBtn]} title={strings.Menu_NewFollow}
-        >
+        <TouchableOpacity onPress={() => { this.props.navigation.navigate('NewFollowScreen');}}
+        style={styles.menuBtn}>
+            <Text style={styles.menuBtnText}> {strings.Menu_NewFollow} </Text>
+        </TouchableOpacity>
 
-        </Button>
+        <TouchableOpacity onPress={() => { this.props.navigation.navigate('FollowListScreen');}}
+        style={styles.menuBtn}>
+            <Text style={styles.menuBtnText}> {strings.Menu_ContinueFollow} </Text>
+        </TouchableOpacity>
 
-        <Button
-            onPress={() => {this.props.navigation.navigate('FollowListScreen');}}
-            style={[sharedStyles.btn, styles.menuBtn]} title={strings.Menu_ContinueFollow}
-        >
+        <TouchableOpacity onPress={() => { this.props.navigation.navigate('ExportDataScreen');}}
+        style={styles.menuBtn}>
+            <Text style={styles.menuBtnText}> {strings.Menu_ExportData} </Text>
+        </TouchableOpacity>
 
-        </Button>
+        <TouchableOpacity onPress={() => { this.props.navigation.navigate('GPSTestScreen');}}
+        style={styles.menuBtn}>
+            <Text style={styles.menuBtnText}> GPS Monitor </Text>
+        </TouchableOpacity>
 
-        <Button
-            onPress={() => {this.props.navigation.navigate('ExportDataScreen');}}
-            style={[sharedStyles.btn, styles.menuBtn]} title={strings.Menu_ExportData}>
-
-        </Button>
-
-        <Text>Version: 0.3.2</Text>
+        <Text>Version: 0.3.3</Text>
 
       </Image>
     );
@@ -106,6 +107,16 @@ const styles = {
     textAlign: 'center',
     lineHeight: 40,
     color: 'black'
+  },
+  menuBtnText: {
+    paddingTop: 12,
+    paddingBottom: 12,
+    paddingLeft: 15,
+    paddingRight: 15,
+    fontSize: 28,
+    color: '#fff',
+    backgroundColor: '#33b5e5',
+    borderRadius: 3
   },
   menuBtn: {
     width: 500,
