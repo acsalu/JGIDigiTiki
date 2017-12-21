@@ -196,9 +196,9 @@ const styles = {
     borderWidth: 0.5,
   },
   chimpColTitleText: {
-    transform: [{ rotate: '90deg'}],
-    width: 32,
-    fontSize: 11,
+    transform: [{ rotate: '270deg'}],
+    width: 40,
+    fontSize: 18,
     color: 'black',
     fontWeight: 'bold'
   },

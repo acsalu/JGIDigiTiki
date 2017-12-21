@@ -69,7 +69,7 @@ export default class FollowScreen extends Component {
               focalId, date);
 
     if (existingLocations.length === 0) {
-      console.log("Not GPS locations in Realm");
+      console.log("No GPS locations in Realm");
       //this.recordLocation();
     } else {
       console.log("Existing location records");
@@ -180,7 +180,7 @@ export default class FollowScreen extends Component {
       femaleChimpsSorted: femaleChimpsSorted,
       GPSStatus: 'Not found',
       currentGeolocation: [0, 0],
-      timerInterval: 5*1000,
+      timerInterval: 15*60*1000,
     };
   };
 
@@ -202,6 +202,7 @@ export default class FollowScreen extends Component {
     const followStartTime = this.props.navigation.state.params.followTime;
 
     navigator.geolocation.getCurrentPosition((position) => {
+      console.log("Wrote to Realm");
       this.setState({ currentGeolocation: [position.coords.longitude, position.coords.latitude] });
       this.setState({ GPSStatus: 'OK' });
 

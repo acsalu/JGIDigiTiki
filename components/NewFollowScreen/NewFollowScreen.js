@@ -171,9 +171,25 @@ export default class NewFollowScreen extends Component {
               const hasSetFocalChimpId = this.state.focalChimpId != null;
               const hasSetResearcher = this.state.researcher != '';
 
-              if ([hasSetBeginTime, hasSetCommunity, hasSetFocalChimpId].some(e => !e)) {
+              if (!hasSetBeginTime) {
                 Alert.alert(
-                  'Invalid Input',
+                  'Please choose a Start time',
+                  'My Alert Msg',
+                  [
+                    {text: 'OK', onPress: () => console.log('OK Pressed')},
+                  ]
+                );
+              } else if(!hasSetCommunity) {
+                Alert.alert(
+                  'Please choose the Community',
+                  'My Alert Msg',
+                  [
+                    {text: 'OK', onPress: () => console.log('OK Pressed')},
+                  ]
+                );
+              } else if(!hasSetFocalChimpId) {
+                Alert.alert(
+                  'Please choose the Target',
                   'My Alert Msg',
                   [
                     {text: 'OK', onPress: () => console.log('OK Pressed')},
