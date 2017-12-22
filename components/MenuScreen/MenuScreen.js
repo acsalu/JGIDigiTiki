@@ -67,7 +67,7 @@ export default class MenuScreen extends Component {
             <Text style={styles.menuBtnText}> GPS Monitor </Text>
         </TouchableOpacity>
 
-        <Text>Version: 0.3.3</Text>
+        <Text>Version: 0.3.3.2</Text>
 
       </Image>
     );

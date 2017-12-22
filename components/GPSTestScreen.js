@@ -10,18 +10,22 @@ export default class GPSTestScreen extends Component {
 
   intervalId: ?number = null;
   watchId: ?number = null;
+  watchId2: ?number = null;
+  watchId3: ?number = null;
 
   constructor(props) {
     super(props);
 
     this.state = {
       geolocationHistory: [],
+      geolocationHistory2: [],
+      geolocationHistory3: [],
       lastGPSrecordDateTime: '-',
       currentGeolocation: [0, 0],
       initialPosition: 'unknown',
       lastPosition: 'unknown',
       timerTimeout: 0,
-      timerInterval: 5*1000, // 15*60*1000
+      timerInterval: 60*1000, // 15*60*1000
     }
   }
 
@@ -31,7 +35,7 @@ export default class GPSTestScreen extends Component {
 
   componentWillUnmount() {
     BackgroundTimer.clearInterval(intervalId);
-    navigator.geolocation.clearWatch(this.watchId);
+    navigator.geolocation.clearWatch(watchId);
   }
 
   getGPSnow() {
@@ -53,9 +57,69 @@ export default class GPSTestScreen extends Component {
             this.getGPSnow();
             break;
         default:
-            alert(JSON.stringify(error));
+            this.getGPSnow();
+            //alert(JSON.stringify(error));
       }
-    });
+    },
+    {
+      enableHighAccuracy: true, // FINE_LOCATION
+      timeout: 2*60*1000, // wait for signal for 2 minutes, then call ErrorCallback
+      maximumAge: 2*60*1000
+    }
+  );
+  }
+
+  getGPSnow2() {
+    var timeout = this.state.timerInterval;
+
+    watchId2 = navigator.geolocation.getCurrentPosition((position) => {
+      console.log("Got GPS position")
+      const dateTime = new Date();
+      var dateTimeString = dateTime.getHours().toString() + 'H :' + dateTime.getMinutes().toString() + 'M: ' + dateTime.getSeconds().toString() + 'S';
+
+      this.setState({ geolocationHistory2: [...this.state.geolocationHistory2, [position.coords.longitude, position.coords.latitude]]});
+    }, (error) => {
+      switch(error.code) {
+        case error.TIMEOUT:
+            console.log("Couldn't get lock");
+            this.getGPSnow2();
+            break;
+        default:
+            this.getGPSnow2();
+            //alert(JSON.stringify(error));
+      }
+    },
+    {
+      enableHighAccuracy: true, // FINE_LOCATION
+    }
+  );
+  }
+
+  getGPSnow3() {
+    var timeout = this.state.timerInterval;
+
+    watchId3 = navigator.geolocation.getCurrentPosition((position) => {
+      console.log("Got GPS position")
+      const dateTime = new Date();
+      var dateTimeString = dateTime.getHours().toString() + 'H :' + dateTime.getMinutes().toString() + 'M: ' + dateTime.getSeconds().toString() + 'S';
+
+      this.setState({ geolocationHistory3: [...this.state.geolocationHistory3, [position.coords.longitude, position.coords.latitude]]});
+    }, (error) => {
+      switch(error.code) {
+        case error.TIMEOUT:
+            console.log("Couldn't get lock");
+            this.getGPSnow3();
+            break;
+        default:
+            this.getGPSnow3();
+            //alert(JSON.stringify(error));
+      }
+    },
+    {
+      enableHighAccuracy: true, // FINE_LOCATION
+      timeout: 2*60*1000
+    }
+  );
   }
 
   changeGPSInterval(interval) {
@@ -69,10 +133,13 @@ export default class GPSTestScreen extends Component {
   restartTimer() {
     console.log("Timer started for: ", this.state.timerInterval);
     this.getGPSnow();
-
+    this.getGPSnow2();
+    this.getGPSnow3();
     const interval = this.state.timerInterval;
     intervalId = BackgroundTimer.setInterval(() => {
       this.getGPSnow();
+      this.getGPSnow2();
+      this.getGPSnow3();
       if(this.state.timerInterval != interval) {
           BackgroundTimer.clearInterval(intervalId);
           this.restartTimer();
@@ -91,7 +158,9 @@ export default class GPSTestScreen extends Component {
         <Button title="Get location every 5 seconds" onPress={() => this.changeGPSInterval(5)}></Button>
         <Button title="Get location every 5 minutes" onPress={() => this.changeGPSInterval(5*60)}></Button>
         <Button title="Get location every 15 minutes" onPress={() => this.changeGPSInterval(15*60)}></Button>
-        <Text>{ this.state.geolocationHistory }</Text>
+        <Text>{ this.state.geolocationHistory } {"\n\n"}
+        { this.state.geolocationHistory2 } {"\n\n"}
+        { this.state.geolocationHistory3 } {"\n\n"}</Text>
       </View>
     )
   }
