@@ -8,6 +8,9 @@ import BackgroundTimer from 'react-native-background-timer';
 
 export default class GPSTestScreen extends Component {
 
+  intervalId: ?number = null;
+  watchId: ?number = null;
+
   constructor(props) {
     super(props);
 
@@ -26,11 +29,16 @@ export default class GPSTestScreen extends Component {
     this.restartTimer();
   }
 
+  componentWillUnmount() {
+    BackgroundTimer.clearInterval(intervalId);
+    navigator.geolocation.clearWatch(this.watchId);
+  }
+
   getGPSnow() {
-    console.log("Get GPS now");
     var timeout = this.state.timerInterval;
 
-    navigator.geolocation.getCurrentPosition((position) => {
+    watchId = navigator.geolocation.getCurrentPosition((position) => {
+      console.log("Got GPS position")
       const dateTime = new Date();
       var dateTimeString = dateTime.getHours().toString() + 'H :' + dateTime.getMinutes().toString() + 'M: ' + dateTime.getSeconds().toString() + 'S';
 
@@ -38,40 +46,55 @@ export default class GPSTestScreen extends Component {
       this.setState({ currentGeolocation: [position.coords.longitude, position.coords.latitude] });
       this.setState({ geolocationHistory: [...this.state.geolocationHistory, [position.coords.longitude, position.coords.latitude]]});
     }, (error) => {
-      this.setState({ currentGeolocation: ['x', 'x']});
+      switch(error.code) {
+        case error.TIMEOUT:
+            console.log("Couldn't get lock");
+            this.setState({ currentGeolocation: ['x', 'x']});
+            this.getGPSnow();
+            break;
+        default:
+            alert(JSON.stringify(error));
+      }
     },
-    { enableHighAccuracy: true, timeout: timeout });
+    {
+      enableHighAccuracy: true, // FINE_LOCATION
+      timeout: 2*60*1000, // wait for signal for 2 minutes, then call ErrorCallback
+    });
   }
 
   changeGPSInterval(interval) {
     console.log("GPS Timer Interval: ", interval);
     this.setState({ timerInterval: interval*1000 });
     this.setState({ timerTimeout: interval*1000 });
+    BackgroundTimer.clearInterval(intervalId);
     this.restartTimer();
   }
 
   restartTimer() {
     console.log("Timer started for: ", this.state.timerInterval);
-    this.setState({ timerTimeout: this.state.timerInterval });
     this.getGPSnow();
 
-    BackgroundTimer.setInterval(() => {
+    const interval = this.state.timerInterval;
+    intervalId = BackgroundTimer.setInterval(() => {
       this.getGPSnow();
-    },
-    this.state.timerInterval);
+      if(this.state.timerInterval != interval) {
+          BackgroundTimer.clearInterval(intervalId);
+          this.restartTimer();
+      }
+    }, this.state.timerInterval);
   }
 
   render() {
     return(
       <View>
-        <Button title="Get GPS now" onPress={() =>   this.getGPSnow() }></Button>
+        <Button title="Get GPS now" onPress={() => this.getGPSnow() }></Button>
         <Text>Last location recorded at: { this.state.lastGPSrecordDateTime }</Text>
         <Text>Lat: { this.state.currentGeolocation[0] } </Text>
         <Text>Lat: { this.state.currentGeolocation[1] } </Text>
         <Text>GPS Location Interval: { this.state.timerInterval / 1000 } sec</Text>
         <Button title="Get location every 5 seconds" onPress={() => this.changeGPSInterval(5)}></Button>
         <Button title="Get location every 5 minutes" onPress={() => this.changeGPSInterval(5*60)}></Button>
-        <Button title="Get location every 5 minutes" onPress={() => this.changeGPSInterval(15*60)}></Button>
+        <Button title="Get location every 15 minutes" onPress={() => this.changeGPSInterval(15*60)}></Button>
         <Text>{ this.state.geolocationHistory }</Text>
       </View>
     )

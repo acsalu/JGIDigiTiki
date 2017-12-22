@@ -26,7 +26,8 @@ const ModalType = Object.freeze({
 
 export default class FollowScreen extends Component {
 
-  watchID: ?number = null;
+  intervalId: ?number = null;
+  watchId: ?number = null;
 
   componentDidMount() {
     Orientation.lockToPortrait();
@@ -34,7 +35,9 @@ export default class FollowScreen extends Component {
   }
 
   componentWillUnmount() {
-    navigator.geolocation.clearWatch(this.watchID);
+    console.log(intervalId, this.intervalId, this.watchId);
+    BackgroundTimer.clearInterval(this.intervalId);
+    navigator.geolocation.clearWatch(this.watchId);
   }
 
   _unpackChimps(chimps) {
@@ -187,21 +190,21 @@ export default class FollowScreen extends Component {
   restartTimer() {
     console.log("Timer started for: ", this.state.timerInterval);
     this.getGPSnow();
-    const timeoutId = BackgroundTimer.setInterval(() => {
+
+    intervalId = BackgroundTimer.setInterval(() => {
         this.getGPSnow();
       }, this.state.timerInterval);
   }
 
   getGPSnow() {
     console.log("Get GPS now");
-    var timeout = this.state.timerInterval;
 
     const focalId = this.props.navigation.state.params.follow.focalId;
     const date = this.props.navigation.state.params.follow.date;
     const community = this.props.navigation.state.params.follow.community;
     const followStartTime = this.props.navigation.state.params.followTime;
 
-    navigator.geolocation.getCurrentPosition((position) => {
+    watchId = navigator.geolocation.getCurrentPosition((position) => {
       console.log("Wrote to Realm");
       this.setState({ currentGeolocation: [position.coords.longitude, position.coords.latitude] });
       this.setState({ GPSStatus: 'OK' });
@@ -220,11 +223,20 @@ export default class FollowScreen extends Component {
         });
       });
     }, (error) => {
-      //alert(JSON.stringify(error));
-      console.log("Couldn't get lock");
-      this.setState({ GPSStatus: 'Not found' });
+      switch(error.code) {
+        case error.TIMEOUT:
+            console.log("Couldn't get lock");
+            this.setState({ GPSStatus: 'Not found' });
+            this.getGPSnow();
+            break;
+        default:
+            alert(JSON.stringify(error));
+      }
     },
-    { enableHighAccuracy: true, timeout: timeout });
+    {
+      enableHighAccuracy: true, // FINE_LOCATION
+      timeout: 2*60*1000, // wait for signal for 2 minutes, then call ErrorCallback
+    });
   }
 
   getSortedChimps(chimps, sex, followArrivals) {
@@ -325,6 +337,10 @@ export default class FollowScreen extends Component {
   }
 
   endFollow() {
+    console.log(intervalId, this.intervalId, this.watchId,  this.props.navigation.state.params.follow.gpsFirstTimeoutId);
+    BackgroundTimer.clearInterval(intervalId);
+    navigator.geolocation.clearWatch(watchId);
+
     realm.write(() => {
       this.props.navigation.state.params.follow.endTime = this.props.navigation.state.params.followTime;
     });
