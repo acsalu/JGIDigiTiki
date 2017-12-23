@@ -230,7 +230,7 @@ export default class FollowScreen extends Component {
     {
       enableHighAccuracy: true, // FINE_LOCATION
       timeout: 2*60*1000, // wait for signal for 2 minutes, then call ErrorCallback
-      maximumAge: 2*60*1000
+      maximumAge: 5*60*1000
     }
   );
   }

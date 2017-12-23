@@ -1,31 +1,33 @@
 ### Version 0.3.3
 
-## Solved
+## Solved bugs
 3. Initial screen: Please make the buttons (New Follow, Continue Follow, Export data) bigger
 5. Great that a researcher name is now required, but need a specific error message (like “Please enter name of researcher”)
 14. Main screen: If don’t enter a time, get a generic error message. Please have the error message read,
 “Please choose a start time”. Same for “Community” – error message should be, “Please choose the community”. And for Target; “Please choose the target”
 12. SummaryScreen: Please make font bigger for chimp IDs, and rotate chimp IDs 180 degrees
 7. FollowScreen: A suggestion - rather than display the actual GPS coordinates, display the error? Or an indication if there is a signal or not? --- "OK", "Not found" as GPS Status
+11. SummaryScreen: arrivals screen shows all chimps, not specific to either Kasekela or Mitumba
+10. List Follows in "Continue Follow by recent to oldest" ??
 
-## In progress:
-1. Get GPS location - removed 3rd argument in getCurrentPosition
+## Bugs In progress of being solved:
+## SettingsScreen
 4. Initial screen: The app crashes when try to switch from English to Swahili. Need to pass on local language state from this.props.screenProps to reflect on all strings globally in the app
+## GPS:
 1. GPS: it's still giving me only one location per follow. I noticed that when I first started the follow, it gave me coordinates on the main screen (very cool!), but then when I moved to the next interval, it said 'you are at 0,0'. I made sure to wait at least 15 minutes, but it never reported a location (either on the tablet or in the output file). --- rewrote the functions entirely. Added GPS Monitor screen.
 2. GPS: the app always gives the same starting coordinates, and doesn't update after the specified number of minutes. --- Needs to be replicated.
 13. I made sure I had a strong signal (outside), then started a follow at 11:00. At 11:15 I moved the unit several meters, then again at 11:30 before stopping the follow. See the attached output – the location never changes, and it seems to be trying to take several readings per interval.
-
-## Bugs:
-6. FollowScreen: Sometimes the Icons are too big, pushing the females off the edge of the screen. Fixed when app is killed and restarted. --- which icons?
-8. FollowScreen: There are still lots of issues when going back to previous intervals to change arrival data
-For example, if the user realizes that he previously mis-identified a chimp, he’ll need to go back and change it. For the chimp that was previously marked as present, the user can now choose the null arrival icon (great!), but there is no null option in the certainty column like there is for 5m, JK and Groom. Then, when the user navigates to the next interval, that chimp is still listed as being there (although the exported data seem correct).
-9. FollowScreen: Also, when the user navigates back to previous intervals, and then forward again, 5m and JK data (but not grooming) are lost (they appear briefly, then disappear)
-10. Summary Screen – crashes when press on a time to return to. Is this -- line 117 on SummaryScreenTable?
-11. SummaryScreen: arrivals screen shows all chimps, not specific to either Kasekela or Mitumba
+## FollowScreen
 15. Entering foods: When I choose a start time, food name or part name, the choice remains selected for a
 few seconds, then reverts to the default (e.g. “Chagua Chakula”). Not noticed.
 16. Entering other species - Same problem as with the foods – fields keep resetting. Not noticed. How to replicate?
-17. FollowScreen -> SummaryScreen -> FollowScreen crashes app. "updatedFollowArrivals" undefined.
+6. FollowScreen: Sometimes the Icons are too big, pushing the females off the edge of the screen. Fixed when app is killed and restarted. --- which icons?
+10. Summary Screen – crashes when press on a time to return to. FollowScreen -> SummaryScreen -> FollowScreen crashes app.
+
+## Bugs yet to be solved:
+8. FollowScreen: There are still lots of issues when going back to previous intervals to change arrival data
+For example, if the user realizes that he previously mis-identified a chimp, he’ll need to go back and change it. For the chimp that was previously marked as present, the user can now choose the null arrival icon (great!), but there is no null option in the certainty column like there is for 5m, JK and Groom. Then, when the user navigates to the next interval, that chimp is still listed as being there (although the exported data seem correct).
+9. FollowScreen: Also, when the user navigates back to previous intervals, and then forward again, 5m and JK data (but not grooming) are lost (they appear briefly, then disappear)
 
 ### Version 0.3.2
 

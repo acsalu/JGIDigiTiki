@@ -127,6 +127,7 @@ export default class SummaryScreenTable extends Component {
 
   render() {
 
+    console.log("Community: ", this.props.community);
     const startTimeIndex = this.props.times.indexOf(this.props.followStartTime);
     const endTimeIndex = this.props.times.indexOf(this.props.followEndTime);
     const timeLength = endTimeIndex - startTimeIndex + 1;
@@ -138,10 +139,10 @@ export default class SummaryScreenTable extends Component {
         });
 
     const intervals = endTimeIndex - startTimeIndex + 1;
-    const maleChimpCols = this.props.chimps.filter((c) => c.sex == 'M')
+    const maleChimpCols = this.props.chimps.filter((c) => c.sex == 'M' && c.community == this.props.community)
                   .map((c, i) => this.createChimpCol(c.name, i, intervals, c.name === this.props.focalChimpId));
 
-    const femaleChimpCols = this.props.chimps.filter((c) => c.sex == 'F')
+    const femaleChimpCols = this.props.chimps.filter((c) => c.sex == 'F' && c.community == this.props.community)
         .map((c, i) => this.createChimpCol(c.name, i, intervals, c.name === this.props.focalChimpId));
     const foodCol = this.createItemCol("Food", intervals);
     const speciesCol = this.createItemCol("Species", intervals);
@@ -189,7 +190,7 @@ const styles = {
   },
   chimpColTitle: {
     borderBottomWidth: 1,
-    height: 50,
+    height: 60,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 0,
@@ -197,8 +198,8 @@ const styles = {
   },
   chimpColTitleText: {
     transform: [{ rotate: '270deg'}],
-    width: 40,
-    fontSize: 18,
+    width: 50,
+    fontSize: 16,
     color: 'black',
     fontWeight: 'bold'
   },

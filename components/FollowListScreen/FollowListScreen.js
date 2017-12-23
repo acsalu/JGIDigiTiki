@@ -23,6 +23,7 @@ export default class FollowListScreen extends Component {
 
     const follows = realm.objects('Follow')
       .filtered('endTime = $0', undefined);
+
     const rows = follows.map((f, i) => {
       return (
         <FollowListRow
@@ -41,7 +42,7 @@ export default class FollowListScreen extends Component {
     return(
       <View style={styles.container}>
         <ScrollView style={styles.scrollView}>
-        {rows}
+        {rows.reverse()}
         </ScrollView>
       </View>
     );

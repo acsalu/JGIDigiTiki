@@ -57,6 +57,7 @@ export default class SummaryScreen extends Component {
       followArrivalSummary[fa.chimpId].push(fa);
     }
 
+    let updatedFollowArrivals = {} // TODO: 
 
     return(
         <View style={styles.container}>
@@ -69,6 +70,7 @@ export default class SummaryScreen extends Component {
           />
           <SummaryScreenTable
             focalChimpId={this.props.navigation.state.params.follow.focalId}
+            community={this.props.navigation.state.params.follow.community}
             chimps={this.props.screenProps.chimps}
             followStartTime={followStartTime}
             followEndTime={lastFollowStartTime}
