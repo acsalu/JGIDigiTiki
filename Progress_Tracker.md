@@ -1,5 +1,14 @@
 ### Version 0.3.3
 
+## Questions:
+1. If [] shows the Chimp's status, what is the meaning of the column 'C'?
+2. List Follows in "Continue Follow is now listed by most recent to oldest". Is this a good idea?
+3. 15. Entering foods: When I choose a start time, food name or part name, the choice remains selected for a
+few seconds, then reverts to the default (e.g. “Chagua Chakula”). Not noticed.
+16. Entering other species - Same problem as with the foods – fields keep resetting. Not noticed. How to replicate?
+6. FollowScreen: Sometimes the Icons are too big, pushing the females off the edge of the screen. Fixed when app is killed and restarted. --- which icons?
+7. Summary Screen – crashes when press on a time to return to. FollowScreen -> SummaryScreen -> FollowScreen crashes app. Solved partially to make sure the app doesn't crash. Are the follow details displayed as expected? 
+
 ## Solved bugs
 3. Initial screen: Please make the buttons (New Follow, Continue Follow, Export data) bigger
 5. Great that a researcher name is now required, but need a specific error message (like “Please enter name of researcher”)
@@ -8,7 +17,6 @@
 12. SummaryScreen: Please make font bigger for chimp IDs, and rotate chimp IDs 180 degrees
 7. FollowScreen: A suggestion - rather than display the actual GPS coordinates, display the error? Or an indication if there is a signal or not? --- "OK", "Not found" as GPS Status
 11. SummaryScreen: arrivals screen shows all chimps, not specific to either Kasekela or Mitumba
-10. List Follows in "Continue Follow by recent to oldest" ??
 
 ## Bugs In progress of being solved:
 ## SettingsScreen
@@ -17,12 +25,6 @@
 1. GPS: it's still giving me only one location per follow. I noticed that when I first started the follow, it gave me coordinates on the main screen (very cool!), but then when I moved to the next interval, it said 'you are at 0,0'. I made sure to wait at least 15 minutes, but it never reported a location (either on the tablet or in the output file). --- rewrote the functions entirely. Added GPS Monitor screen.
 2. GPS: the app always gives the same starting coordinates, and doesn't update after the specified number of minutes. --- Needs to be replicated.
 13. I made sure I had a strong signal (outside), then started a follow at 11:00. At 11:15 I moved the unit several meters, then again at 11:30 before stopping the follow. See the attached output – the location never changes, and it seems to be trying to take several readings per interval.
-## FollowScreen
-15. Entering foods: When I choose a start time, food name or part name, the choice remains selected for a
-few seconds, then reverts to the default (e.g. “Chagua Chakula”). Not noticed.
-16. Entering other species - Same problem as with the foods – fields keep resetting. Not noticed. How to replicate?
-6. FollowScreen: Sometimes the Icons are too big, pushing the females off the edge of the screen. Fixed when app is killed and restarted. --- which icons?
-10. Summary Screen – crashes when press on a time to return to. FollowScreen -> SummaryScreen -> FollowScreen crashes app.
 
 ## Bugs yet to be solved:
 8. FollowScreen: There are still lots of issues when going back to previous intervals to change arrival data
