@@ -183,8 +183,8 @@ export default class FollowScreen extends Component {
       femaleChimpsSorted: femaleChimpsSorted,
       GPSStatus: 'Not found',
       currentGeolocation: [0, 0],
-      timerInterval: 15*60*1000,
-    };
+      timerInterval: 15*60*1000, // 15 mins
+     };
   };
 
   restartTimer() {
@@ -223,15 +223,9 @@ export default class FollowScreen extends Component {
         });
       });
     }, (error) => {
-      switch(error.code) {
-        case error.TIMEOUT:
-            console.log("Couldn't get lock");
-            this.setState({ GPSStatus: 'Not found' });
-            this.getGPSnow();
-            break;
-        default:
-            alert(JSON.stringify(error));
-      }
+        console.log("Couldn't get lock");
+        this.setState({ currentGeolocation: ['x', 'x']});
+        this.getGPSnow();
     },
     {
       enableHighAccuracy: true, // FINE_LOCATION
