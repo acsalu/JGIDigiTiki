@@ -1,4 +1,4 @@
-### Version 0.3.3
+### Version 0.3.3.2
 
 ## Questions:
 1. If [] shows the Chimp's status, what is the meaning of the column 'C'?
@@ -7,7 +7,8 @@
 few seconds, then reverts to the default (e.g. “Chagua Chakula”). Not noticed.
 16. Entering other species - Same problem as with the foods – fields keep resetting. Not noticed. How to replicate?
 6. FollowScreen: Sometimes the Icons are too big, pushing the females off the edge of the screen. Fixed when app is killed and restarted. --- which icons?
-7. Summary Screen – crashes when press on a time to return to. FollowScreen -> SummaryScreen -> FollowScreen crashes app. Solved partially to make sure the app doesn't crash. Are the follow details displayed as expected? 
+7. Summary Screen – crashes when press on a time to return to. FollowScreen -> SummaryScreen -> FollowScreen crashes app. Solved partially to make sure the app doesn't crash. Are the follow details displayed as expected?
+8. Follow Screen: When you navigate to the new interval, 5m, JK and G are supposed to be blank? 
 
 ## Solved bugs
 3. Initial screen: Please make the buttons (New Follow, Continue Follow, Export data) bigger
