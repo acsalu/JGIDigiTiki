@@ -155,6 +155,7 @@ export default class ExportDataScreen extends Component {
   async exportFollow(follow, path) {
     const prefix = 'export';
 
+    const followOutput = this._getFollowOutput(follow);
     const followArrivals = this._getFollowArrivals(follow);
     const foods = this._getFoods(follow);
     const species = this._getSpecies(follow);
@@ -167,7 +168,7 @@ export default class ExportDataScreen extends Component {
     const fiveMeterFollowArrivals = this._getFiveMeterFollowArrivals(followArrivals);
     const locationOutputs = this._getLocationOutputs(locations);
 
-    await this._exportFollow(follow, path, prefix);
+    await this._exportFollow(followOutput, path, prefix);
     await this._exportFollowArrivals(followIntervals, path, prefix);
     await this._exportFoods(foods, path, prefix);
     await this._exportSpecies(species, path, prefix);
@@ -175,6 +176,19 @@ export default class ExportDataScreen extends Component {
     await this._exportArmsReach(armsReachFollowArrivals, path, prefix);
     await this._exportFiveMeter(fiveMeterFollowArrivals, path, prefix);
     await this._exportMapLocation(locationOutputs, path, prefix);
+  }
+
+  _getFollowOutput(follow) {
+    return {
+        date: Util.getDateString(follow.date),
+        focalId: follow.focalId,
+        communityId: follow.community,
+        startTime: Util.getTimeOutput(follow.startTime),
+        amObserver1: follow.amObserver1,
+        day: follow.day,
+        month: follow.month,
+        year: follow.year
+      };
   }
 
   _getFollowArrivals(follow) {
@@ -187,11 +201,31 @@ export default class ExportDataScreen extends Component {
   }
 
   _getFoods(follow) {
-    return this._getFollowData(follow, 'Food');
+    const follow_food = this._getFollowData(follow, 'Food');
+
+    return follow_food
+      .map((fo, i) => ({
+        date: Util.getDateString(fo.date),
+        focalId: fo.focalId,
+        startTime: Util.getTimeOutput(fo.startTime),
+        endTime: Util.getTimeOutput(fo.endTime),
+        foodName: fo.foodName,
+        foodPart: fo.foodPart
+      }));
   }
 
   _getSpecies(follow) {
-    return this._getFollowData(follow, 'Species');
+    const follow_species = this._getFollowData(follow, 'Species');
+
+    return follow_species
+      .map((fo, i) => ({
+        date: Util.getDateString(fo.date),
+        focalId: fo.focalId,
+        startTime: Util.getTimeOutput(fo.startTime),
+        endTime: Util.getTimeOutput(fo.endTime),
+        speciesName: fo.speciesName,
+        speciesCount: fo.speciesCount
+      }));
   }
 
   _getLocations(follow) {
@@ -350,10 +384,10 @@ export default class ExportDataScreen extends Component {
     followOutput.communityId = Util.getCommunityIdOutput(followOutput.community);
     const csvFilePath = `${path}/${prefix}-follow.csv`;
     const csvFields = [
-      'FOL_date',
+      'FOL_date', // display only date
       'FOL_B_AnimID',
       'FOL_CL_community_id',
-      'FOL_time_begin',
+      'FOL_time_begin', // convert to English time
       'FOL_am_observer1',
       'FOL_day',
       'FOL_month',
@@ -393,10 +427,10 @@ export default class ExportDataScreen extends Component {
   async _exportFoods(foods, path, prefix) {
     const csvFilePath = `${path}/${prefix}-food.csv`;
     const csvFields = [
-      'FB_FOL_date',
+      'FB_FOL_date', // display only date
       'FB_FOL_B_AnimId',
-      'FB_begin_feed_time',
-      'FB_end_feed_time',
+      'FB_begin_feed_time', // convert to English time
+      'FB_end_feed_time', // convert to English time
       'FB_FL_local_food_name',
       'FB_FPL_local_food_part'
     ];
@@ -410,10 +444,10 @@ export default class ExportDataScreen extends Component {
   async _exportSpecies(species, path, prefix) {
     const csvFilePath = `${path}/${prefix}-other-species.csv`;
     const csvFields = [
-      'OS_FOL_date',
+      'OS_FOL_date', // display only date
       'OS_FOL_B_focal_AnimId',
-      'OS_time_begin',
-      'OS_time_end',
+      'OS_time_begin', // convert to English time
+      'OS_time_end', // convert to English time
       'OS_OSL_local_species_name',
       'OS_duration'
     ];

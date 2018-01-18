@@ -21,7 +21,7 @@ export default class GPSTestScreen extends Component {
       initialPosition: 'unknown',
       lastPosition: 'unknown',
       timerTimeout: 0,
-      timerInterval: 2*60*1000, // 15*60*1000
+      timerInterval: 5*60*1000, // 15*60*1000
     }
   }
 
@@ -52,7 +52,7 @@ export default class GPSTestScreen extends Component {
     {
       enableHighAccuracy: true, // FINE_LOCATION
       timeout: 2*60*1000, // wait for signal for 2 minutes, then call ErrorCallback
-      maximumAge: 60*1000 // maximumAge should be less than timerInterval
+      maximumAge: 3*60*1000 // maximumAge should be less than timerInterval
     }
   );
   }

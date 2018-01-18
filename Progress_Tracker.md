@@ -1,14 +1,58 @@
-### Version 0.3.3.2
+### Version 0.3.4
 
 ## Questions:
-1. If [] shows the Chimp's status, what is the meaning of the column 'C'?
-2. List Follows in "Continue Follow is now listed by most recent to oldest". Is this a good idea?
+
+
+
+## Solved Bugs
+
+
+
+## Bugs in progress: Please confirm if it has been solved
+1. Output formatting:
+  o   Export-follow.csv
+  §  FOL_date column: Please output just the date, not the time
+  §  FOL_time_begin: Please convert to English time
+
+  o   Export-food.csv
+  §  FB_FOL_date: Please output the date only, not the time
+  §  FB_begin_feed_time & FB_end_feed_time: Please convert to English time
+
+  o   Export-other-species.csv
+  §  Same fixes as in Export-food.csv
+2. GPS reports multiple records per interval
+3. Rewrite previous entries in Realm
+
+## Bugs Pipeline: to be solved in next version
+8. FollowScreen: There are still lots of issues when going back to previous intervals to change arrival data
+For example, if the user realizes that he previously mis-identified a chimp, he’ll need to go back and change it. For the chimp that was previously marked as present, the user can now choose the null arrival icon (great!), but there is no null option in the certainty column like there is for 5m, JK and Groom. Then, when the user navigates to the next interval, that chimp is still listed as being there (although the exported data seem correct).
+9. FollowScreen: Also, when the user navigates back to previous intervals, and then forward again, 5m and JK data (but not grooming) are lost (they appear briefly, then disappear)
+6. FollowScreen: Sometimes the Icons are too big, pushing the females off the edge of the screen. Fixed when app is killed and restarted. --- which icons? >>The chimp names and columns
+8. Follow Screen: When you navigate to the new interval, 5m, JK and G are supposed to be blank? >>Yes please
+4. Settings: Switch from English to Swahili. Need to pass on local language state from this.props.screenProps to reflect on all strings globally in the app
+7. Summary Screen: display foods and other species
+
+### Version 0.3.3.3
+
+## Questions:
+
+2. List Follows in "Continue Follow is now listed by most recent to oldest". Is this a good idea? >> Yes
 3. 15. Entering foods: When I choose a start time, food name or part name, the choice remains selected for a
-few seconds, then reverts to the default (e.g. “Chagua Chakula”). Not noticed.
-16. Entering other species - Same problem as with the foods – fields keep resetting. Not noticed. How to replicate?
+few seconds, then reverts to the default (e.g. “Chagua Chakula”). Not noticed. -- Solved
+16. Entering other species - Same problem as with the foods – fields keep resetting. Not noticed. How to replicate? -- solved
+
+1. If [] shows the Chimp's status, what is the meaning of the column 'C'?
+>>Column “C” indicates how “certain” the researcher is that the chimpanzee is present in the group. Sometimes the forest is so thick, or the group very spread out, that the researcher doesn’t know exactly who is there. So, a check mark indicates that a given chimp is definitely there. A dot means that the researcher thinks he/she might be there, but doesn’t know for sure. A blank indicates that the chimp is definitely NOT there.
+
 6. FollowScreen: Sometimes the Icons are too big, pushing the females off the edge of the screen. Fixed when app is killed and restarted. --- which icons?
+>>The chimp names and columns
+
 7. Summary Screen – crashes when press on a time to return to. FollowScreen -> SummaryScreen -> FollowScreen crashes app. Solved partially to make sure the app doesn't crash. Are the follow details displayed as expected?
-8. Follow Screen: When you navigate to the new interval, 5m, JK and G are supposed to be blank? 
+>>> Yes, the app no longer crashes, and navigates to the correct screen.
+>>>I’d like to have foods and other species displayed on the summary screen, if possible
+
+8. Follow Screen: When you navigate to the new interval, 5m, JK and G are supposed to be blank?
+>>Yes please
 
 ## Solved bugs
 3. Initial screen: Please make the buttons (New Follow, Continue Follow, Export data) bigger

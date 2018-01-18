@@ -67,7 +67,7 @@ export default class Util {
   }
 
   static getCertaintyOutput(certaintyLabel) {
-    return certaintyLabel == this.certaintyLabels.certain || 
+    return certaintyLabel == this.certaintyLabels.certain ||
       certaintyLabel == this.certaintyLabels.nestCertain ? 1 : 0;
   }
 
@@ -193,7 +193,7 @@ export default class Util {
     const baseDifference = this.getDbTimeIndex(dbTimeLatter) - this.getDbTimeIndex(dbTimeFormer);
     return baseDifference * 15 + this.getDbTimeOffset(dbTimeLatter) - this.getDbTimeOffset(dbTimeFormer);
   }
-  
+
   static getFollowArrivalTime(dbTime, part) {
     const prefix = dbTime.substring(0, dbTime.length - 3);
     let minutes = parseInt(dbTime.substring(dbTime.length - 3, dbTime.length - 1));

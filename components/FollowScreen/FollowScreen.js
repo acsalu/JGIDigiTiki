@@ -31,13 +31,18 @@ export default class FollowScreen extends Component {
 
   componentDidMount() {
     Orientation.lockToPortrait();
-    this.restartTimer();
+    try {
+      console.log("Timer running ", intervalId);
+    } catch (e) {
+      console.log("No timers running");
+      this.restartTimer();
+    }
   }
 
   componentWillUnmount() {
-    console.log(intervalId, this.intervalId, this.watchId);
-    BackgroundTimer.clearInterval(this.intervalId);
-    navigator.geolocation.clearWatch(this.watchId);
+    console.log(intervalId, watchId);
+    BackgroundTimer.clearInterval(intervalId);
+    navigator.geolocation.clearWatch(watchId);
   }
 
   _unpackChimps(chimps) {
@@ -182,7 +187,6 @@ export default class FollowScreen extends Component {
       maleChimpsSorted: maleChimpsSorted,
       femaleChimpsSorted: femaleChimpsSorted,
       GPSStatus: 'Not found',
-      currentGeolocation: [0, 0],
       timerInterval: 15*60*1000, // 15 mins
      };
   };
@@ -196,6 +200,10 @@ export default class FollowScreen extends Component {
       }, this.state.timerInterval);
   }
 
+  // getGPSnow2() {
+  //   console.log("Write to Realm ", new Date());
+  // }
+
   getGPSnow() {
     console.log("Get GPS now");
 
@@ -205,34 +213,33 @@ export default class FollowScreen extends Component {
     const followStartTime = this.props.navigation.state.params.followTime;
 
     watchId = navigator.geolocation.getCurrentPosition((position) => {
-      console.log("Wrote to Realm");
-      this.setState({ currentGeolocation: [position.coords.longitude, position.coords.latitude] });
-      this.setState({ GPSStatus: 'OK' });
+        console.log("Wrote to Realm ", followStartTime, focalId);
+        this.setState({ GPSStatus: 'OK' });
 
-      realm.write(() => {
-        const newLocation = realm.create('Location', {
-          date: date,
-          focalId: focalId,
-          followStartTime: followStartTime,
-          community: community,
-          timestamp: position.timestamp,
-          longitude: position.coords.longitude,
-          latitude: position.coords.latitude,
-          altitude: position.coords.altitude,
-          accuracy: position.coords.accuracy
+        realm.write(() => {
+          const newLocation = realm.create('Location', {
+            date: date,
+            focalId: focalId,
+            followStartTime: followStartTime,
+            community: community,
+            timestamp: position.timestamp,
+            longitude: position.coords.longitude,
+            latitude: position.coords.latitude,
+            altitude: position.coords.altitude,
+            accuracy: position.coords.accuracy
+          });
         });
-      });
-    }, (error) => {
-        console.log("Couldn't get lock");
-        this.setState({ currentGeolocation: ['x', 'x']});
-        this.getGPSnow();
-    },
-    {
-      enableHighAccuracy: true, // FINE_LOCATION
-      timeout: 2*60*1000, // wait for signal for 2 minutes, then call ErrorCallback
-      maximumAge: 5*60*1000
-    }
-  );
+      }, (error) => {
+          console.log("Couldn't get lock");
+          this.getGPSnow();
+      },
+      {
+        enableHighAccuracy: true, // FINE_LOCATION
+        timeout: 2*60*1000, // wait for signal for 2 minutes, then call ErrorCallback
+        maximumAge: 3*60*1000
+      }
+    );
+    console.log("Watch ID^ ", watchId);
   }
 
   getSortedChimps(chimps, sex, followArrivals) {
@@ -333,7 +340,7 @@ export default class FollowScreen extends Component {
   }
 
   endFollow() {
-    console.log(intervalId, this.intervalId, this.watchId,  this.props.navigation.state.params.follow.gpsFirstTimeoutId);
+    console.log(intervalId, watchId,  this.props.navigation.state.params.follow.gpsFirstTimeoutId);
     BackgroundTimer.clearInterval(intervalId);
     navigator.geolocation.clearWatch(watchId);
 
@@ -488,7 +495,9 @@ export default class FollowScreen extends Component {
                       {text: strings.Follow_NextDataValidationAlertCancel,
                         onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
                       {text: strings.Follow_NextDataValidationAlertConfirm,
-                        onPress: () => this.navigateToFollowTime(nextFollowTime, _.extend(this.state.followArrivals))},
+                        onPress: () => {
+                          this.navigateToFollowTime(nextFollowTime, _.extend(this.state.followArrivals));
+                        }},
                     ],
                     {cancelable: true}
                 );
