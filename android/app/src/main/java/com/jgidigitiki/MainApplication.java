@@ -5,6 +5,8 @@ import android.app.Application;
 import com.babisoft.ReactNativeLocalization.ReactNativeLocalizationPackage;
 import com.chirag.RNMail.*;
 import com.facebook.react.ReactApplication;
+import com.github.yamill.orientation.OrientationPackage;
+import com.ocetnik.timer.BackgroundTimerPackage;
 import com.ocetnik.timer.BackgroundTimerPackage;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
@@ -31,6 +33,8 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new OrientationPackage(),
+            new BackgroundTimerPackage(),
             new BackgroundTimerPackage(),
             new RNZipArchivePackage(),
             new ReactNativeLocalizationPackage(),

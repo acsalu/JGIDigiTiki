@@ -80,6 +80,42 @@ For example, if the user realizes that he previously mis-identified a chimp, heâ
 
 ## Solved:
 1. React Native, React-Navigation upgraded to latest versions. Deprecated components fixed. Data flow restored.
+
+app
+    android {
+        compileSdkVersion 25
+        buildToolsVersion "25.0.1"
+
+        defaultConfig {
+            applicationId "com.jgidigitiki"
+            minSdkVersion 22
+            targetSdkVersion 25
+
+gradle.properties
+    android.useDeprecatedNdk=true
+    MYAPP_RELEASE_STORE_FILE=digitiki-release-key.keystore
+    MYAPP_RELEASE_KEY_ALIAS=digitiki-key
+    MYAPP_RELEASE_STORE_PASSWORD=digitiki
+    MYAPP_RELEASE_KEY_PASSWORD=digitiki
+
+    org.gradle.jvmargs=-Xmx1536M
+
+Error: node_modules/.../RNZipArchivePackage.java:20: error: method does not override or implement a method from a supertype
+  @Override
+-- Remove Override on line 19
+
+To find the latest gradle:
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.0.1'
+    }
+}
+
 2. Added Version number to MenuScreen. To keep track of which version is being tested.
 3. SpeciesNumber selection crashed the app
 5. End Follow button sometimes went missing

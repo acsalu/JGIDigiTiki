@@ -14,7 +14,7 @@
     "lodash": "*",
     "react": "^16.0.0-beta.5",
     "react-native": "*",
-    "react-native-background-timer": "*",
+    "react-native-background-timer": "^2.0.0",
     "react-native-busy-indicator": "*",
     "react-native-button": "^2.1.0",
     "react-native-deprecated-custom-components": "^0.1.1",
