@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {
   Button,
   Image,
+  ImageBackground,
   TouchableHighlight,
   TouchableOpacity,
   Text,
@@ -33,7 +34,7 @@ export default class MenuScreen extends Component {
     const strings = this.props.screenProps.localizedStrings; // default = "en"
 
     return(
-      <Image source={require('../../img/chimp.png')} style={styles.container}>
+      <ImageBackground source={require('../../img/chimp.png')} style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.headerText}>Jane Goodall Institute</Text>
           <TouchableHighlight
@@ -69,7 +70,7 @@ export default class MenuScreen extends Component {
 
         <Text>Version: 0.3.4</Text>
 
-      </Image>
+      </ImageBackground>
     );
   }
 }
@@ -81,7 +82,7 @@ const styles = {
     height: undefined,
     backgroundColor:'white',
     alignItems: 'center',
-    resizeMode: Image.resizeMode.contain
+    //resizeMode: Image.resizeMode.contain
   },
   header: {
     flexDirection: 'row',
