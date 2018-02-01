@@ -76,7 +76,7 @@ export default class FollowArrivalTable extends Component {
 
     this.panels[PanelType.time] = arrivalButtons.concat(departureButtons);
 
-    const certaintyOrder = ['certain', 'uncertain', 'nestCertain', 'nestUncertain'];
+    const certaintyOrder = ['null', 'certain', 'uncertain', 'nestCertain', 'nestUncertain'];
     const certaintyOptions = certaintyOrder.map((c, i) => Util.certaintyLabelsUser[c]);
     const certaintyValues = certaintyOrder.map((c, i) => Util.certaintyLabels[c]);
 

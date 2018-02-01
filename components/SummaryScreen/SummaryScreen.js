@@ -39,10 +39,30 @@ export default class SummaryScreen extends Component {
         .filtered('focalId = $0 AND date = $1', this.props.navigation.state.params.follow.focalId, this.props.navigation.state.params.follow.date);
 
     // TODO: filter using follow.id
-    const food = realm.objects('Food').filtered('focalId = $0 AND date = $1', this.props.navigation.state.params.follow.focalId, this.props.navigation.state.params.follow.date);
+    const foodObjects = realm.objects('Food').filtered('focalId = $0 AND date = $1', this.props.navigation.state.params.follow.focalId, this.props.navigation.state.params.follow.date);
+
+    const food = foodObjects
+      .map((fo, i) => ({
+        date: Util.getDateString(fo.date),
+        focalId: fo.focalId,
+        startTime: Util.getTimeOutput(fo.startTime),
+        endTime: Util.getTimeOutput(fo.endTime),
+        foodName: fo.foodName,
+        foodPart: fo.foodPart
+      }));
 
     // TODO: filter using follow.id
-    const species = realm.objects('Species').filtered('focalId = $0 AND date = $1', this.props.navigation.state.params.follow.focalId, this.props.navigation.state.params.follow.date);
+    const speciesObjects = realm.objects('Species').filtered('focalId = $0 AND date = $1', this.props.navigation.state.params.follow.focalId, this.props.navigation.state.params.follow.date);
+
+    const species = speciesObjects
+      .map((fo, i) => ({
+        date: Util.getDateString(fo.date),
+        focalId: fo.focalId,
+        startTime: Util.getTimeOutput(fo.startTime),
+        endTime: Util.getTimeOutput(fo.endTime),
+        speciesName: fo.speciesName,
+        speciesCount: fo.speciesCount
+    }));
 
     let followStartTimes = [this.props.navigation.state.params.follow.startTime];
     followStartTimes = followStartTimes.concat(followArrivals.map((fa, i) => fa.followStartTime));

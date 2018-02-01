@@ -125,11 +125,20 @@ export default class SummaryScreenTable extends Component {
     );
   }
 
+  // TODO: more complex lists for continued food / species
+  createTimedList(items, intervals) {
+
+    let itemList = [];
+
+    return items.slice(0, intervals);
+  }
+
   render() {
 
     console.log("Community: ", this.props.community);
     console.log(this.props.food);
     console.log(this.props.species);
+
     const startTimeIndex = this.props.times.indexOf(this.props.followStartTime);
     const endTimeIndex = this.props.times.indexOf(this.props.followEndTime);
     const timeLength = endTimeIndex - startTimeIndex + 1;
@@ -141,15 +150,17 @@ export default class SummaryScreenTable extends Component {
         });
 
     const intervals = endTimeIndex - startTimeIndex + 1;
+
     const maleChimpCols = this.props.chimps.filter((c) => c.sex == 'M' && c.community == this.props.community)
                   .map((c, i) => this.createChimpCol(c.name, i, intervals, c.name === this.props.focalChimpId));
 
     const femaleChimpCols = this.props.chimps.filter((c) => c.sex == 'F' && c.community == this.props.community)
         .map((c, i) => this.createChimpCol(c.name, i, intervals, c.name === this.props.focalChimpId));
-    const foodCol = this.createItemCol("Food", intervals);
-    const speciesCol = this.createItemCol("Species", intervals);
-    // const foodCol = this.createItemCol("Food", this.props.food.foodName);
-    // const speciesCol = this.createItemCol("Species", this.props.species.speciesName);
+
+    const foodList = this.createTimedList(this.props.food, intervals);
+    const speciesList = this.createTimedList(this.props.species, intervals);
+    const foodCol = this.createItemCol("Food", foodList);
+    const speciesCol = this.createItemCol("Species", speciesList);
 
     return(
         <View style={styles.container}>
