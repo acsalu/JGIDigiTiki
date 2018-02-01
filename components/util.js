@@ -22,6 +22,7 @@ export default class Util {
   };
 
   static certaintyLabels = {
+    null: 0,
     certain: 1,
     uncertain: 2,
     nestCertain: 3,
@@ -29,6 +30,7 @@ export default class Util {
   };
 
   static certaintyLabelsUser = {
+    null: '',
     certain: '✓',
     uncertain: '•',
     nestCertain: 'N✓',
@@ -36,6 +38,7 @@ export default class Util {
   };
 
   static certaintyLabelsDb2UserMap = {
+    '0': '',
     '1': '✓',
     '2': '•',
     '3': 'N✓',

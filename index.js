@@ -174,7 +174,11 @@ export default class JGIDigiTiki extends Component {
 }
 
 const Navstack = StackNavigator({
-  MenuScreen: { screen: MenuScreen },
+  MenuScreen: { screen: MenuScreen,
+    navigationOptions: {
+      headerLeft: null
+    }
+  },
   NewFollowScreen: { screen: NewFollowScreen },
   FollowScreen: { screen: FollowScreen,
     navigationOptions:  {

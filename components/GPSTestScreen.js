@@ -26,7 +26,12 @@ export default class GPSTestScreen extends Component {
   }
 
   componentDidMount() {
-    this.restartTimer();
+    try {
+      console.log("Timer running ", intervalId);
+    } catch (e) {
+      console.log("No timers running");
+      this.restartTimer();
+    }
   }
 
   componentWillUnmount() {
@@ -35,6 +40,7 @@ export default class GPSTestScreen extends Component {
   }
 
   getGPSnow() {
+    console.log("Get GPS now");
 
     watchId = navigator.geolocation.getCurrentPosition((position) => {
       console.log("Got GPS position")
@@ -68,14 +74,10 @@ export default class GPSTestScreen extends Component {
   restartTimer() {
     console.log("Timer started for: ", this.state.timerInterval);
     this.getGPSnow();
-    const interval = this.state.timerInterval;
+
     intervalId = BackgroundTimer.setInterval(() => {
-      this.getGPSnow();
-      if(this.state.timerInterval != interval) {
-          BackgroundTimer.clearInterval(intervalId);
-          this.restartTimer();
-      }
-    }, this.state.timerInterval);
+        this.getGPSnow();
+      }, this.state.timerInterval);
   }
 
   render() {

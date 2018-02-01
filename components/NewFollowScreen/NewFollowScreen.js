@@ -219,6 +219,7 @@ export default class NewFollowScreen extends Component {
                   const species = this.packValuePairs(this.props.screenProps.species);
 
                   const newFollow = realm.create('Follow', {
+                     id: Util.generateuid(),
                      date: this.state.date,
                      focalId: this.state.focalChimpId,
                      community: this.state.community,
@@ -236,8 +237,6 @@ export default class NewFollowScreen extends Component {
 
                 const follow = realm.objects('Follow').slice(-1).pop();
 
-                //console.log("Navigate to FollowScreen");
-
                 this.props.navigation.navigate('FollowScreen', {
                   follow: follow,
                   followTime: follow.startTime,
@@ -245,7 +244,7 @@ export default class NewFollowScreen extends Component {
                 });
               }
             }}
-          title="Begin"
+          title="Begin Follow"
         >
         </Button>
 

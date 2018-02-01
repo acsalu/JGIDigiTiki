@@ -34,11 +34,14 @@ export default class SummaryScreen extends Component {
 
   render() {
 
+    // TODO: filter using follow.id
     const followArrivals = realm.objects('FollowArrival')
         .filtered('focalId = $0 AND date = $1', this.props.navigation.state.params.follow.focalId, this.props.navigation.state.params.follow.date);
 
+    // TODO: filter using follow.id
     const food = realm.objects('Food').filtered('focalId = $0 AND date = $1', this.props.navigation.state.params.follow.focalId, this.props.navigation.state.params.follow.date);
 
+    // TODO: filter using follow.id
     const species = realm.objects('Species').filtered('focalId = $0 AND date = $1', this.props.navigation.state.params.follow.focalId, this.props.navigation.state.params.follow.date);
 
     let followStartTimes = [this.props.navigation.state.params.follow.startTime];

@@ -40,7 +40,6 @@ export default class FollowScreen extends Component {
   }
 
   componentWillUnmount() {
-    console.log(intervalId, watchId);
     BackgroundTimer.clearInterval(intervalId);
     navigator.geolocation.clearWatch(watchId);
   }
@@ -314,6 +313,7 @@ export default class FollowScreen extends Component {
           updatedFollowArrivals[k] = newFa;
         }
 
+        // TODO: change state -- don't create duplicate components
         this.props.navigation.navigate('FollowScreen', {
           follow: this.props.navigation.state.params.follow,
           followTime: followTime,
@@ -347,7 +347,7 @@ export default class FollowScreen extends Component {
     BackgroundTimer.clearInterval(intervalId);
     navigator.geolocation.clearWatch(watchId);
 
-    // TODO: does this even work? Update Follow using id
+    // TODO: Not working! Update Follow using id
     realm.write(() => {
       this.props.navigation.state.params.follow.endTime = this.props.navigation.state.params.followTime;
     });
@@ -585,6 +585,20 @@ export default class FollowScreen extends Component {
                   let newFollowArrivals = this.state.followArrivals;
                   newFollowArrivals[chimpId] = arrival;
                   this.setState({followArrivals: newFollowArrivals});
+
+                  // realm.create('FollowArrival', {
+                  //   date: this.props.navigation.state.params.follow.date,
+                  //   followStartTime: this.props.navigation.state.params.followTime,
+                  //   focalId: this.props.navigation.state.params.follow.focalId,
+                  //   chimpId: chimpId,
+                  //   time: time,
+                  //   certainty: parseInt(Util.certaintyLabels.certain),
+                  //   estrus: parseInt(Util.estrusLabels.a),
+                  //   isWithin5m: false,
+                  //   isNearestNeighbor: false,
+                  //   grooming: 'N'
+                  // }, true);
+
                 });
               }
             }}

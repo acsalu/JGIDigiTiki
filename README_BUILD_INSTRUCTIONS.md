@@ -55,6 +55,11 @@ Implement onConfigurationChanged method in MainActivity.java
       ......
     }
 
+# Add permissions
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
 # Adding signature so that you can assembleRelease
 Add digitiki-release-key.keystore to android/app
 
@@ -65,7 +70,7 @@ MYAPP_RELEASE_KEY_ALIAS=digitiki-key
 MYAPP_RELEASE_STORE_PASSWORD=digitiki
 MYAPP_RELEASE_KEY_PASSWORD=digitiki
 
-# To speed up build, add the following to android/gradle.properties
+# To speed up build, add the following to android/gradle.properties especially jvmargs of 2GB is great!
 org.gradle.daemon=true
 org.gradle.jvmargs=-Xmx2048M
 org.gradle.configureondemand=true
@@ -101,6 +106,3 @@ Remove duplicate entries in MainApplication.java in android/app/src/.../MainAppl
 ## Code up
 Install missing modules in package.json. Run 'npm install'
 Change index.js
-
-## Next development baacklog:
-1. Use react-native-mixin: This will eliminate a lot of hard work tracking down bugs, such as crashes caused by timeouts firing after a component has been unmounted. http://facebook.github.io/react-native/docs/timers.html

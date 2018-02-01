@@ -1,15 +1,15 @@
+### Version 0.3.5
+
+## Next development backlog:
+1. Use react-native-mixin: This will eliminate a lot of hard work tracking down bugs, such as crashes caused by timeouts firing after a component has been unmounted. http://facebook.github.io/react-native/docs/timers.html
+2. Use Redux for managining follows
+3. Give unique Ids for all elements in the database so that it can be updated. -- Rewrite previous entries in Realm
+
 ### Version 0.3.4
 
-## Questions:
-
-
-
 ## Solved Bugs
-
-
-
-## Bugs in progress: Please confirm if it has been solved
-1. Output formatting:
+1. GPS reports multiple records per interval
+2. Output formatting for date and time columns:
   o   Export-follow.csv
   §  FOL_date column: Please output just the date, not the time
   §  FOL_time_begin: Please convert to English time
@@ -20,18 +20,20 @@
 
   o   Export-other-species.csv
   §  Same fixes as in Export-food.csv
-2. GPS reports multiple records per interval
-3. Rewrite previous entries in Realm
+
+## Bugs in progress
+8. Add Null in C -- FollowScreen: There are still lots of issues when going back to previous intervals to change arrival data
+For example, if the user realizes that he previously mis-identified a chimp, he’ll need to go back and change it. For the chimp that was previously marked as present, the user can now choose the null arrival icon (great!), but there is no null option in the certainty column like there is for 5m, JK and Groom. Then, when the user navigates to the next interval, that chimp is still listed as being there (although the exported data seem correct).
+7. Summary Screen: display foods and other species
+10. Update corrections in previous intervals.
 
 ## Bugs Pipeline: to be solved in next version
-8. FollowScreen: There are still lots of issues when going back to previous intervals to change arrival data
-For example, if the user realizes that he previously mis-identified a chimp, he’ll need to go back and change it. For the chimp that was previously marked as present, the user can now choose the null arrival icon (great!), but there is no null option in the certainty column like there is for 5m, JK and Groom. Then, when the user navigates to the next interval, that chimp is still listed as being there (although the exported data seem correct).
 9. FollowScreen: Also, when the user navigates back to previous intervals, and then forward again, 5m and JK data (but not grooming) are lost (they appear briefly, then disappear)
 6. FollowScreen: Sometimes the Icons are too big, pushing the females off the edge of the screen. Fixed when app is killed and restarted. --- which icons? >>The chimp names and columns
 8. Follow Screen: When you navigate to the new interval, 5m, JK and G are supposed to be blank? >>Yes please
 4. Settings: Switch from English to Swahili. Need to pass on local language state from this.props.screenProps to reflect on all strings globally in the app
 7. Summary Screen: display foods and other species
-11. EndFollow button doesn't end it. All follows show up in Continue Follow screen. EndTime is not being recorded. 
+11. EndFollow button doesn't end it. All follows show up in Continue Follow screen. EndTime is not being recorded.
 
 ### Version 0.3.3.3
 
