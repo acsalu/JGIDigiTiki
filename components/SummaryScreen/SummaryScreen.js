@@ -37,6 +37,10 @@ export default class SummaryScreen extends Component {
     const followArrivals = realm.objects('FollowArrival')
         .filtered('focalId = $0 AND date = $1', this.props.navigation.state.params.follow.focalId, this.props.navigation.state.params.follow.date);
 
+    const food = realm.objects('Food').filtered('focalId = $0 AND date = $1', this.props.navigation.state.params.follow.focalId, this.props.navigation.state.params.follow.date);
+
+    const species = realm.objects('Species').filtered('focalId = $0 AND date = $1', this.props.navigation.state.params.follow.focalId, this.props.navigation.state.params.follow.date);
+
     let followStartTimes = [this.props.navigation.state.params.follow.startTime];
     followStartTimes = followStartTimes.concat(followArrivals.map((fa, i) => fa.followStartTime));
     followStartTimes.sort();
@@ -57,7 +61,7 @@ export default class SummaryScreen extends Component {
       followArrivalSummary[fa.chimpId].push(fa);
     }
 
-    let updatedFollowArrivals = {} // TODO: 
+    let updatedFollowArrivals = {} // TODO:
 
     return(
         <View style={styles.container}>
@@ -75,6 +79,8 @@ export default class SummaryScreen extends Component {
             followStartTime={followStartTime}
             followEndTime={lastFollowStartTime}
             times={this.props.screenProps.times}
+            food={food}
+            species={species}
             onFollowTimeSelected={(t) => {
               this.props.navigation.navigate('FollowScreen', {
                 follow: this.props.navigation.state.params.follow,

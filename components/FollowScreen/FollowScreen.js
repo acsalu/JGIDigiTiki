@@ -96,6 +96,8 @@ export default class FollowScreen extends Component {
               focalId, date, followStartTime, fa.chimpId);
           if (followArrivals.length === 0) {
             const newArrival = realm.create('FollowArrival', {
+              followId: this.props.navigation.state.params.follow.id,
+              id: new Date().getUTCMilliseconds().toString(),
               date: this.props.navigation.state.params.follow.date,
               followStartTime: this.props.navigation.state.params.followTime,
               focalId: this.props.navigation.state.params.follow.focalId,
@@ -123,7 +125,8 @@ export default class FollowScreen extends Component {
     loaderHandler.showLoader('Loading More');
 
     let followArrivals = {};
-    // Populate followArrival in db
+    // TODO: Populate followArrival in db
+    // TODO: filter using followId
     const allFollowArrival = realm.objects('FollowArrival')
         .filtered('focalId = $0 AND date = $1 AND followStartTime = $2', focalId, date, this.props.navigation.state.params.followTime);
     for (let i = 0; i < allFollowArrival.length; i++) {
@@ -131,7 +134,8 @@ export default class FollowScreen extends Component {
       followArrivals[arrival.chimpId] = arrival;
     }
 
-    // Populate food in db
+    // TODO: Populate food in db
+    // TODO: filter using followId
     const allFood = realm.objects('Food')
         .filtered('focalId = $0 AND date = $1', focalId, date);
 
@@ -148,6 +152,7 @@ export default class FollowScreen extends Component {
     }
 
     // Populate species in db
+    // TODO: filter using followId
     const allSpecies = realm.objects('Species')
         .filtered('focalId = $0 AND date = $1', focalId, date);
 
@@ -200,13 +205,10 @@ export default class FollowScreen extends Component {
       }, this.state.timerInterval);
   }
 
-  // getGPSnow2() {
-  //   console.log("Write to Realm ", new Date());
-  // }
-
   getGPSnow() {
     console.log("Get GPS now");
 
+    const followId = this.props.navigation.state.params.follow.id;
     const focalId = this.props.navigation.state.params.follow.focalId;
     const date = this.props.navigation.state.params.follow.date;
     const community = this.props.navigation.state.params.follow.community;
@@ -218,6 +220,7 @@ export default class FollowScreen extends Component {
 
         realm.write(() => {
           const newLocation = realm.create('Location', {
+            followId: followId,
             date: date,
             focalId: focalId,
             followStartTime: followStartTime,
@@ -344,9 +347,11 @@ export default class FollowScreen extends Component {
     BackgroundTimer.clearInterval(intervalId);
     navigator.geolocation.clearWatch(watchId);
 
+    // TODO: does this even work? Update Follow using id
     realm.write(() => {
       this.props.navigation.state.params.follow.endTime = this.props.navigation.state.params.followTime;
     });
+
     if (this.props.navigation.state.params.follow.gpsFirstTimeoutId !== undefined) {
       console.log("stop gps timeout");
       BackgroundTimer.clearTimeout(this.props.navigation.state.params.follow.gpsFirstTimeoutId);
@@ -395,15 +400,17 @@ export default class FollowScreen extends Component {
               realm.write(() => {
                 if (!isEditing) {
                   let objectDict = {
+                    followId: this.props.navigation.state.params.follow.id,
+                    id: new Date().getUTCMilliseconds(),
                     date: this.props.navigation.state.params.follow.date,
                     focalId: this.props.navigation.state.params.follow.focalId,
                     startTime: data.startTime,
-                    endTime: data.endTime,
-                    id: new Date().getUTCMilliseconds()
+                    endTime: data.endTime
                   };
                   objectDict[mainFieldName] = data.mainSelection;
                   objectDict[secondaryFieldName] = data.secondarySelection;
 
+                  // Food or Species
                   const newObject = realm.create(className, objectDict);
 
                   if (data.endTime === 'ongoing') {
@@ -547,6 +554,8 @@ export default class FollowScreen extends Component {
             createNewArrival={(chimpId, time) => {
               realm.write(() => {
                 const newArrival = realm.create('FollowArrival', {
+                  followId: this.props.navigation.state.params.follow.id,
+                  id: new Date().getUTCMilliseconds().toString(),
                   date: this.props.navigation.state.params.follow.date,
                   followStartTime: this.props.navigation.state.params.followTime,
                   focalId: this.props.navigation.state.params.follow.focalId,
@@ -567,8 +576,12 @@ export default class FollowScreen extends Component {
               const chimpId = this.state.selectedChimp;
               if (chimpId !== null) {
                 let arrival = this.state.followArrivals[chimpId];
+                // TODO: is this where the arrival status is recorded? Does it work when you go to previous intervals and change data?
                 realm.write(() => {
+                  //id = this.state.followArrivals[chimpId].id;
                   arrival[field] = value;
+
+                  // update State
                   let newFollowArrivals = this.state.followArrivals;
                   newFollowArrivals[chimpId] = arrival;
                   this.setState({followArrivals: newFollowArrivals});

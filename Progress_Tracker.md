@@ -31,6 +31,7 @@ For example, if the user realizes that he previously mis-identified a chimp, heâ
 8. Follow Screen: When you navigate to the new interval, 5m, JK and G are supposed to be blank? >>Yes please
 4. Settings: Switch from English to Swahili. Need to pass on local language state from this.props.screenProps to reflect on all strings globally in the app
 7. Summary Screen: display foods and other species
+11. EndFollow button doesn't end it. All follows show up in Continue Follow screen. EndTime is not being recorded. 
 
 ### Version 0.3.3.3
 

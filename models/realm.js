@@ -10,7 +10,7 @@ let Chimp = {
 
 let ValuePairObjectSchema = {
     name: 'ValuePairObject',
-    properties: { 
+    properties: {
       dbValue: 'string',
       userValue: 'string'
     }
@@ -20,7 +20,9 @@ class Follow {}
 Follow.className = 'Follow';
 Follow.schema = {
   name: Follow.className,
+  primaryKey: 'id',
   properties: {
+    id: 'string',
     date: 'date',
     focalId: 'string',
     community: 'string',
@@ -50,7 +52,10 @@ class FollowArrival {}
 FollowArrival.className = 'FollowArrival';
 FollowArrival.schema = {
   name: FollowArrival.className,
+  primaryKey: 'id',
   properties: {
+    id: 'string',
+    followId: 'string',
     date: 'date',
     followStartTime: 'string',
     focalId: 'string',
@@ -72,6 +77,7 @@ Species.schema = {
   primaryKey: 'id',
   properties: {
     id: 'int',
+    followId: 'string',
     date: 'date',
     startTime: 'string',
     endTime: 'string',
@@ -88,6 +94,7 @@ Food.schema = {
   primaryKey: 'id',
   properties: {
     id: 'int',
+    followId: 'string',
     date: 'date',
     startTime: 'string',
     endTime: 'string',
@@ -102,6 +109,7 @@ Location.className = 'Location';
 Location.schema = {
   name: Location.className,
   properties: {
+    followId: 'string',
     date: 'date',
     focalId: 'string',
     followStartTime: 'string',
@@ -115,5 +123,5 @@ Location.schema = {
 }
 
 export default new Realm({
-  schema: [Follow, FollowArrival, Species, Food, Location, Chimp, ValuePairObjectSchema]
+  schema: [Follow, FollowArrival, Species, Food, Location, Chimp, ValuePairObjectSchema], schemaVersion: 3
 });

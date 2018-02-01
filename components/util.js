@@ -66,6 +66,13 @@ export default class Util {
     '100': '1.0'
   }
 
+  static generateuid() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+      return v.toString(16);
+    });
+  }
+
   static getCertaintyOutput(certaintyLabel) {
     return certaintyLabel == this.certaintyLabels.certain ||
       certaintyLabel == this.certaintyLabels.nestCertain ? 1 : 0;

@@ -56,6 +56,7 @@ export default class ExportDataScreen extends Component {
 
   render() {
     const strings = this.props.screenProps.localizedStrings;
+
     const follows = realm.objects('Follow')
         .filtered('date >= $0 AND date <= $1', this.state.startDate, this.state.endDate);
 
