@@ -16,7 +16,7 @@ import RNFS from 'react-native-fs';
 import realm from '../../models/realm';
 import distance from 'gps-distance';
 
-const Mailer = NativeModules.RNMail;
+import Mailer from 'react-native-mail';
 import { zip } from 'react-native-zip-archive';
 import Orientation from 'react-native-orientation';
 import Util from '../util';
@@ -567,6 +567,7 @@ export default class ExportDataScreen extends Component {
 
   openEmailClient(attachmentPath) {
     console.log(format("=== openEmailClient {0} ===", attachmentPath));
+    this.setState({status: "Opening email client"});
     Mailer.mail({
       subject: 'JGI DigiTiki Data Export',
       recipients: [],
@@ -581,6 +582,7 @@ export default class ExportDataScreen extends Component {
     }, (error, event) => {
       if(error) {
         ToastAndroid.show(this.props.screenProps.localizedStrings.ExportData_SetUpEmailPrompt, ToastAndroid.SHORT);
+        this.setState({status: "Error opening email client"});
         console.log(error);
       }
     });
