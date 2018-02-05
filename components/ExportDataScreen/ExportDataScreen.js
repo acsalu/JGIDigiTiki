@@ -127,7 +127,7 @@ export default class ExportDataScreen extends Component {
   }
 
   async exportButtonPressed(follows, dirPath, zipPath) {
-    console.log("exportButtonPressed");
+    this.setState({status: "Starting export"});
     if (await RNFS.exists(dirPath)) {
       await RNFS.unlink(dirPath);
     }
@@ -184,6 +184,7 @@ export default class ExportDataScreen extends Component {
   }
 
   _getFollowOutput(follow) {
+    this.setState({status: "Getting follows"});
     return {
         date: Util.getDateString(follow.date),
         focalId: follow.focalId,
@@ -202,12 +203,13 @@ export default class ExportDataScreen extends Component {
     for (let i = 0; i < data.length; ++i) {
       followArrivals.push(data[i]);
     }
+    this.setState({status: "Getting follow arrivals"});
     return followArrivals;
   }
 
   _getFoods(follow) {
     const follow_food = this._getFollowData(follow, 'Food');
-
+    this.setState({status: "Getting foods"});
     return follow_food
       .map((fo, i) => ({
         date: Util.getDateString(fo.date),
@@ -221,7 +223,7 @@ export default class ExportDataScreen extends Component {
 
   _getSpecies(follow) {
     const follow_species = this._getFollowData(follow, 'Species');
-
+    this.setState({status: "Getting species"});
     return follow_species
       .map((fo, i) => ({
         date: Util.getDateString(fo.date),
@@ -234,6 +236,7 @@ export default class ExportDataScreen extends Component {
   }
 
   _getLocations(follow) {
+    this.setState({status: "Getting locations"});
     return this._getFollowData(follow, 'Location');
   }
 
@@ -252,6 +255,7 @@ export default class ExportDataScreen extends Component {
       }
       followArrivalsByChimpId[chimpId].push(fa);
     }
+    this.setState({status: "Getting follow arrival by the Chimp Id"});
     return followArrivalsByChimpId;
   }
 
@@ -317,10 +321,12 @@ export default class ExportDataScreen extends Component {
       }
       followIntervals = followIntervals.concat(intervals);
     }
+    this.setState({status: "Getting follow intervals"});
     return followIntervals;
   }
 
   _getGroomingFollowArrivals(followArrivals) {
+    this.setState({status: "Getting grooming follows"});
     return followArrivals
       .filter((fa) => Util.hasGrooming(fa.grooming))
       .map((fa, i) => ({
@@ -333,6 +339,7 @@ export default class ExportDataScreen extends Component {
   }
 
   _getArmsReachFollowArrivals(followArrivals) {
+    this.setState({status: "Getting arms reach follows"});
     return followArrivals
       .filter((fa) => fa.isNearestNeighbor)
       .map((fa, i) => ({
@@ -344,6 +351,7 @@ export default class ExportDataScreen extends Component {
   }
 
   _getFiveMeterFollowArrivals(followArrivals) {
+    this.setState({status: "Getting 5m follows"});
     return followArrivals
       .filter((fa) => fa.isWithin5m)
       .map((fa, i) => ({
@@ -369,7 +377,7 @@ export default class ExportDataScreen extends Component {
       dists.push(d * 1000.0);
     }
 
-    this.setState({status: "Done exporting locations"});
+    this.setState({status: "Getting location outputs"});
 
     return locations.map((loc, i) =>
       ({
