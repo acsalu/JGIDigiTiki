@@ -7,7 +7,6 @@
 ### Version 0.3.4
 
 ## Questions:
-1. EndFollow button doesn't end it. All follows show up in Continue Follow screen. EndTime is not being recorded.
 2. There is now a Null option for Certainty. Is this what you asked for? Or did you want me to make Certainty null when the [] option was selected for a chimp?
 
 ## Solved Bugs
@@ -25,11 +24,11 @@
   §  Same fixes as in Export-food.csv
 
 ## Bugs in progress
-8. Add Null in C -- FollowScreen: There are still lots of issues when going back to previous intervals to change arrival data
-For example, if the user realizes that he previously mis-identified a chimp, he’ll need to go back and change it. For the chimp that was previously marked as present, the user can now choose the null arrival icon (great!), but there is no null option in the certainty column like there is for 5m, JK and Groom. Then, when the user navigates to the next interval, that chimp is still listed as being there (although the exported data seem correct).
+8. FollowScreen: There are still lots of issues when going back to previous intervals to change arrival data.
+For example, if the user realizes that he previously mis-identified a chimp, he’ll need to go back and change it. For the chimp that was previously marked as present, the user can now choose the null arrival icon (great!), but there is no null option in the certainty column like there is for 5m, JK and Groom. Then, when the user navigates to the next interval, that chimp is still listed as being there (although the exported data seem correct). --- Added Null in C -- Make manual corrections in following screen if something is corrected in the previous screen.
+11. EndFollow button doesn't end it. All follows show up in Continue Follow screen. EndTime is not being recorded.
 7. Summary Screen: display foods and other species
 10. Update corrections in previous intervals.
-7. Summary Screen: display foods and other species
 3. Give unique Ids for all elements in the database so that it can be updated. -- Rewrite previous entries in Realm
 
 ## Bugs Pipeline: to be solved in next version

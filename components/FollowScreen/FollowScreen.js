@@ -348,8 +348,17 @@ export default class FollowScreen extends Component {
     navigator.geolocation.clearWatch(watchId);
 
     // TODO: Not working! Update Follow using id
+    // realm.write(() => {
+    //   this.props.navigation.state.params.follow.endTime = this.props.navigation.state.params.followTime;
+    // });
+
     realm.write(() => {
       this.props.navigation.state.params.follow.endTime = this.props.navigation.state.params.followTime;
+
+      realm.create('Follow', {
+        id: this.props.navigation.state.params.follow.id, endTime: this.props.navigation.state.params.followTime
+        },
+        true);
     });
 
     if (this.props.navigation.state.params.follow.gpsFirstTimeoutId !== undefined) {

@@ -36,7 +36,8 @@ export default class ExportDataScreen extends Component {
 
     this.state = {
       startDate: defaultStartDate,
-      endDate: defaultEndDate
+      endDate: defaultEndDate,
+      status: ""
     };
   }
 
@@ -91,13 +92,15 @@ export default class ExportDataScreen extends Component {
 
         <Text style={styles.followCountText}>{totalFollows} Follows</Text>
 
-          <Button
-              disabled={follows.length === 0}
-              onPress={() => {
-                this.exportButtonPressed(follows, dirPath, zipPath);
-              }} title={strings.ExportData_ExportButtonTitle}
-              style={exportButtonStyles}>
-          </Button>
+        <Button
+            disabled={follows.length === 0}
+            onPress={() => {
+              this.exportButtonPressed(follows, dirPath, zipPath);
+            }} title={strings.ExportData_ExportButtonTitle}
+            style={exportButtonStyles}>
+        </Button>
+
+        <Text style={styles.followCountText}>{this.state.status}</Text>
       </View>
     );
   }
@@ -139,7 +142,8 @@ export default class ExportDataScreen extends Component {
     console.log(`zip ${dirPath} into ${RNFS.DocumentDirectoryPath}/myFile.zip`);
     await zip(dirPath, zipPath)
       .then((path) => {
-        console.log(`zip completed at ${path}`)
+        this.setState({status: "Zip completed"});
+        console.log(`zip completed at ${path}`);
         this.openEmailClient(path);
       })
       .catch((error) => {
@@ -230,7 +234,6 @@ export default class ExportDataScreen extends Component {
   }
 
   _getLocations(follow) {
-    console.log('_getLocations');
     return this._getFollowData(follow, 'Location');
   }
 
@@ -366,6 +369,8 @@ export default class ExportDataScreen extends Component {
       dists.push(d * 1000.0);
     }
 
+    this.setState({status: "Done exporting locations"});
+
     return locations.map((loc, i) =>
       ({
         date: Util.getDateString(loc.date),
@@ -399,6 +404,7 @@ export default class ExportDataScreen extends Component {
       'date', 'focalId', 'communityId', 'startTime', 'amObserver1', 'day', 'month', 'year'
     ];
 
+    this.setState({status: "Exporting follows"});
     await this._exportObjectsToCsv([followOutput], csvFilePath, csvFields, objectFields);
   }
 
@@ -422,6 +428,7 @@ export default class ExportDataScreen extends Component {
       'nesting', 'cycle', 'startTime', 'endTime', 'duration'
     ];
 
+    this.setState({status: "Exporting follow arrivals"});
     await this._exportObjectsToCsv(followArrivals, csvFilePath, csvFields, objectFields);
   }
 
@@ -439,6 +446,7 @@ export default class ExportDataScreen extends Component {
       'date', 'focalId', 'startTime', 'endTime', 'foodName', 'foodPart'
     ];
 
+    this.setState({status: "Exporting foods"});
     await this._exportObjectsToCsv(foods, csvFilePath, csvFields, objectFields);
   }
 
@@ -456,6 +464,7 @@ export default class ExportDataScreen extends Component {
       'date', 'focalId', 'startTime', 'endTime', 'speciesName', 'speciesCount'
     ];
 
+    this.setState({status: "Exporting species"});
     await this._exportObjectsToCsv(species, csvFilePath, csvFields, objectFields);
   }
 
@@ -472,6 +481,7 @@ export default class ExportDataScreen extends Component {
       'date', 'focalId', 'startTime', 'chimpId', 'grooming'
     ];
 
+    this.setState({status: "Exporting grooming"});
     await this._exportObjectsToCsv(followArrivals, csvFilePath, csvFields, objectFields);
   }
 
@@ -487,6 +497,7 @@ export default class ExportDataScreen extends Component {
       'date', 'focalId', 'startTime', 'chimpId'
     ];
 
+    this.setState({status: "Exporting Arms Reach"});
     await this._exportObjectsToCsv(followArrivals, csvFilePath, csvFields, objectFields);
   }
 
@@ -502,6 +513,7 @@ export default class ExportDataScreen extends Component {
       'date', 'focalId', 'startTime', 'chimpId'
     ];
 
+    this.setState({status: "Exporting 5m"});
     await this._exportObjectsToCsv(followArrivals, csvFilePath, csvFields, objectFields);
   }
 
@@ -521,6 +533,7 @@ export default class ExportDataScreen extends Component {
       'date', 'focalId', 'followStartTime', 'seqNum', 'x', 'y', 'distanceToNext','communityId'
     ];
 
+    this.setState({status: "Exporting Map locations"});
     await this._exportObjectsToCsv(locationOutputs, csvFilePath, csvFields, objectFields);
   }
 
