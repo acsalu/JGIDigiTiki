@@ -102,14 +102,6 @@ export default class ExportDataScreen extends Component {
 
         <Text style={styles.followCountText}>{this.state.status}</Text>
 
-        <Button
-            disabled={follows.length === 0}
-            onPress={() => {
-              this.openEmailClient(zipPath)
-            }} title="Open Mail Client"
-            style={exportButtonStyles}>
-        </Button>
-
       </View>
     );
   }

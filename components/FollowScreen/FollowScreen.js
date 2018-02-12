@@ -192,26 +192,30 @@ export default class FollowScreen extends Component {
       femaleChimpsSorted: femaleChimpsSorted,
       GPSStatus: 'Not found',
       timerInterval: 15*60*1000, // 15 mins
+      currentFollowTime: this.props.navigation.state.params.followTime
      };
   };
 
   restartTimer() {
     console.log("Timer started for: ", this.state.timerInterval);
-    this.getGPSnow();
+    this.getGPSnow(this.state.currentFollowTime);
 
     intervalId = BackgroundTimer.setInterval(() => {
-        this.getGPSnow();
+        const followTimeIndex = this.props.screenProps.times.indexOf(this.state.currentFollowTime);
+        const nextFollowTime = followTimeIndex !== this.props.screenProps.times.length - 1 ? this.props.screenProps.times[followTimeIndex + 1] : null;
+        this.setState({currentFollowTime: nextFollowTime});
+        this.getGPSnow(nextFollowTime);
       }, this.state.timerInterval);
   }
 
-  getGPSnow() {
+  getGPSnow(followStartTime) {
     console.log("Get GPS now");
 
     const followId = this.props.navigation.state.params.follow.id;
     const focalId = this.props.navigation.state.params.follow.focalId;
     const date = this.props.navigation.state.params.follow.date;
     const community = this.props.navigation.state.params.follow.community;
-    const followStartTime = this.props.navigation.state.params.followTime;
+    //const followStartTime = this.props.navigation.state.params.followTime;
 
     watchId = navigator.geolocation.getCurrentPosition((position) => {
         console.log("Wrote to Realm ", followStartTime, focalId);
@@ -233,7 +237,7 @@ export default class FollowScreen extends Component {
         });
       }, (error) => {
           console.log("Couldn't get lock");
-          this.getGPSnow();
+          this.getGPSnow(followStartTime);
       },
       {
         enableHighAccuracy: true, // FINE_LOCATION
@@ -347,19 +351,19 @@ export default class FollowScreen extends Component {
     BackgroundTimer.clearInterval(intervalId);
     navigator.geolocation.clearWatch(watchId);
 
+    realm.write(() => {
+      this.props.navigation.state.params.follow.endTime = this.props.navigation.state.params.followTime;
+    });
+
     // TODO: Not working! Update Follow using id
     // realm.write(() => {
     //   this.props.navigation.state.params.follow.endTime = this.props.navigation.state.params.followTime;
+    //
+    //   realm.create('Follow', {
+    //     id: this.props.navigation.state.params.follow.id, endTime: this.props.navigation.state.params.followTime
+    //     },
+    //     true);
     // });
-
-    realm.write(() => {
-      this.props.navigation.state.params.follow.endTime = this.props.navigation.state.params.followTime;
-
-      realm.create('Follow', {
-        id: this.props.navigation.state.params.follow.id, endTime: this.props.navigation.state.params.followTime
-        },
-        true);
-    });
 
     if (this.props.navigation.state.params.follow.gpsFirstTimeoutId !== undefined) {
       console.log("stop gps timeout");
