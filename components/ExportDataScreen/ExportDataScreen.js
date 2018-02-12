@@ -16,7 +16,7 @@ import RNFS from 'react-native-fs';
 import realm from '../../models/realm';
 import distance from 'gps-distance';
 
-import Mailer from 'react-native-mail';
+const Mailer = NativeModules.RNMail;
 import { zip } from 'react-native-zip-archive';
 import Orientation from 'react-native-orientation';
 import Util from '../util';
@@ -101,6 +101,15 @@ export default class ExportDataScreen extends Component {
         </Button>
 
         <Text style={styles.followCountText}>{this.state.status}</Text>
+
+        <Button
+            disabled={follows.length === 0}
+            onPress={() => {
+              this.openEmailClient(zipPath)
+            }} title="Open Mail Client"
+            style={exportButtonStyles}>
+        </Button>
+
       </View>
     );
   }

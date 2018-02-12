@@ -1,18 +1,10 @@
 ## How the project was built
-$ create-react-native-app JGIDigiTiki
+$ react-native init JGIDigiTiki
 $ cd JGIDigiTiki
-
-To run app in Expo App on your phone:
-$ yarn run start
-
-To run app in Expo on Android Emulator
-$ yarn run start -> a
-
-To eject from Expo:
-$ yarn run eject
-
 $ npm install
 $ react-native run-android
+$ npm install --save react-native-background-timer react-native-zip-archive react-native-orientation react-native-localization react-native-fs realm react-native-mail
+$ react-native link
 
 Open 'android' folder in Android Studio:
 Updated Gradle Android plugin to 3.0.0 and Gradle to 4.1
@@ -20,20 +12,6 @@ Updated Gradle Android plugin to 3.0.0 and Gradle to 4.1
 For the Gradle Android plugin v3 migration: as described in the official migration guide (https://developer.android.com/studio/build/gradle-plugin-3-0-0-migration.html113), please make sure that you add google() to the repositories list in build.gradle!
 
 In fact you’ll most likely need both google() and jcenter() right now.
-
-$ npm i react-native-background-timer --save
-$ react-native link
-# Error: Command `link` unrecognized
-Make sure that you have run `npm install`  
-
-## Install with '--save' and 'react-native link':
-react-native-background-timer
-react-native-zip-archive
-react-native-orientation
-react-native-localization
-react-native-fs
-realm
-RNMail
 
 ## Change all 'compile' to 'implementation'
 
@@ -71,9 +49,7 @@ MYAPP_RELEASE_STORE_PASSWORD=digitiki
 MYAPP_RELEASE_KEY_PASSWORD=digitiki
 
 # To speed up build, add the following to android/gradle.properties especially jvmargs of 2GB is great!
-org.gradle.daemon=true
 org.gradle.jvmargs=-Xmx2048M
-org.gradle.configureondemand=true
 
 # Edit the file android/app/build.gradle in your project folder and add the signing config,
 

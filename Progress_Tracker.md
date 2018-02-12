@@ -2,7 +2,7 @@
 
 ## Next development backlog:
 1. Use react-native-mixin: This will eliminate a lot of hard work tracking down bugs, such as crashes caused by timeouts firing after a component has been unmounted. http://facebook.github.io/react-native/docs/timers.html
-2. Use Redux for managining follows
+2. Use Redux for managing follows
 
 ### Version 0.3.4
 
@@ -34,8 +34,7 @@ For example, if the user realizes that he previously mis-identified a chimp, heâ
 
 ## Bugs Pipeline: to be solved in next version
 9. FollowScreen: Also, when the user navigates back to previous intervals, and then forward again, 5m and JK data (but not grooming) are lost (they appear briefly, then disappear)
-6. FollowScreen: Sometimes the Icons are too big, pushing the females off the edge of the screen. Fixed when app is killed and restarted. --- which icons? >>The chimp names and columns
-8. Follow Screen: When you navigate to the new interval, 5m, JK and G are supposed to be blank? >>Yes please
+6. FollowScreen: Sometimes the Icons are too big, pushing the females off the edge of the screen. Fixed when app is killed and restarted. --- which icons? >> The chimp names and columns
 4. Settings: Switch from English to Swahili. Need to pass on local language state from this.props.screenProps to reflect on all strings globally in the app
 
 ### Version 0.3.3.3

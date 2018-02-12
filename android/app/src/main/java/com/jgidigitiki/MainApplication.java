@@ -2,22 +2,14 @@ package com.jgidigitiki;
 
 import android.app.Application;
 
+import com.facebook.react.BuildConfig;
 import com.facebook.react.ReactApplication;
 import io.realm.react.RealmReactPackage;
 import com.rnziparchive.RNZipArchivePackage;
 import com.github.yamill.orientation.OrientationPackage;
-import com.chirag.RNMail.RNMail;
+import com.chirag.RNMail.*;
 import com.babisoft.ReactNativeLocalization.ReactNativeLocalizationPackage;
 import com.rnfs.RNFSPackage;
-import com.ocetnik.timer.BackgroundTimerPackage;
-import io.realm.react.RealmReactPackage;
-import com.rnfs.RNFSPackage;
-import com.rnziparchive.RNZipArchivePackage;
-import com.github.yamill.orientation.OrientationPackage;
-import com.babisoft.ReactNativeLocalization.ReactNativeLocalizationPackage;
-import com.ocetnik.timer.BackgroundTimerPackage;
-import com.github.yamill.orientation.OrientationPackage;
-import com.rnziparchive.RNZipArchivePackage;
 import com.ocetnik.timer.BackgroundTimerPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -42,14 +34,8 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
             new RealmReactPackage(),
-            new RNZipArchivePackage(),
-            new OrientationPackage(),
+            new RNFSPackage(),
             new RNMail(),
-            new ReactNativeLocalizationPackage(),
-            new RNFSPackage(),
-            new BackgroundTimerPackage(),
-            new RealmReactPackage(),
-            new RNFSPackage(),
             new RNZipArchivePackage(),
             new OrientationPackage(),
             new ReactNativeLocalizationPackage(),
