@@ -7,8 +7,6 @@
 ### Version 0.3.4
 
 ## Questions:
-1. There is now a Null option for Certainty. Is this what you asked for? Or did you want me to make Certainty null when the [] option was selected for a chimp?
-2. The Continue Follow screen now only lists the Follows that weren't ended by pressing the EndFollow button. But, you still know that this follow was recorded because the Export Data Screen count of follow would have increased. If the EndFollow button wasn't clicked, then you can see the follow in the Continue Follow screen. Is this as expected?
 
 ## Solved Bugs
 1. GPS reports multiple records per interval

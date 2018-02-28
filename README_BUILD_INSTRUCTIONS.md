@@ -3,17 +3,11 @@ $ react-native init JGIDigiTiki
 $ cd JGIDigiTiki
 $ npm install
 $ react-native run-android
-$ npm install --save react-native-background-timer react-native-zip-archive react-native-orientation react-native-localization react-native-fs realm react-native-mail
+$ npm install --save react-native-background-timer react-native-zip-archive react-native-orientation react-native-localization react-native-fs realm react-native-mail react-navigation assert dateformat gps-distance lodash react-native-easy-grid react-redux redux string-format react-native-busy-indicator react-native-radio-buttons
 $ react-native link
 
 Open 'android' folder in Android Studio:
-Updated Gradle Android plugin to 3.0.0 and Gradle to 4.1
-
-For the Gradle Android plugin v3 migration: as described in the official migration guide (https://developer.android.com/studio/build/gradle-plugin-3-0-0-migration.html113), please make sure that you add google() to the repositories list in build.gradle!
-
-In fact you’ll most likely need both google() and jcenter() right now.
-
-## Change all 'compile' to 'implementation'
+# Don't updated Gradle Android plugin to 3.0.0 and Gradle to 4.1
 
 ## For react-native-orientation to work, implement the following method:
 Implement onConfigurationChanged method in MainActivity.java
@@ -78,7 +72,3 @@ android {
 
 # Error: "Native module moduleX tried to override moduleX for module name moduleX. If this was your intention set canOverrideExistingModule=true"
 Remove duplicate entries in MainApplication.java in android/app/src/.../MainApplication.java
-
-## Code up
-Install missing modules in package.json. Run 'npm install'
-Change index.js
