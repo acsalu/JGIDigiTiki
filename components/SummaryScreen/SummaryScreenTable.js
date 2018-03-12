@@ -11,7 +11,6 @@ import {
   View
 } from 'react-native';
 import assert from 'assert';
-import Button from 'react-native-button';
 import { Col, Row, Grid } from "react-native-easy-grid";
 
 import Orientation from 'react-native-orientation';
@@ -98,7 +97,7 @@ export default class SummaryScreenTable extends Component {
 
   createItemCol(title, rows) {
     const cells = ([...Array(rows||0)])
-        .map((v, i) => (<SummaryScreenTableCell key={i} />));
+        .map((v, i) => (<SummaryScreenTableCell key={i} certaintyText={rows[i]} />));
     return (
         <View style={styles.itemCol}>
           <View style={styles.chimpColTitle}>
@@ -118,26 +117,36 @@ export default class SummaryScreenTable extends Component {
               if (shouldAllowAction === true) {
                 onTimeSelected(dbTime);
               }
-            }}
-        >
-          <Text style={styles.timeRowText}>{Util.dbTime2UserTime(dbTime)}</Text>
+            }}>
+          <Text style={styles.timeRowText}>{Util.dbTime2UserTime(dbTime)} </Text>
         </TouchableHighlight>
     );
   }
 
   // TODO: more complex lists for continued food / species
-  createTimedList(items, intervals) {
-
+  createTimedList(category, items, intervals) {
     let itemList = [];
 
-    return items.slice(0, intervals);
+    if (category == "Food") {
+      for (var k in items) {
+        itemList.push(items[k].foodName + " " + items[k].foodPart);
+      }
+    }
+
+    if (category == "Species") {
+      for (var k in items) {
+        itemList.push(items[k].speciesName + " " + items[k].speciesCount);
+      }
+    }
+
+    let buffer = intervals - itemList.length;
+    for (i = 0; i < buffer; i++) {
+      itemList.push("");
+    }
+    return itemList;
   }
 
   render() {
-
-    console.log("Community: ", this.props.community);
-    console.log(this.props.food);
-    console.log(this.props.species);
 
     const startTimeIndex = this.props.times.indexOf(this.props.followStartTime);
     const endTimeIndex = this.props.times.indexOf(this.props.followEndTime);
@@ -157,8 +166,8 @@ export default class SummaryScreenTable extends Component {
     const femaleChimpCols = this.props.chimps.filter((c) => c.sex == 'F' && c.community == this.props.community)
         .map((c, i) => this.createChimpCol(c.name, i, intervals, c.name === this.props.focalChimpId));
 
-    const foodList = this.createTimedList(this.props.food, intervals);
-    const speciesList = this.createTimedList(this.props.species, intervals);
+    const foodList = this.createTimedList("Food", this.props.food, intervals);
+    const speciesList = this.createTimedList("Species", this.props.species, intervals);
     const foodCol = this.createItemCol("Food", foodList);
     const speciesCol = this.createItemCol("Species", speciesList);
 
@@ -239,7 +248,8 @@ const styles = {
   },
   timeRowText: {
     fontSize: 12,
-    textAlign: 'center'
+    textAlign: 'center',
+    color: '#33b5e5'
   },
   cell: {
     height: 30,

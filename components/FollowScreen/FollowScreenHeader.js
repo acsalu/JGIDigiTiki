@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
   AppRegistry,
+  Button,
   DatePickerAndroid,
   StyleSheet,
   TouchableHighlight,
@@ -11,7 +12,6 @@ import {
   Picker,
   View
 } from 'react-native';
-import Button from 'react-native-button';
 import ItemTracker from './ItemTracker';
 
 import sharedStyles from '../SharedStyles';
@@ -29,19 +29,13 @@ export default class FollowScreenHeader extends Component {
             <Button
                 style={[{opacity: (isFirstFollow ? 0.0 : 1.0)}, sharedStyles.btn]}
                 onPress={this.props.onPreviousPress}
-                disabled={isFirstFollow}
-            >
-              {strings.Follow_PreviousTimeInterval}
-            </Button>
+                disabled={isFirstFollow} title={strings.Follow_PreviousTimeInterval}></Button>
             <Text style={styles.followScreenHeaderMainText}>
               {util.dbTime2UserTime(this.props.followTime)}
             </Text>
             <Button
                 style={sharedStyles.btn}
-                onPress={this.props.onNextPress}
-            >
-              {strings.Follow_NextTimeInterval}
-            </Button>
+                onPress={this.props.onNextPress} title={strings.Follow_NextTimeInterval} ></Button>
           </View>
           <ItemTracker
               title='Food'

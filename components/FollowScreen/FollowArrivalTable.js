@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {
+  Button,
   Dimensions,
   ListView,
   Image,
@@ -10,7 +11,6 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import Button from 'react-native-button';
 import Util from '../util';
 import sharedStyles from '../SharedStyles';
 
@@ -44,9 +44,7 @@ class Panel extends Component {
             this.props.onValueChange(this.props.values[i]);
           }}
           style={styles.panelOptionButton}
-      >
-        {o}
-      </Button>);
+          title={o} ></Button>);
     });
     return (
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -174,7 +172,7 @@ export default class FollowArrivalTable extends Component {
               <Button style={chimpButtonStyles} onPress={()=> {
                 this._onRowPress(c);
                 this.setState({panelType: PanelType.time});
-              }}>{c.name}</Button>
+              }} title={c.name}></Button>
           </TouchableOpacity>
       );
     }
@@ -199,29 +197,29 @@ export default class FollowArrivalTable extends Component {
               <Button style={chimpButtonStyles} onPress={() => {
                 this._onRowPress(c)
                 this.setState({panelType: PanelType.time});
-              }}>{c.name}</Button>
+              }} title={c.name}></Button>
 
               <Image source={infoButtonImages[followArrival.time]}/>
 
               <Button style={[styles.followArrivalTableBtn]} onPress={() => {
                 this._onRowPress(c)
                 this.setState({panelType: PanelType.certainty});
-              }}>{certaintyLabel}</Button>
+              }} title={certaintyLabel}></Button>
 
               <Button style={[styles.followArrivalTableBtn]} onPress={() => {
                 this._onRowPress(c)
                 this.setState({panelType: PanelType.isWithIn5m});
-              }}>{isWithin5mLabel}</Button>
+              }} title={isWithin5mLabel}></Button>
 
               <Button style={[styles.followArrivalTableBtn]} onPress={() => {
                 this._onRowPress(c)
                 this.setState({panelType: PanelType.isNearestNeighbor});
-              }}>{isNearestNeighborLabel}</Button>
+              }} title={isNearestNeighborLabel}></Button>
 
               <Button style={[styles.followArrivalTableBtn]} onPress={() => {
                 this._onRowPress(c)
                 this.setState({panelType: PanelType.grooming});
-              }}>{groomingLabel}</Button>
+              }} title={groomingLabel}></Button>
           </TouchableOpacity>
       );
     }
@@ -237,34 +235,34 @@ export default class FollowArrivalTable extends Component {
             <Button style={chimpButtonStyles} onPress={() => {
               this._onRowPress(c)
               this.setState({panelType: PanelType.time});
-            }}>{c.name}</Button>
+            }} title={c.name} ></Button>
 
             <Image source={infoButtonImages[followArrival.time]}/>
 
             <Button style={[styles.followArrivalTableBtn]} onPress={() => {
               this._onRowPress(c)
               this.setState({panelType: PanelType.certainty});
-            }}>{certaintyLabel}</Button>
+            }} title={certaintyLabel} ></Button>
 
             <Button style={[styles.followArrivalTableBtn]} onPress={() => {
               this._onRowPress(c)
               this.setState({panelType: PanelType.estrus});
-            }}>{estrusLabel}</Button>
+            }} title={estrusLabel} ></Button>
 
             <Button style={[styles.followArrivalTableBtn]} onPress={() => {
               this._onRowPress(c)
               this.setState({panelType: PanelType.isWithIn5m});
-            }}>{isWithin5mLabel}</Button>
+            }} title={isWithin5mLabel} ></Button>
 
             <Button style={[styles.followArrivalTableBtn]} onPress={() => {
               this._onRowPress(c)
               this.setState({panelType: PanelType.isNearestNeighbor});
-            }}>{isNearestNeighborLabel}</Button>
+            }} title={isNearestNeighborLabel} ></Button>
 
             <Button style={[styles.followArrivalTableBtn]} onPress={() => {
               this._onRowPress(c)
               this.setState({panelType: PanelType.grooming});
-            }}>{groomingLabel}</Button>
+            }} title={groomingLabel} ></Button>
         </TouchableOpacity>
     );
   }

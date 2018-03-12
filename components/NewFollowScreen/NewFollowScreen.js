@@ -29,7 +29,7 @@ export default class NewFollowScreen extends Component {
   };
 
   componentDidMount() {
-    //Orientation.lockToPortrait(); // TODO: lockToPortrait
+    Orientation.lockToPortrait();
   }
 
   getCommunities = () => {
@@ -241,6 +241,7 @@ export default class NewFollowScreen extends Component {
                   follow: follow,
                   followTime: follow.startTime,
                   locationInterval: this.state.locationInterval,
+                  trackGps: true
                 });
               }
             }}

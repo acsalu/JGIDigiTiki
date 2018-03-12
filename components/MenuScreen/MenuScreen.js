@@ -10,10 +10,12 @@ import {
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import deviceLog, {LogView, InMemoryAdapter} from 'react-native-device-log';
+import * as actions from '../../reduxmgmt/actions';
+import { connect } from 'react-redux';
 
 import sharedStyles from '../SharedStyles';
 
-export default class MenuScreen extends Component {
+class MenuScreen extends Component {
 
   _orientationDidChange(orientation) {
     console.log("_orientationDidChange", orientation);
@@ -27,11 +29,17 @@ export default class MenuScreen extends Component {
   componentDidMount() {
     Orientation.lockToPortrait();
     Orientation.addOrientationListener(this._orientationDidChange);
+    this.increment();
+  }
+
+  increment() {
+    this.props.increment();
   }
 
   render() {
 
-    const strings = this.props.screenProps.localizedStrings; // default = "en"
+    const strings = this.props.screenProps.localizedStrings;
+    //const strings = "en";
 
     return(
       <ImageBackground source={require('../../img/chimp.png')} style={styles.container}>
@@ -68,12 +76,27 @@ export default class MenuScreen extends Component {
             <Text style={styles.menuBtnText}> GPS Monitor </Text>
         </TouchableOpacity>
 
-        <Text>Version: 0.3.4</Text>
+        <View>
+          <Button title="Up" onPress={ () => this.increment() }/>
+          <Text>
+              {this.props.count}
+          </Text>
+        </View>
+
+        <Text>Version: 0.3.6</Text>
 
       </ImageBackground>
     );
   }
 }
+
+const mapStateToProps = (state) => {
+    return {
+      count: state.count
+    }
+}
+
+export default connect(mapStateToProps, actions)(MenuScreen);
 
 const styles = {
   container: {

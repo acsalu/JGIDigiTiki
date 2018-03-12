@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import {
+  Button,
   Text,
   Modal,
   Picker,
   View
 } from 'react-native';
-import Button from 'react-native-button';
 import Util from '../util';
 import sharedStyles from '../SharedStyles';
 
@@ -82,9 +82,7 @@ export default class ItemTrackerModal extends Component {
                     };
                     this.props.onSave(data, this.state.isEditing);
                     this.props.onDismiss();
-                  }}>
-                {strings.ItemTracker_Save}
-              </Button>
+                  }} title={strings.ItemTracker_Save} ></Button>
 
               <Text style={[sharedStyles.text.size.title, sharedStyles.text.color.normal]}>
                 {this.props.title}
@@ -94,9 +92,7 @@ export default class ItemTrackerModal extends Component {
                   style={sharedStyles.btn}
                   onPress={() => {
                     this.props.onDismiss();
-                  }}>
-                {strings.ItemTracker_Cancel}
-              </Button>
+                  }} title={strings.ItemTracker_Cancel} ></Button>
             </View>
 
             <View style={styles.timeSelectionGroup}>

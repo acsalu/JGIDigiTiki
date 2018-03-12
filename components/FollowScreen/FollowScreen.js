@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Alert,
   Button,
+  CheckBox,
   Text,
   View
 } from 'react-native';
@@ -14,6 +15,9 @@ import Util from '../util';
 import sharedStyles from '../SharedStyles';
 import BackgroundTimer from 'react-native-background-timer';
 
+import * as actions from '../../reduxmgmt/actions';
+import { connect } from 'react-redux';
+
 import FollowArrivalTable from './FollowArrivalTable';
 import FollowScreenHeader from './FollowScreenHeader';
 import ItemTrackerModal from './ItemTrackerModal';
@@ -24,18 +28,35 @@ const ModalType = Object.freeze({
   species: 2
 });
 
-export default class FollowScreen extends Component {
+class FollowScreen extends Component {
 
   intervalId: ?number = null;
   watchId: ?number = null;
 
   componentDidMount() {
     Orientation.lockToPortrait();
+    if(this.state.gpsTrackerOn) {
+      console.log("GPS tracker already ON");
+    } else {
+      this.props.trackGps();
+    }
     try {
       console.log("Timer running ", intervalId);
     } catch (e) {
       console.log("No timers running");
-      this.restartTimer();
+      if(this.props.navigation.state.params.tracksGps) {
+          this.restartTimer();
+      } else {
+        Alert.alert(
+            'GPS Tracker',
+            'Do you want to record GPS positions for this follow?',
+            [
+              {text: 'No', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+              {text: 'Yes', onPress: () => this.props.trackGps()}
+            ],
+            { cancelable: false }
+          );
+      }
     }
   }
 
@@ -476,7 +497,12 @@ export default class FollowScreen extends Component {
             style={[sharedStyles.btn, sharedStyles.btnSpecial]}
             onPress={this.presentEndFollowAlert.bind(this)} title={strings.Follow_EndFollowButtonTitle} >
           </Button>
-          <Text>GPS: { this.state.GPSStatus }</Text>
+          <Text>GPS Status: { this.state.gpsStatus }</Text>
+          <CheckBox
+            value={this.state.gpsTrackerOn}
+            onValueChange={() => this.setState({ gpsTrackerOn: !this.state.gpsTrackerOn })}
+          />
+          <Text style={{marginTop: 5}}>Track GPS</Text>
         </View>
 
         <FollowScreenHeader
@@ -621,6 +647,16 @@ export default class FollowScreen extends Component {
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    gpsTrackerOn: state.gpsTrackerOn,
+    gpsStatus: state.gpsStatus,
+    lastGpsPosition: state.lastGpsPosition,
+  }
+}
+
+export default connect(mapStateToProps, actions)(FollowScreen);
 
 const styles = {
   container: {
