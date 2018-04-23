@@ -20,10 +20,12 @@ const Mailer = NativeModules.RNMail;
 import { zip } from 'react-native-zip-archive';
 import Orientation from 'react-native-orientation';
 import Util from '../util';
+import * as actions from '../../reduxmgmt/actions';
+import { connect } from 'react-redux';
 
 import assert from 'assert';
 
-export default class ExportDataScreen extends Component {
+class ExportDataScreen extends Component {
 
   constructor(props) {
     super(props);
@@ -56,11 +58,12 @@ export default class ExportDataScreen extends Component {
   };
 
   render() {
-    const strings = this.props.screenProps.localizedStrings;
+    const strings = this.props.selectedLanguageStrings;
 
     const follows = realm.objects('Follow')
         .filtered('date >= $0 AND date <= $1', this.state.startDate, this.state.endDate);
 
+    // TODO: uncomment line 66, 67
     // create a path you want to write to
     const dirPath = RNFS.ExternalDirectoryPath + '/follow-data';
     const zipPath = RNFS.ExternalDirectoryPath + '/follow-data.zip';
@@ -129,6 +132,8 @@ export default class ExportDataScreen extends Component {
 
   async exportButtonPressed(follows, dirPath, zipPath) {
     this.setState({status: "Starting export"});
+
+    // TODO: uncomment 135-142, 144-155
     if (await RNFS.exists(dirPath)) {
       await RNFS.unlink(dirPath);
     }
@@ -137,6 +142,7 @@ export default class ExportDataScreen extends Component {
     }
 
     RNFS.mkdir(dirPath);
+
     await this.exportFollows(follows, dirPath);
     let result = await RNFS.readDir(`${dirPath}`);
 
@@ -215,8 +221,8 @@ export default class ExportDataScreen extends Component {
       .map((fo, i) => ({
         date: Util.getDateString(fo.date),
         focalId: fo.focalId,
-        startTime: Util.getTimeOutput(fo.startTime),
-        endTime: Util.getTimeOutput(fo.endTime),
+        startTime: Util.getTimeOutputUsingSuffix(fo.startTime),
+        endTime: Util.getTimeOutputUsingSuffix(fo.endTime),
         foodName: fo.foodName,
         foodPart: fo.foodPart
       }));
@@ -229,8 +235,8 @@ export default class ExportDataScreen extends Component {
       .map((fo, i) => ({
         date: Util.getDateString(fo.date),
         focalId: fo.focalId,
-        startTime: Util.getTimeOutput(fo.startTime),
-        endTime: Util.getTimeOutput(fo.endTime),
+        startTime: Util.getTimeOutputUsingSuffix(fo.startTime),
+        endTime: Util.getTimeOutputUsingSuffix(fo.endTime),
         speciesName: fo.speciesName,
         speciesCount: fo.speciesCount
       }));
@@ -582,13 +588,21 @@ export default class ExportDataScreen extends Component {
       }
     }, (error, event) => {
       if(error) {
-        ToastAndroid.show(this.props.screenProps.localizedStrings.ExportData_SetUpEmailPrompt, ToastAndroid.SHORT);
+        ToastAndroid.show(strings.ExportData_SetUpEmailPrompt, ToastAndroid.SHORT);
         this.setState({status: "Error opening email client"});
         console.log(error);
       }
     });
   }
 }
+
+const mapStateToProps = (state) => {
+    return {
+      selectedLanguageStrings: state.selectedLanguageStrings
+    }
+}
+
+export default connect(mapStateToProps, actions)(ExportDataScreen);
 
 const styles = {
   container: {

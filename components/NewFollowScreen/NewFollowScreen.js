@@ -16,8 +16,10 @@ import Orientation from 'react-native-orientation';
 import realm from '../../models/realm';
 import sharedStyles from '../SharedStyles';
 import Util from '../util';
+import * as actions from '../../reduxmgmt/actions';
+import { connect } from 'react-redux';
 
-export default class NewFollowScreen extends Component {
+class NewFollowScreen extends Component {
 
   state = {
     beginTime: null,
@@ -65,7 +67,7 @@ export default class NewFollowScreen extends Component {
   };
 
   getCommunityPickerItems = () => {
-    const strings = this.props.screenProps.localizedStrings;
+    const strings = this.props.selectedLanguageStrings;
     const communities = this.getCommunities();
     const communityPromptPickerItem = (
         <Picker.Item key="community-prompt" label={strings.NewFollow_Community} value={null} />
@@ -77,7 +79,7 @@ export default class NewFollowScreen extends Component {
   };
 
   getBeginTimePickerItems = () => {
-    const strings = this.props.screenProps.localizedStrings;
+    const strings = this.props.selectedLanguageStrings;
     const beginTimePromptPickerItem = (
         <Picker.Item key="begin-time-prompt" label={strings.NewFollow_BeginTime + " " + strings.TimeFormat} value={null} />
     );
@@ -88,7 +90,7 @@ export default class NewFollowScreen extends Component {
   }
 
   getChimpPickerItems = (community) => {
-    const strings = this.props.screenProps.localizedStrings;
+    const strings = this.props.selectedLanguageStrings;
     if (community === null) {
       return [];
     }
@@ -114,7 +116,7 @@ export default class NewFollowScreen extends Component {
   }
 
   render() {
-    const strings = this.props.screenProps.localizedStrings;
+    const strings = this.props.selectedLanguageStrings;
     const communityPickerItems = this.getCommunityPickerItems();
     const beginTimePickerItems = this.getBeginTimePickerItems();
 
@@ -204,13 +206,13 @@ export default class NewFollowScreen extends Component {
                   ]
                 );
               } else {
-                //console.log("Form inputs good");
+
+                // New Follow, turn ON GPS
+                this.props.turnOnGPS();
 
                 const year = this.state.date.getYear() + 1900;
                 const month = this.state.date.getMonth() + 1;
                 const day = this.state.date.getDate();
-
-                //console.log(this.state);
 
                 realm.write(() => {
                   const chimps = this.packChimps(this.props.screenProps.chimps.filter((c) => c.community === this.state.community));
@@ -241,7 +243,8 @@ export default class NewFollowScreen extends Component {
                   follow: follow,
                   followTime: follow.startTime,
                   locationInterval: this.state.locationInterval,
-                  trackGps: true
+                  trackGps: true,
+                  intervalNumber: 0
                 });
               }
             }}
@@ -253,6 +256,14 @@ export default class NewFollowScreen extends Component {
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    selectedLanguageStrings: state.selectedLanguageStrings,
+  }
+}
+
+export default connect(mapStateToProps, actions)(NewFollowScreen);
 
 
 const styles = {

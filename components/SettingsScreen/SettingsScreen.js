@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {
   BackAndroid,
+  Button,
   ScrollView,
   Text,
   TextInput,
@@ -9,6 +10,8 @@ import {
 } from 'react-native';
 import { RadioButtons } from 'react-native-radio-buttons';
 import assert from 'assert';
+import * as actions from '../../reduxmgmt/actions';
+import { connect } from 'react-redux';
 
 import SharedStyles from '../SharedStyles';
 
@@ -26,15 +29,13 @@ class LocalizedTextSettingRow extends Component {
             <TextInput
                 autoCorrect={false}
                 style={styles.localizedTextSettingRowItem}
-                onEndEditing={(event) => {this._onEndEditingHandler('en', event.nativeEvent.text)}}
-            >
+                onEndEditing={(event) => {this._onEndEditingHandler('en', event.nativeEvent.text)}}>
               {this.props.enString}
             </TextInput>
             <TextInput
                 autoCorrect={false}
                 style={styles.localizedTextSettingRowItem}
-                onEndEditing={(event) => {this._onEndEditingHandler('sw', event.nativeEvent.text)}}
-            >
+                onEndEditing={(event) => {this._onEndEditingHandler('sw', event.nativeEvent.text)}}>
               {this.props.swString}
             </TextInput>
           </View>
@@ -43,7 +44,14 @@ class LocalizedTextSettingRow extends Component {
   }
 }
 
-export default class SettingsScreen extends Component {
+class SettingsScreen extends Component {
+
+  static navigationOptions = ({navigation}) => {
+    return {
+      title: "Language Settings",
+      headerRight: <Button title="Done" onPress={ () => navigation.navigate('MenuScreen')} />
+    };
+  };
 
   constructor(props) {
     super(props);
@@ -66,7 +74,7 @@ export default class SettingsScreen extends Component {
     const languageOptions = ["en", "sw"];
 
     function setSelectedOption(selectedOption){
-      //this.props.onLanguageChanged(selectedOption);
+      this.props.changeLanguage(selectedOption);
       this.props.screenProps.language = selectedOption;
     }
 
@@ -105,8 +113,8 @@ export default class SettingsScreen extends Component {
          <Text>Language: </Text>
          <RadioButtons
              options={ languageOptions }
-             onSelection={setSelectedOption.bind(this) }
-             selectedOption={ this.state.selectedLanguage }
+             onSelection={ setSelectedOption.bind(this) }
+             selectedOption={ this.props.selectedLanguage }
              renderOption={ renderOption }
              renderContainer={ renderContainer }
          />
@@ -118,6 +126,14 @@ export default class SettingsScreen extends Component {
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    selectedLanguage: state.selectedLanguage
+  }
+}
+
+export default connect(mapStateToProps, actions)(SettingsScreen);
 
 const styles = {
   container: {

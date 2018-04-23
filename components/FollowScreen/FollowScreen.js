@@ -35,34 +35,39 @@ class FollowScreen extends Component {
 
   componentDidMount() {
     Orientation.lockToPortrait();
-    if(this.state.gpsTrackerOn) {
+    if(this.props.navigation.state.params.trackGps) {
       console.log("GPS tracker already ON");
+      this.restartTimer();
+    } else if (this.props.gpsTrackerOn) {
+      console.log("GPS tracking ON and active");
     } else {
-      this.props.trackGps();
-    }
-    try {
-      console.log("Timer running ", intervalId);
-    } catch (e) {
-      console.log("No timers running");
-      if(this.props.navigation.state.params.tracksGps) {
-          this.restartTimer();
-      } else {
-        Alert.alert(
-            'GPS Tracker',
-            'Do you want to record GPS positions for this follow?',
-            [
-              {text: 'No', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-              {text: 'Yes', onPress: () => this.props.trackGps()}
-            ],
-            { cancelable: false }
-          );
-      }
+      Alert.alert(
+          'GPS Tracker',
+          'Do you want to record GPS positions for this follow?',
+          [
+            {text: 'No', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+            {text: 'Yes', onPress: () => {
+              this.props.trackGps(); // gpsTrackerOn: true
+              this.restartTimer(); // TODO: move to actions
+              }
+            }
+          ],
+          { cancelable: false }
+        );
     }
   }
 
   componentWillUnmount() {
     BackgroundTimer.clearInterval(intervalId);
     navigator.geolocation.clearWatch(watchId);
+    BackgroundTimer.clearInterval(this.props.gpsIntervalId);
+  }
+
+  stopTimer() {
+    this.props.setGPSStatus("OFF");
+    BackgroundTimer.clearInterval(intervalId);
+    navigator.geolocation.clearWatch(watchId);
+    BackgroundTimer.clearInterval(this.props.gpsIntervalId);
   }
 
   _unpackChimps(chimps) {
@@ -211,14 +216,12 @@ class FollowScreen extends Component {
       lastPosition: 'unknown',
       maleChimpsSorted: maleChimpsSorted,
       femaleChimpsSorted: femaleChimpsSorted,
-      GPSStatus: 'Not found',
-      timerInterval: 15*60*1000, // 15 mins
       currentFollowTime: this.props.navigation.state.params.followTime
      };
   };
 
   restartTimer() {
-    console.log("Timer started for: ", this.state.timerInterval);
+    console.log("Timer started for: ", this.props.gpsTimerInterval);
     this.getGPSnow(this.state.currentFollowTime);
 
     intervalId = BackgroundTimer.setInterval(() => {
@@ -226,21 +229,27 @@ class FollowScreen extends Component {
         const nextFollowTime = followTimeIndex !== this.props.screenProps.times.length - 1 ? this.props.screenProps.times[followTimeIndex + 1] : null;
         this.setState({currentFollowTime: nextFollowTime});
         this.getGPSnow(nextFollowTime);
-      }, this.state.timerInterval);
+      }, this.props.gpsTimerInterval);
+
+    this.props.gpsTimerId = intervalId;
   }
 
   getGPSnow(followStartTime) {
     console.log("Get GPS now");
+    this.props.setGPSStatus('Searching');
 
     const followId = this.props.navigation.state.params.follow.id;
     const focalId = this.props.navigation.state.params.follow.focalId;
     const date = this.props.navigation.state.params.follow.date;
     const community = this.props.navigation.state.params.follow.community;
-    //const followStartTime = this.props.navigation.state.params.followTime;
 
     watchId = navigator.geolocation.getCurrentPosition((position) => {
         console.log("Wrote to Realm ", followStartTime, focalId);
-        this.setState({ GPSStatus: 'OK' });
+        this.props.setGPSStatus('OK');
+
+        if(this.props.gpsTrialNumber != 0) {
+          this.props.resetGpsTrialNumber();
+        }
 
         realm.write(() => {
           const newLocation = realm.create('Location', {
@@ -258,7 +267,32 @@ class FollowScreen extends Component {
         });
       }, (error) => {
           console.log("Couldn't get lock");
-          this.getGPSnow(followStartTime);
+          this.props.setGPSStatus('Not found');
+
+          // (0,0), (1, 3), (2, 6), (3, 9)
+          this.props.incrementGpsTrialNumber();
+
+          if(this.props.gpsTrialNumber == 2) {
+            realm.write(() => {
+              const newLocation = realm.create('Location', {
+                followId: followId,
+                date: date,
+                focalId: focalId,
+                followStartTime: followStartTime,
+                community: community,
+                timestamp: position.timestamp,
+                longitude: 0.0,
+                latitude: 0.0,
+                altitude: 0.0,
+                accuracy: 0.0
+              });
+            });
+          }
+
+          // Will not search again after minute 12
+          if(this.props.gpsTrialNumber < 4) {
+            this.getGPSnow(followStartTime);
+          }
       },
       {
         enableHighAccuracy: true, // FINE_LOCATION
@@ -339,23 +373,30 @@ class FollowScreen extends Component {
         }
 
         // TODO: change state -- don't create duplicate components
+        console.log("Interval number, ", this.props.navigation.state.params.intervalNumber + 1);
         this.props.navigation.navigate('FollowScreen', {
           follow: this.props.navigation.state.params.follow,
           followTime: followTime,
-          followArrivals: updatedFollowArrivals
+          followArrivals: updatedFollowArrivals,
+          trackGps: false,
+          intervalNumber: this.props.navigation.state.params.intervalNumber + 1
         });
 
       }
     } else {
+      console.log("Interval number restarted, ", 0);
+
       this.props.navigation.navigate('FollowScreen', {
         follow: this.props.navigation.state.params.follow,
-        followTime: followTime
+        followTime: followTime,
+        trackGps: true,
+        intervalNumber: 0
       });
     }
   }
 
   presentEndFollowAlert() {
-    const strings = this.props.screenProps.localizedStrings;
+    const strings = this.props.selectedLanguageStrings;
     Alert.alert(
         strings.Follow_EndFollowAlertTitle,
         strings.Follow_EndFollowAlertMessage,
@@ -400,8 +441,7 @@ class FollowScreen extends Component {
   }
 
   render() {
-    //console.log("Rendering FollowScreen");
-    const strings = this.props.screenProps.localizedStrings;
+    const strings = this.props.selectedLanguageStrings;
     const beginFollowTime = this.props.navigation.state.params.follow.startTime;
     const beginFollowTimeIndex = this.props.screenProps.times.indexOf(beginFollowTime);
     const followTimeIndex = this.props.screenProps.times.indexOf(this.props.navigation.state.params.followTime);
@@ -432,6 +472,13 @@ class FollowScreen extends Component {
               let newFinishedList = this.state.modalType === ModalType.food ? this.state.finishedFood : this.state.finishedSpecies;
 
               realm.write(() => {
+
+                // When Food starts and ends in the same interval
+                // -- same startInterval and endInterval
+                // OR food was started in the current interval
+                // -- startInterval = this intervalNumber
+                // endInterval is temporarily this intervalNumber
+                // TODO: edit endInterval when it actually ends
                 if (!isEditing) {
                   let objectDict = {
                     followId: this.props.navigation.state.params.follow.id,
@@ -439,7 +486,10 @@ class FollowScreen extends Component {
                     date: this.props.navigation.state.params.follow.date,
                     focalId: this.props.navigation.state.params.follow.focalId,
                     startTime: data.startTime,
-                    endTime: data.endTime
+                    endTime: data.endTime,
+                    startInterval: 0, //this.props.navigation.state.params.intervalNumber,
+                    endInterval: 1, // this.props.navigation.state.params.intervalNumber,
+                    intervalNumber: [0, 1] //[this.props.navigation.state.params.intervalNumber, this.props.navigation.state.params.intervalNumber]
                   };
                   objectDict[mainFieldName] = data.mainSelection;
                   objectDict[secondaryFieldName] = data.secondarySelection;
@@ -462,10 +512,15 @@ class FollowScreen extends Component {
                       this.setState({finishedSpecies: newFinishedList});
                     }
                   }
-                } else {
+                }
+                // When food ends in a different interval
+                else {
                   let object = newActiveList.filter((o) => o.id === data.itemId)[0];
                   object.startTime = data.startTime;
                   object.endTime = data.endTime;
+                  object.startInterval = data.startInterval? data.startInterval: 0;
+                  object.endInterval = this.props.navigation.state.params.intervalNumber;
+                  object.intervalNumber = [object.startInterval, this.props.navigation.state.params.intervalNumber];
                   object[mainFieldName] = data.mainSelection;
                   object[secondaryFieldName] = data.secondarySelection;
 
@@ -486,7 +541,7 @@ class FollowScreen extends Component {
 
         <View style={styles.mainMenu}>
           <Button
-            style={[sharedStyles.btn, sharedStyles.btnSpecial, {marginRight: 8}]}
+            style={[sharedStyles.btn, sharedStyles.btnSpecial, styles.btnInGroup]}
             onPress={()=>{
               this.props.navigation.navigate('SummaryScreen', {
                 follow: this.props.navigation.state.params.follow
@@ -494,15 +549,24 @@ class FollowScreen extends Component {
             }} title={strings.Follow_SeeSummaryButtonTitle}>
           </Button>
           <Button
-            style={[sharedStyles.btn, sharedStyles.btnSpecial]}
+            style={[sharedStyles.btn, sharedStyles.btnSpecial, styles.btnInGroup]}
             onPress={this.presentEndFollowAlert.bind(this)} title={strings.Follow_EndFollowButtonTitle} >
           </Button>
-          <Text>GPS Status: { this.state.gpsStatus }</Text>
+          <Text style={styles.btnStatus}>GPS Status: { this.props.gpsStatus }</Text>
           <CheckBox
-            value={this.state.gpsTrackerOn}
-            onValueChange={() => this.setState({ gpsTrackerOn: !this.state.gpsTrackerOn })}
-          />
-          <Text style={{marginTop: 5}}>Track GPS</Text>
+            value={this.props.gpsTrackerOn}
+            onValueChange={() => {
+                if(this.props.gpsTrackerOn) {
+                  console.log("Stop GPS");
+                  this.stopTimer();
+                } else {
+                  console.log("Turn on GPS");
+                  this.restartTimer();
+                }
+                this.props.toggleGPS();
+              }
+            }/>
+          <Text style={styles.btnStatus}>Track GPS</Text>
         </View>
 
         <FollowScreenHeader
@@ -615,7 +679,7 @@ class FollowScreen extends Component {
               const chimpId = this.state.selectedChimp;
               if (chimpId !== null) {
                 let arrival = this.state.followArrivals[chimpId];
-                // TODO: is this where the arrival status is recorded? Does it work when you go to previous intervals and change data?
+
                 realm.write(() => {
                   //id = this.state.followArrivals[chimpId].id;
                   arrival[field] = value;
@@ -625,20 +689,9 @@ class FollowScreen extends Component {
                   newFollowArrivals[chimpId] = arrival;
                   this.setState({followArrivals: newFollowArrivals});
 
-                  // realm.create('FollowArrival', {
-                  //   date: this.props.navigation.state.params.follow.date,
-                  //   followStartTime: this.props.navigation.state.params.followTime,
-                  //   focalId: this.props.navigation.state.params.follow.focalId,
-                  //   chimpId: chimpId,
-                  //   time: time,
-                  //   certainty: parseInt(Util.certaintyLabels.certain),
-                  //   estrus: parseInt(Util.estrusLabels.a),
-                  //   isWithin5m: false,
-                  //   isNearestNeighbor: false,
-                  //   grooming: 'N'
-                  // }, true);
-
                 });
+
+                // TODO: update subsequent values
               }
             }}
         />
@@ -653,6 +706,10 @@ const mapStateToProps = (state) => {
     gpsTrackerOn: state.gpsTrackerOn,
     gpsStatus: state.gpsStatus,
     lastGpsPosition: state.lastGpsPosition,
+    gpsTimerInterval: state.gpsTimerInterval,
+    gpsTimerId: state.gpsTimerId,
+    gpsTrialNumber: state.gpsTrialNumber,
+    selectedLanguageStrings: state.selectedLanguageStrings
   }
 }
 
@@ -692,6 +749,10 @@ const styles = {
   },
   btnInGroup: {
     marginRight: 8
+  },
+  btnStatus: {
+    marginRight: 8,
+    marginTop: 5
   }
 };
 

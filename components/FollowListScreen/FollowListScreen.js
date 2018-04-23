@@ -13,14 +13,19 @@ import realm from '../../models/realm';
 import strings from '../../data/strings';
 import Util from '../util';
 
-export default class FollowListScreen extends Component {
+import * as actions from '../../reduxmgmt/actions';
+import { connect } from 'react-redux';
+
+class FollowListScreen extends Component {
 
   componentDidMount() {
     Orientation.lockToPortrait();
+    //this.props.turnOffGPS();
   }
 
   render() {
 
+    const strings = this.props.selectedLanguageStrings;
     const follows = realm.objects('Follow');
       //.filtered('endTime = $0', undefined);
 
@@ -28,7 +33,7 @@ export default class FollowListScreen extends Component {
       return (
         <FollowListRow
           key={i}
-          strings={this.props.screenProps.localizedStrings}
+          strings={strings}
           onPress={() => {
             this.props.navigation.navigate('SummaryScreen', {
               follow: f
@@ -79,6 +84,15 @@ class FollowListRow extends Component {
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    selectedLanguage: state.selectedLanguage,
+    selectedLanguageStrings: state.selectedLanguageStrings
+  }
+}
+
+export default connect(mapStateToProps, actions)(FollowListScreen);
 
 var styles = {
   container: {

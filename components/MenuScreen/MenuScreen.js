@@ -26,6 +26,11 @@ class MenuScreen extends Component {
     }
   }
 
+  componentWillMount() {
+    this.props.changeLanguage(this.props.screenProps.language); // Load default language
+    this.props.loadLocalizedStrings(this.props.screenProps.enStrings, this.props.screenProps.swStrings);
+  }
+
   componentDidMount() {
     Orientation.lockToPortrait();
     Orientation.addOrientationListener(this._orientationDidChange);
@@ -33,13 +38,12 @@ class MenuScreen extends Component {
   }
 
   increment() {
-    this.props.increment();
+    this.props.reduxState();
   }
 
   render() {
 
-    const strings = this.props.screenProps.localizedStrings;
-    //const strings = "en";
+    const strings = this.props.selectedLanguageStrings;
 
     return(
       <ImageBackground source={require('../../img/chimp.png')} style={styles.container}>
@@ -71,18 +75,6 @@ class MenuScreen extends Component {
             <Text style={styles.menuBtnText}> {strings.Menu_ExportData} </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => { this.props.navigation.navigate('GPSTestScreen');}}
-        style={styles.menuBtn}>
-            <Text style={styles.menuBtnText}> GPS Monitor </Text>
-        </TouchableOpacity>
-
-        <View>
-          <Button title="Up" onPress={ () => this.increment() }/>
-          <Text>
-              {this.props.count}
-          </Text>
-        </View>
-
         <Text>Version: 0.3.6</Text>
 
       </ImageBackground>
@@ -92,7 +84,11 @@ class MenuScreen extends Component {
 
 const mapStateToProps = (state) => {
     return {
-      count: state.count
+      count: state.count,
+      localizedStrings: state.localizedStrings,
+      enStrings: state.enStrings,
+      swStrings: state.swStrings,
+      selectedLanguageStrings: state.selectedLanguageStrings
     }
 }
 
