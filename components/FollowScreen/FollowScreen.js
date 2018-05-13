@@ -14,6 +14,7 @@ import realm from '../../models/realm';
 import Util from '../util';
 import sharedStyles from '../SharedStyles';
 import BackgroundTimer from 'react-native-background-timer';
+import BackgroundGeolocation from 'react-native-mauron85-background-geolocation';
 
 import * as actions from '../../reduxmgmt/actions';
 import { connect } from 'react-redux';
@@ -56,6 +57,19 @@ class FollowScreen extends Component {
         );
     }
   }
+
+  // componentWillUpdate() {
+  //   console.log("componentWillUpdate");
+  //   if(this.props.reloadFollowArrivalsObject) {
+  //     // TODO: reloadFollowArrivalsObject
+  //     console.log("Update FollowArrival");
+  //     this.props.reloadFollowArrivalsObject(false);
+  //   }
+  // }
+
+  // componentDidUpdate() {
+  //   console.log("componentDidUpdate");
+  // }
 
   componentWillUnmount() {
     BackgroundTimer.clearInterval(intervalId);
@@ -355,7 +369,7 @@ class FollowScreen extends Component {
     this.setModalVisible(true);
   }
 
-  navigateToFollowTime(followTime, followArrivals) {
+  navigateToFollowTime(step, followTime, followArrivals) {
     if (followArrivals !== null) {
       let updatedFollowArrivals = {};
       const keys = Object.keys(followArrivals);
@@ -371,24 +385,25 @@ class FollowScreen extends Component {
           newFa.certainty = Util.getCertaintyLabelWithoutNesting(newFa.certainty);
           updatedFollowArrivals[k] = newFa;
         }
-
-        // TODO: change state -- don't create duplicate components
-        console.log("Interval number, ", this.props.navigation.state.params.intervalNumber + 1);
-        this.props.navigation.navigate('FollowScreen', {
-          follow: this.props.navigation.state.params.follow,
-          followTime: followTime,
-          followArrivals: updatedFollowArrivals,
-          trackGps: false,
-          intervalNumber: this.props.navigation.state.params.intervalNumber + 1
-        });
-
       }
+
+      // TODO: change state -- don't create duplicate components
+      console.log("Interval number, ", this.props.navigation.state.params.intervalNumber + step);
+      this.props.navigation.navigate('FollowScreen', {
+        follow: this.props.navigation.state.params.follow,
+        followTime: followTime,
+        followArrivals: updatedFollowArrivals,
+        trackGps: false,
+        intervalNumber: this.props.navigation.state.params.intervalNumber + step
+      });
+
     } else {
       console.log("Interval number restarted, ", 0);
 
       this.props.navigation.navigate('FollowScreen', {
         follow: this.props.navigation.state.params.follow,
         followTime: followTime,
+        followArrivals: followArrivals,
         trackGps: true,
         intervalNumber: 0
       });
@@ -416,16 +431,6 @@ class FollowScreen extends Component {
     realm.write(() => {
       this.props.navigation.state.params.follow.endTime = this.props.navigation.state.params.followTime;
     });
-
-    // TODO: Not working! Update Follow using id
-    // realm.write(() => {
-    //   this.props.navigation.state.params.follow.endTime = this.props.navigation.state.params.followTime;
-    //
-    //   realm.create('Follow', {
-    //     id: this.props.navigation.state.params.follow.id, endTime: this.props.navigation.state.params.followTime
-    //     },
-    //     true);
-    // });
 
     if (this.props.navigation.state.params.follow.gpsFirstTimeoutId !== undefined) {
       console.log("stop gps timeout");
@@ -487,9 +492,9 @@ class FollowScreen extends Component {
                     focalId: this.props.navigation.state.params.follow.focalId,
                     startTime: data.startTime,
                     endTime: data.endTime,
-                    startInterval: 0, //this.props.navigation.state.params.intervalNumber,
-                    endInterval: 1, // this.props.navigation.state.params.intervalNumber,
-                    intervalNumber: [0, 1] //[this.props.navigation.state.params.intervalNumber, this.props.navigation.state.params.intervalNumber]
+                    startInterval: this.props.navigation.state.params.intervalNumber,
+                    endInterval:  this.props.navigation.state.params.intervalNumber,
+                    intervalNumber: [this.props.navigation.state.params.intervalNumber, this.props.navigation.state.params.intervalNumber]
                   };
                   objectDict[mainFieldName] = data.mainSelection;
                   objectDict[secondaryFieldName] = data.secondarySelection;
@@ -579,7 +584,10 @@ class FollowScreen extends Component {
             activeSpecies={this.state.activeSpecies.map((s, i) => ({id: s.id, name: s.speciesName}))}
             finishedSpecies={this.state.finishedSpecies.map((s, i) => ({id: s.id, name: s.speciesName}))}
             onPreviousPress={()=> {
-              this.navigateToFollowTime(previousFollowTime, null);
+              const followArrivals =
+                  Object.keys(this.state.followArrivals).map(key => this.state.followArrivals[key]);
+
+              this.navigateToFollowTime(-1, previousFollowTime, _.extend(this.state.followArrivals)); // TODO
             }}
             onNextPress={()=>{
               const followArrivals =
@@ -587,14 +595,14 @@ class FollowScreen extends Component {
               const hasNearest = followArrivals.some((fa, i) => fa.isNearestNeighbor);
               const hasWithin5m = followArrivals.some((fa, i) => fa.isWithin5m);
               const hasOpenFood = this.state.activeFood.length !== 0;
-              const hasOpenSpeices = this.state.activeSpecies.length !== 0;
+              const hasOpenSpecies = this.state.activeSpecies.length !== 0;
 
-              if (!hasNearest || !hasWithin5m || hasOpenFood || hasOpenSpeices) {
+              if (!hasNearest || !hasWithin5m || hasOpenFood || hasOpenSpecies) {
                 let alertMessages = [];
                 if (!hasNearest) { alertMessages.push(strings.Follow_NextDataValidationAlertMessageNoNearest); }
                 if (!hasWithin5m) { alertMessages.push(strings.Follow_NextDataValidationAlertMessageNoWithIn5m); }
                 if (hasOpenFood) { alertMessages.push(strings.Follow_NextDataValidationAlertMessageOpenFood); }
-                if (hasOpenSpeices) { alertMessages.push(strings.Follow_NextDataValidationAlertMessageOpenSpecies); }
+                if (hasOpenSpecies) { alertMessages.push(strings.Follow_NextDataValidationAlertMessageOpenSpecies); }
                 alertMessages.push(strings.Follow_NextDataValidationAlertMessagePrompt);
                 const alertMessage = alertMessages.join('\n');
 
@@ -606,13 +614,13 @@ class FollowScreen extends Component {
                         onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
                       {text: strings.Follow_NextDataValidationAlertConfirm,
                         onPress: () => {
-                          this.navigateToFollowTime(nextFollowTime, _.extend(this.state.followArrivals));
+                          this.navigateToFollowTime(1, nextFollowTime, _.extend(this.state.followArrivals));
                         }},
                     ],
                     {cancelable: true}
                 );
               } else {
-                this.navigateToFollowTime(nextFollowTime, _.extend(this.state.followArrivals))
+                this.navigateToFollowTime(1, nextFollowTime, _.extend(this.state.followArrivals))
               }
             }}
             onFoodTrackerSelected={()=>{
@@ -678,20 +686,31 @@ class FollowScreen extends Component {
             updateArrival={(field, value) => {
               const chimpId = this.state.selectedChimp;
               if (chimpId !== null) {
-                let arrival = this.state.followArrivals[chimpId];
+                if(value != "arriveEmpty") {
+                  let arrival = this.state.followArrivals[chimpId];
 
-                realm.write(() => {
-                  //id = this.state.followArrivals[chimpId].id;
-                  arrival[field] = value;
+                  realm.write(() => {
+                    //id = this.state.followArrivals[chimpId].id;
+                    arrival[field] = value;
+
+                    // update State
+                    let newFollowArrivals = this.state.followArrivals;
+                    newFollowArrivals[chimpId] = arrival;
+                    this.setState({followArrivals: newFollowArrivals});
+                  });
+                } else {
+                  // TODO: delete the follow
+                  let arrival = this.state.followArrivals[chimpId];
+                  realm.write(() => {
+                    realm.delete(arrival);
+                  });
 
                   // update State
                   let newFollowArrivals = this.state.followArrivals;
-                  newFollowArrivals[chimpId] = arrival;
+                  delete newFollowArrivals[chimpId];
                   this.setState({followArrivals: newFollowArrivals});
-
-                });
-
-                // TODO: update subsequent values
+                  this.props.reloadFollowArrivalsObject(true);
+                }
               }
             }}
         />
@@ -709,7 +728,8 @@ const mapStateToProps = (state) => {
     gpsTimerInterval: state.gpsTimerInterval,
     gpsTimerId: state.gpsTimerId,
     gpsTrialNumber: state.gpsTrialNumber,
-    selectedLanguageStrings: state.selectedLanguageStrings
+    selectedLanguageStrings: state.selectedLanguageStrings,
+    reloadFollowArrivalsObject: state.reloadFollowArrivalsObject
   }
 }
 
