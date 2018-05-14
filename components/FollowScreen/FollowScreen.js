@@ -232,9 +232,39 @@ class FollowScreen extends Component {
       lastPosition: 'unknown',
       maleChimpsSorted: maleChimpsSorted,
       femaleChimpsSorted: femaleChimpsSorted,
-      currentFollowTime: this.props.navigation.state.params.followTime
+      currentFollowTime: this.props.navigation.state.params.followTime,
+      editActiveList: false,
+      editFinishedList: false
      };
   };
+
+  deleteChimp(chimp) {
+    let followArrivals = realm.objects('FollowArrival')
+      .filtered('focalId = $0 AND date = $1 AND followStartTime = $2',
+        this.props.navigation.state.params.follow.focalId, this.props.navigation.state.params.follow.date, this.props.navigation.state.params.follow.startTime);
+
+    for (let i = 0; i < followArrivals.length; i++) {
+      let arrival = followArrivals[i];
+      if (arrival.chimpId == chimp) {
+        realm.write(() => {
+          realm.delete(arrival);
+        });
+      }
+    }
+
+    // this.forceUpdate();
+
+    // let updatedFollowArrivals = realm.objects('FollowArrival')
+    //   .filtered('focalId = $0 AND date = $1 AND followStartTime = $2',
+    //     this.props.navigation.state.params.follow.focalId, this.props.navigation.state.params.follow.date, this.props.navigation.state.params.follow.startTime);
+    //
+    // for (let i = 0; i < updatedFollowArrivals.length; i++) {
+    //   let arrival = updatedFollowArrivals[i];
+    //   console.log(arrival);
+    // }
+
+    //this.forceUpdate();
+  }
 
   restartTimer() {
     console.log("Timer started for: ", this.props.gpsTimerInterval);
@@ -376,6 +406,8 @@ class FollowScreen extends Component {
   }
 
   navigateToFollowTime(step, followTime, followArrivals) {
+
+    // Next Interval
     if (followArrivals !== null) {
       let updatedFollowArrivals = {};
       const keys = Object.keys(followArrivals);
@@ -393,27 +425,27 @@ class FollowScreen extends Component {
           newFa.certainty = Util.getCertaintyLabelWithoutNesting(newFa.certainty);
           updatedFollowArrivals[k] = newFa;
         }
-
-        // TODO: change state -- don't create duplicate components
-        console.log("Interval number, ", this.props.navigation.state.params.intervalNumber + step);
-        this.props.navigation.navigate('FollowScreen', {
-          follow: this.props.navigation.state.params.follow,
-          followTime: followTime,
-          followArrivals: updatedFollowArrivals,
-          trackGps: false,
-          intervalNumber: this.props.navigation.state.params.intervalNumber + step
-        });
       }
-
-    } else {
-      console.log("Interval number restarted, ", 0);
+      // TODO: change state -- don't create duplicate components
+      console.log("Interval number, ", this.props.navigation.state.params.intervalNumber + step);
+      this.props.navigation.navigate('FollowScreen', {
+        follow: this.props.navigation.state.params.follow,
+        followTime: followTime,
+        followArrivals: updatedFollowArrivals,
+        trackGps: false,
+        intervalNumber: this.props.navigation.state.params.intervalNumber + step
+      });
+    }
+    // Previous Interval
+    else {
+      console.log("Interval number, ", this.props.navigation.state.params.intervalNumber + step);
 
       this.props.navigation.navigate('FollowScreen', {
         follow: this.props.navigation.state.params.follow,
         followTime: followTime,
         followArrivals: followArrivals,
         trackGps: true,
-        intervalNumber: 0
+        intervalNumber: this.props.navigation.state.params.intervalNumber + step
       });
     }
   }
@@ -473,8 +505,8 @@ class FollowScreen extends Component {
             beginFollowTime={this.props.navigation.state.params.followTime}
             initialStartTime={this.state.itemTrackerInitialStartTime}
             initialEndTime={this.state.itemTrackerInitialEndTime}
-            startInterval={this.props.navigation.state.params.intervalNumber}
-            endInterval={this.props.navigation.state.params.intervalNumber}
+            initialStartInterval={this.state.itemTrackerInitialStartInterval}
+            initialEndInterval={this.state.itemTrackerInitialEndInterval}
             initialMainSelection={this.state.itemTrackerInitialMainSelection}
             initialSecondarySelection={this.state.itemTrackerInitialSecondarySelection}
             itemId={this.state.itemTrackerItemId}
@@ -487,7 +519,6 @@ class FollowScreen extends Component {
               let newFinishedList = this.state.modalType === ModalType.food ? this.state.finishedFood : this.state.finishedSpecies;
 
               realm.write(() => {
-
                 // When Food starts and ends in the same interval
                 // -- same startInterval and endInterval
                 // OR food was started in the current interval
@@ -502,8 +533,8 @@ class FollowScreen extends Component {
                     focalId: this.props.navigation.state.params.follow.focalId,
                     startTime: data.startTime,
                     endTime: data.endTime,
-                    startInterval: this.props.navigation.state.params.intervalNumber,
-                    endInterval:  this.props.navigation.state.params.intervalNumber,
+                    startInterval: data.startInterval? data.startInterval: this.props.navigation.state.params.intervalNumber,
+                    endInterval:  data.endInterval? data.endInterval: this.props.navigation.state.params.intervalNumber,
                     intervalNumber: [0,0]
                   };
                   objectDict[mainFieldName] = data.mainSelection;
@@ -530,25 +561,37 @@ class FollowScreen extends Component {
                 }
                 // When food ends in a different interval
                 else {
-                  let object = newActiveList.filter((o) => o.id === data.itemId)[0];
-                  object.startTime = data.startTime;
-                  object.endTime = data.endTime;
-                  object.startInterval = data.startInterval? data.startInterval: this.props.navigation.state.params.intervalNumber;
-                  object.endInterval = this.props.navigation.state.params.intervalNumber;
-                  object.intervalNumber = [0,0];
-                  object[mainFieldName] = data.mainSelection;
-                  object[secondaryFieldName] = data.secondarySelection;
+                  if(this.state.editActiveList) {
+                    let object = newActiveList.filter((o) => o.id === data.itemId)[0];
+                    object.startTime = data.startTime;
+                    object.endTime = data.endTime;
+                    object.startInterval = data.startInterval? data.startInterval: this.props.navigation.state.params.intervalNumber;
+                    object.endInterval = this.props.navigation.state.params.intervalNumber;
+                    object.intervalNumber = [0,0];
+                    object[mainFieldName] = data.mainSelection;
+                    object[secondaryFieldName] = data.secondarySelection;
 
-                  if (data.endTime !== 'ongoing') {
-                    const index = newActiveList.indexOf(object);
-                    newActiveList.splice(index, 1);
-                    newFinishedList.push(object);
-                    if (this.state.modalType === ModalType.food) {
-                      this.setState({activeFood: newActiveList, finishedFood: newFinishedList});
-                    } else {
-                      this.setState({activeSpecies: newActiveList, finishedSpecies: newFinishedList});
+                    if (data.endTime !== 'ongoing') {
+                      const index = newActiveList.indexOf(object);
+                      newActiveList.splice(index, 1);
+                      newFinishedList.push(object);
+                      if (this.state.modalType === ModalType.food) {
+                        this.setState({activeFood: newActiveList, finishedFood: newFinishedList});
+                      } else {
+                        this.setState({activeSpecies: newActiveList, finishedSpecies: newFinishedList});
+                      }
                     }
+                  } else if (this.state.editFinishedList) {
+                    let object = newFinishedList.filter((o) => o.id === data.itemId)[0];
+                    object.startTime = data.startTime;
+                    object.endTime = data.endTime;
+                    object.startInterval = data.startInterval;
+                    object.endInterval = data.endInterval;
+                    object.intervalNumber = [0,0];
+                    object[mainFieldName] = data.mainSelection;
+                    object[secondaryFieldName] = data.secondarySelection;
                   }
+
                 }
               });
             }}
@@ -597,7 +640,9 @@ class FollowScreen extends Component {
               const followArrivals =
                   Object.keys(this.state.followArrivals).map(key => this.state.followArrivals[key]);
 
-              this.navigateToFollowTime(-1, previousFollowTime, _.extend(this.state.followArrivals)); // TODO
+              this.navigateToFollowTime(-1, previousFollowTime, null);
+
+              // this.navigateToFollowTime(-1, previousFollowTime, _.extend(this.state.followArrivals)); // TODO
             }}
             onNextPress={()=>{
               const followArrivals =
@@ -644,20 +689,24 @@ class FollowScreen extends Component {
             }}
 
             onSelectActiveFood={(fid) => {
+              this.setState({editActiveList: true});
               this.editFood(fid, this.state.activeFood);
             }}
 
             onSelectFinishedFood={(fid) => {
               if (fid === null) { return; }
+              this.setState({editFinishedList: true});
               this.editFood(fid, this.state.finishedFood);
             }}
 
             onSelectActiveSpecies={(sid) => {
+              this.setState({editActiveList: true});
               this.editSpecies(sid, this.state.activeSpecies);
             }}
 
             onSelectFinishedSpecies={(sid) => {
               if (sid === null) { return; }
+              this.setState({editFinishedList: true});
               this.editSpecies(sid, this.state.finishedSpecies);
             }}
         />
@@ -714,6 +763,7 @@ class FollowScreen extends Component {
                   realm.write(() => {
                     realm.delete(arrival);
                   });
+                  this.deleteChimp(chimpId);
 
                   // update State
                   let newFollowArrivals = this.state.followArrivals;
