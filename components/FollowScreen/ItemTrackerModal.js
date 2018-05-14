@@ -105,7 +105,9 @@ export default class ItemTrackerModal extends Component {
               <Picker
                   selectedValue={this.state.startTime}
                   onValueChange={(v)=>{
-                    this.setState({startTime: v})}
+                    this.setState({
+                      startTime: v
+                    })}
                   }
                   style={styles.timeSelectionPicker}
               >

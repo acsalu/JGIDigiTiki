@@ -223,6 +223,8 @@ class FollowScreen extends Component {
       itemTrackerInitialEndTime: null,
       itemTrackerInitialMainSelection: null,
       itemTrackerInitialSecondarySelection: null,
+      itemTrackerInitialStartInterval: null,
+      itemTrackerInitialEndInterval: null,
       itemTrackerItemId: null,
       followArrivals: followArrivals,
       selectedChimp: null,
@@ -340,6 +342,8 @@ class FollowScreen extends Component {
           itemTrackerInitialMainSelection: data ? data.foodName : null,
           itemTrackerInitialSecondarySelection: data ? data.foodPart : null,
           itemTrackerItemId: data ? data.id : null,
+          itemTrackerInitialStartInterval: data ? data.startInterval : null,
+          itemTrackerInitialEndInterval: data ? data.endInterval : null,
         });
         break;
       case ModalType.species:
@@ -352,6 +356,8 @@ class FollowScreen extends Component {
           itemTrackerInitialMainSelection: data ? data.speciesName : null,
           itemTrackerInitialSecondarySelection: data ? data.speciesCount : null,
           itemTrackerItemId: data ? data.id : null,
+          itemTrackerInitialStartInterval: data ? data.startInterval : null,
+          itemTrackerInitialEndInterval: data ? data.endInterval : null,
         });
         break;
     }
@@ -467,6 +473,8 @@ class FollowScreen extends Component {
             beginFollowTime={this.props.navigation.state.params.followTime}
             initialStartTime={this.state.itemTrackerInitialStartTime}
             initialEndTime={this.state.itemTrackerInitialEndTime}
+            startInterval={this.props.navigation.state.params.intervalNumber}
+            endInterval={this.props.navigation.state.params.intervalNumber}
             initialMainSelection={this.state.itemTrackerInitialMainSelection}
             initialSecondarySelection={this.state.itemTrackerInitialSecondarySelection}
             itemId={this.state.itemTrackerItemId}
