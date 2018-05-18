@@ -36,9 +36,12 @@ class FollowScreen extends Component {
 
   componentDidMount() {
     Orientation.lockToPortrait();
+
     if(this.props.navigation.state.params.trackGps) {
-      console.log("GPS tracker already ON");
-      this.restartTimer();
+      console.log("Turning on GPS tracker....");
+      if (!this.props.gpsTrackerOn) {
+        this.restartTimer();
+      }
     } else if (this.props.gpsTrackerOn) {
       console.log("GPS tracking ON and active");
     } else {
@@ -57,19 +60,6 @@ class FollowScreen extends Component {
         );
     }
   }
-
-  // componentWillUpdate() {
-  //   console.log("componentWillUpdate");
-  //   if(this.props.reloadFollowArrivalsObject) {
-  //     // TODO: reloadFollowArrivalsObject
-  //     console.log("Update FollowArrival");
-  //     this.props.reloadFollowArrivalsObject(false);
-  //   }
-  // }
-
-  // componentDidUpdate() {
-  //   console.log("componentDidUpdate");
-  // }
 
   componentWillUnmount() {
     BackgroundTimer.clearInterval(intervalId);
@@ -120,9 +110,10 @@ class FollowScreen extends Component {
       //this.recordLocation();
     } else {
       console.log("Existing location records");
-      console.log(existingLocations);
     }
 
+
+    // Write continuing FollowArrivals to Realm if it exists. Else, do nothing
     if (this.props.navigation.state.params.followArrivals !== undefined && this.props.navigation.state.params.followArrivals !== null) {
       // Write follows from previous into db
       console.log("Got follow arrival from previous", this.props.navigation.state.params.followArrivals);
@@ -163,10 +154,11 @@ class FollowScreen extends Component {
 
     loaderHandler.showLoader('Loading More');
 
+    // Read continued FollowArrivals from Realm
     let followArrivals = {};
     // TODO: Populate followArrival in db
     // TODO: filter using followId
-    const allFollowArrival = realm.objects('FollowArrival')
+    let allFollowArrival = realm.objects('FollowArrival')
         .filtered('focalId = $0 AND date = $1 AND followStartTime = $2', focalId, date, this.props.navigation.state.params.followTime);
     for (let i = 0; i < allFollowArrival.length; i++) {
       const arrival = allFollowArrival[i];
@@ -239,12 +231,24 @@ class FollowScreen extends Component {
   };
 
   deleteChimp(chimp) {
+
+    // delete previous followArrivals
     let followArrivals = realm.objects('FollowArrival')
-      .filtered('focalId = $0 AND date = $1 AND followStartTime = $2',
-        this.props.navigation.state.params.follow.focalId, this.props.navigation.state.params.follow.date, this.props.navigation.state.params.follow.startTime);
+      .filtered('focalId = $0 AND date = $1 AND chimpId = $2',
+        this.props.navigation.state.params.follow.focalId, this.props.navigation.state.params.follow.date, chimp);
 
     for (let i = 0; i < followArrivals.length; i++) {
       let arrival = followArrivals[i];
+      realm.write(() => {
+        realm.delete(arrival);
+      });
+    }
+
+    // delete current FollowArrival
+    let followArrivalsCurrent = realm.objects('FollowArrival').filtered('focalId = $0 AND date = $1 AND followStartTime = $2', this.props.navigation.state.params.follow.focalId, this.props.navigation.state.params.follow.date, this.props.navigation.state.params.followTime);
+
+    for (let i = 0; i < followArrivalsCurrent.length; i++) {
+      let arrival = followArrivalsCurrent[i];
       if (arrival.chimpId == chimp) {
         realm.write(() => {
           realm.delete(arrival);
@@ -252,18 +256,10 @@ class FollowScreen extends Component {
       }
     }
 
-    // this.forceUpdate();
-
-    // let updatedFollowArrivals = realm.objects('FollowArrival')
-    //   .filtered('focalId = $0 AND date = $1 AND followStartTime = $2',
-    //     this.props.navigation.state.params.follow.focalId, this.props.navigation.state.params.follow.date, this.props.navigation.state.params.follow.startTime);
-    //
-    // for (let i = 0; i < updatedFollowArrivals.length; i++) {
-    //   let arrival = updatedFollowArrivals[i];
-    //   console.log(arrival);
-    // }
-
-    //this.forceUpdate();
+    // update View State
+    let newFollowArrivals = this.state.followArrivals;
+    delete newFollowArrivals[chimp];
+    this.setState({followArrivals: newFollowArrivals});
   }
 
   restartTimer() {
@@ -346,7 +342,6 @@ class FollowScreen extends Component {
         maximumAge: 3*60*1000
       }
     );
-    console.log("Watch ID^ ", watchId);
   }
 
   getSortedChimps(chimps, sex, followArrivals) {
@@ -426,6 +421,7 @@ class FollowScreen extends Component {
           updatedFollowArrivals[k] = newFa;
         }
       }
+
       // TODO: change state -- don't create duplicate components
       console.log("Interval number, ", this.props.navigation.state.params.intervalNumber + step);
       this.props.navigation.navigate('FollowScreen', {
@@ -436,6 +432,7 @@ class FollowScreen extends Component {
         intervalNumber: this.props.navigation.state.params.intervalNumber + step
       });
     }
+
     // Previous Interval
     else {
       console.log("Interval number, ", this.props.navigation.state.params.intervalNumber + step);
@@ -444,7 +441,7 @@ class FollowScreen extends Component {
         follow: this.props.navigation.state.params.follow,
         followTime: followTime,
         followArrivals: followArrivals,
-        trackGps: true,
+        trackGps: false,
         intervalNumber: this.props.navigation.state.params.intervalNumber + step
       });
     }
@@ -464,7 +461,6 @@ class FollowScreen extends Component {
   }
 
   endFollow() {
-    console.log(intervalId, watchId,  this.props.navigation.state.params.follow.gpsFirstTimeoutId);
     BackgroundTimer.clearInterval(intervalId);
     navigator.geolocation.clearWatch(watchId);
 
@@ -488,6 +484,8 @@ class FollowScreen extends Component {
   render() {
     const strings = this.props.selectedLanguageStrings;
     const beginFollowTime = this.props.navigation.state.params.follow.startTime;
+
+    // TODO: Repeated code for intervalNumber. Prune.
     const beginFollowTimeIndex = this.props.screenProps.times.indexOf(beginFollowTime);
     const followTimeIndex = this.props.screenProps.times.indexOf(this.props.navigation.state.params.followTime);
     const previousFollowTime = followTimeIndex !== beginFollowTimeIndex ? this.props.screenProps.times[followTimeIndex - 1] : null;
@@ -637,8 +635,8 @@ class FollowScreen extends Component {
             activeSpecies={this.state.activeSpecies.map((s, i) => ({id: s.id, name: s.speciesName}))}
             finishedSpecies={this.state.finishedSpecies.map((s, i) => ({id: s.id, name: s.speciesName}))}
             onPreviousPress={()=> {
-              const followArrivals =
-                  Object.keys(this.state.followArrivals).map(key => this.state.followArrivals[key]);
+              // const followArrivals =
+              //     Object.keys(this.state.followArrivals).map(key => this.state.followArrivals[key]);
 
               this.navigateToFollowTime(-1, previousFollowTime, null);
 
@@ -647,6 +645,7 @@ class FollowScreen extends Component {
             onNextPress={()=>{
               const followArrivals =
                   Object.keys(this.state.followArrivals).map(key => this.state.followArrivals[key]);
+
               const hasNearest = followArrivals.some((fa, i) => fa.isNearestNeighbor);
               const hasWithin5m = followArrivals.some((fa, i) => fa.isWithin5m);
               const hasOpenFood = this.state.activeFood.length !== 0;
@@ -759,17 +758,17 @@ class FollowScreen extends Component {
                   });
                 } else {
                   // TODO: delete the follow
-                  let arrival = this.state.followArrivals[chimpId];
-                  realm.write(() => {
-                    realm.delete(arrival);
-                  });
+                  // let arrival = this.state.followArrivals[chimpId];
+                  // realm.write(() => {
+                  //   realm.delete(arrival);
+                  // });
                   this.deleteChimp(chimpId);
 
                   // update State
-                  let newFollowArrivals = this.state.followArrivals;
-                  delete newFollowArrivals[chimpId];
-                  this.setState({followArrivals: newFollowArrivals});
-                  this.props.reloadFollowArrivalsObject(true);
+                  // let newFollowArrivals = this.state.followArrivals;
+                  // delete newFollowArrivals[chimpId];
+                  // this.setState({followArrivals: newFollowArrivals});
+                  // this.props.reloadFollowArrivalsObject(true);
                 }
               }
             }}
@@ -835,59 +834,3 @@ const styles = {
     marginTop: 5
   }
 };
-
-// recordLocation() {
-//   this.saveLocation(navigator.geolocation);
-//   const now = new Date();
-//   const minutes = now.getMinutes();
-//   const seconds = now.getSeconds();
-//   const secondsToGo = (saveLocationInterval * 60) - (minutes * 60 + seconds) % (saveLocationInterval * 60);
-//   console.log(secondsToGo);
-//
-//   const timeoutId = BackgroundTimer.setTimeout(() => {
-//     const intervalId = BackgroundTimer.setInterval(() => {
-//       console.log("Get location");
-//       this.saveLocation(navigator.geolocation);
-//     }, saveLocationInterval * 60 * 1000);
-//     realm.write(() => {
-//       this.props.navigation.state.params.follow.gpsIntervalId = intervalId;
-//     });
-//   }, secondsToGo * 1000);
-//
-//   realm.write(() => {
-//     this.props.navigation.state.params.follow.gpsFirstTimeoutId = timeoutId;
-//   });
-// };
-
-// saveLocation(geolocation) {
-//   const focalId = this.props.navigation.state.params.follow.focalId;
-//   const date = this.props.navigation.state.params.follow.date;
-//   const community = this.props.navigation.state.params.follow.community;
-//   const followStartTime = this.props.navigation.state.params.followTime;
-//
-//   geolocation.getCurrentPosition(
-//       (position) => {
-//         this.setState({ currentGeolocation: [position.coords.longitude, position.coords.latitude] });
-//         realm.write(() => {
-//           const newLocation = realm.create('Location', {
-//             date: date,
-//             focalId: focalId,
-//             followStartTime: followStartTime,
-//             community: community,
-//             timestamp: position.timestamp,
-//             longitude: position.coords.longitude,
-//             latitude: position.coords.latitude,
-//             altitude: position.coords.altitude,
-//             accuracy: position.coords.accuracy
-//           });
-//         });
-//       },
-//       (error) => {
-//         alert(JSON.stringify(error));
-//         console.log("Couldn't get lock");
-//         this.setState({ currentGeolocation: ['x', 'x']});
-//         this.recordLocation();
-//       },
-//       {enableHighAccuracy: true, timeout: 10000}
-//   );
-// }
