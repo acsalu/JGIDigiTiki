@@ -95,7 +95,7 @@ def enableProguardInReleaseBuilds = false
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '26.0.2'
+    buildToolsVersion "23.0.1"
 
     defaultConfig {
         applicationId "com.jgidigitiki"
@@ -148,16 +148,17 @@ android {
 }
 
 dependencies {
-    implementation project(':realm')
-    implementation project(':react-native-fs')
-    implementation project(':RNMail')
-    implementation project(':react-native-zip-archive')
-    implementation project(':react-native-orientation')
-    implementation project(':react-native-localization')
-    implementation project(':react-native-background-timer')
-    implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "com.android.support:appcompat-v7:23.0.1"
-    implementation "com.facebook.react:react-native:+"  // From node_modules
+    compile project(':react-native-mauron85-background-geolocation')
+    compile project(':realm')
+    compile project(':react-native-zip-archive')
+    compile project(':react-native-orientation')
+    compile project(':react-native-mail')
+    compile project(':react-native-localization')
+    compile project(':react-native-fs')
+    compile project(':react-native-background-timer')
+    compile fileTree(dir: "libs", include: ["*.jar"])
+    compile "com.android.support:appcompat-v7:23.0.1"
+    compile "com.facebook.react:react-native:+"  // From node_modules
 }
 
 // Run this once to be able to run the application with BUCK

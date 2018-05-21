@@ -1,8 +1,6 @@
 package com.jgidigitiki;
 
 import com.facebook.react.ReactActivity;
-
-// Configuration for react-native-orientation
 import android.content.Intent;
 import android.content.res.Configuration;
 
@@ -17,13 +15,11 @@ public class MainActivity extends ReactActivity {
         return "JGIDigiTiki";
     }
 
-    // Method implementation for react-native-orientation
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-      super.onConfigurationChanged(newConfig);
-      Intent intent = new Intent("onConfigurationChanged");
-      intent.putExtra("newConfig", newConfig);
-      this.sendBroadcast(intent);
-    }
-
+      public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        Intent intent = new Intent("onConfigurationChanged");
+        intent.putExtra("newConfig", newConfig);
+        this.sendBroadcast(intent);
+      }
 }

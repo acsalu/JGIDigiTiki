@@ -2,12 +2,12 @@ package com.jgidigitiki;
 
 import android.app.Application;
 
-import com.facebook.react.BuildConfig;
 import com.facebook.react.ReactApplication;
+import com.marianhello.bgloc.react.BackgroundGeolocationPackage;
 import io.realm.react.RealmReactPackage;
 import com.rnziparchive.RNZipArchivePackage;
 import com.github.yamill.orientation.OrientationPackage;
-import com.chirag.RNMail.*;
+import com.chirag.RNMail.RNMail;
 import com.babisoft.ReactNativeLocalization.ReactNativeLocalizationPackage;
 import com.rnfs.RNFSPackage;
 import com.ocetnik.timer.BackgroundTimerPackage;
@@ -15,8 +15,6 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
-import android.content.Intent;
-import android.content.res.Configuration;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,12 +31,13 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new BackgroundGeolocationPackage(),
             new RealmReactPackage(),
-            new RNFSPackage(),
-            new RNMail(),
             new RNZipArchivePackage(),
             new OrientationPackage(),
+            new RNMail(),
             new ReactNativeLocalizationPackage(),
+            new RNFSPackage(),
             new BackgroundTimerPackage()
       );
     }
@@ -52,14 +51,6 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public ReactNativeHost getReactNativeHost() {
     return mReactNativeHost;
-  }
-
-  @Override
-  public void onConfigurationChanged(Configuration newConfig) {
-    super.onConfigurationChanged(newConfig);
-    Intent intent = new Intent("onConfigurationChanged");
-    intent.putExtra("newConfig", newConfig);
-    this.sendBroadcast(intent);
   }
 
   @Override

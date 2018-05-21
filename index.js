@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {
+  Button,
   AsyncStorage,
   AppRegistry,
   StyleSheet,
@@ -30,6 +31,14 @@ import defaultFoodParts from './data/food-part-list.json';
 import defaultSpecies from './data/species-list.json';
 import speciesNumbers from './data/species-number-list.json';
 import defaultStrings from './data/strings';
+
+// Redux
+import { createStore, applyMiddleware } from 'redux';
+import reducers from './reduxmgmt/reducer';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
+
+const store = createStore(reducers, applyMiddleware(thunk));
 
 const defaultLanguage = 'en';
 
@@ -168,7 +177,9 @@ export default class JGIDigiTiki extends Component {
 
   render() {
     return (
-      <Navstack screenProps={this.state}/>
+      <Provider store={store}>
+        <Navstack screenProps={this.state}/>
+      </Provider>
     );
   }
 }
@@ -188,7 +199,10 @@ const Navstack = StackNavigator({
   FollowListScreen: { screen: FollowListScreen },
   ExportDataScreen: { screen: ExportDataScreen },
   SummaryScreen: { screen: SummaryScreen },
-  SettingsScreen: { screen: SettingsScreen },
+    SettingsScreen: { screen: SettingsScreen, navigationOptions: {
+      headerLeft: null
+    } 
+  },
   GPSTestScreen: { screen: GPSTestScreen },
 }, {
   initialRouteName: 'MenuScreen',
