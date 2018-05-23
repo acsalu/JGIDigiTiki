@@ -233,7 +233,7 @@ class FollowScreen extends Component {
      };
   };
 
-  deleteChimp(chimp) {
+  deleteChimp(followTimeIndex, chimp) {
 
     // delete previous followArrivals
     let followArrivals = realm.objects('FollowArrival')
@@ -270,21 +270,43 @@ class FollowScreen extends Component {
     this.setState({followArrivals: newFollowArrivals2});
 
     // delete followArrivals by searching by follow.id
-    let followArrivalsById = realm.objects('FollowArrival')
-      .filtered('followId = $0 AND chimpId = $2',
-        this.props.navigation.state.params.follow.id, chimp);
+    // let followArrivalsById = realm.objects('FollowArrival')
+    //   .filtered('followId = $0 AND chimpId = $2',
+    //     this.props.navigation.state.params.follow.id, chimp);
+    //
+    // for (let i = 0; i < followArrivalsById.length; i++) {
+    //   let arrival = followArrivalsById[i];
+    //   realm.write(() => {
+    //     realm.delete(arrival);
+    //   });
+    // }
+    //
+    // // update View State
+    // let newFollowArrivals = this.state.followArrivals;
+    // delete newFollowArrivals[chimp];
+    // this.setState({followArrivals: newFollowArrivals});
+  }
 
-    for (let i = 0; i < followArrivalsById.length; i++) {
-      let arrival = followArrivalsById[i];
+  deleteSubsequentFollowArrivals(currentTimeIndex, chimp) {
+
+    const nextFollowTime = this.props.screenProps.times[currentTimeIndex + 1];
+
+    let followArrivals = realm.objects('FollowArrival')
+      .filtered('focalId = $0 AND date = $1 AND chimpId = $2 AND followStartTime = $3',
+        this.props.navigation.state.params.follow.focalId, this.props.navigation.state.params.follow.date, chimp, nextFollowTime);
+
+    for (let i = 0; i < followArrivals.length; i++) {
+      let arrival = followArrivals[i];
       realm.write(() => {
         realm.delete(arrival);
       });
     }
 
-    // update View State
-    let newFollowArrivals = this.state.followArrivals;
-    delete newFollowArrivals[chimp];
-    this.setState({followArrivals: newFollowArrivals});
+    if(followArrivals.length == 0) {
+      return;
+    } else {
+      deleteSubsequentFollowArrivals(this.props.screenProps.times.indexOf(currentTimeIndex));
+    }
   }
 
   restartTimer() {
@@ -443,7 +465,7 @@ class FollowScreen extends Component {
           newFa.time = 'arriveContinues';
           newFa.isWithin5m = false;
           newFa.isNearestNeighbor = false;
-          newFa.grooming = false;
+          newFa.grooming = '';
           newFa.certainty = Util.getCertaintyLabelWithoutNesting(newFa.certainty);
           updatedFollowArrivals[k] = newFa;
         }
@@ -786,8 +808,13 @@ class FollowScreen extends Component {
                     newFollowArrivals[chimpId] = arrival;
                     this.setState({followArrivals: newFollowArrivals});
                   });
+
+                  if(field=="time" && value.startsWith("depart")) {
+                    this.deleteSubsequentFollowArrivals(followTimeIndex, chimpId);
+                  }
+
                 } else {
-                  this.deleteChimp(chimpId);
+                  this.deleteChimp(followTimeIndex, chimpId);
                 }
               }
             }}
