@@ -3,6 +3,7 @@ import {
   Button,
   AsyncStorage,
   AppRegistry,
+  PermissionsAndroid,
   StyleSheet,
 } from 'react-native';
 
@@ -71,16 +72,61 @@ export default class JGIDigiTiki extends Component {
       times: times
     };
 
-    this._loadCustomData('chimp-list.json', 'chimps');
-    this._loadCustomData('food-list.json', 'food');
-    this._loadCustomData('species-list.json', 'species');
-    this._loadCustomData('species-number.json', 'species');
-    this._loadCustomData('food-part-list.json', 'foodParts');
+    this.requestReadPermission();
+
+    this.requestPermissions();
   }
 
   componentWillMount() {
     this._loadLocalizedStrings();
     this._loadDefaultLanguage();
+  }
+
+  async requestReadPermission() {
+    try {
+      const grantedStatus = await PermissionsAndroid.requestMultiple([
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE
+      ]);
+      const readGranted = grantedStatus["android.permission.READ_EXTERNAL_STORAGE"] === PermissionsAndroid.RESULTS.GRANTED
+
+      if (readGranted) {
+        console.log("You have read permissions");
+        this._loadCustomData('chimp-list.json', 'chimps');
+        this._loadCustomData('food-list.json', 'food');
+        this._loadCustomData('species-list.json', 'species');
+        this._loadCustomData('species-number.json', 'species');
+        this._loadCustomData('food-part-list.json', 'foodParts');
+      } else {
+        console.log("READ_EXTERNAL_STORAGE: ", readGranted);
+      }
+    } catch (err) {
+      console.warn(err)
+    }
+  }
+
+  async requestPermissions() {
+    try {
+      const grantedStatus = await PermissionsAndroid.requestMultiple([
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+      ]);
+      const writeGranted = grantedStatus["android.permission.WRITE_EXTERNAL_STORAGE"] === PermissionsAndroid.RESULTS.GRANTED
+      const locationGranted = grantedStatus["android.permission.ACCESS_FINE_LOCATION"] === PermissionsAndroid.RESULTS.GRANTED
+      //const internetGranted = grantedStatus["android.permission.INTERNET"] === PermissionsAndroid.RESULTS.GRANTED
+      //const alertGranted = grantedStatus["android.permission.SYSTEM_ALERT_WINDOW"] === PermissionsAndroid.RESULTS.GRANTED
+
+      if (writeGranted && locationGranted) {
+        console.log("You have all permissions");
+      } else {
+        console.log("Permissions status: ");
+        console.log("WRITE_EXTERNAL_STORAGE: ", writeGranted);
+        console.log("ACCESS_FINE_LOCATION: ", locationGranted);
+        //console.log("INTERNET: ", internetGranted);
+        //console.log("SYSTEM_ALERT_WINDOW: ", alertGranted);
+      }
+    } catch (err) {
+      console.warn(err)
+    }
   }
 
   async _updateLocalizedString(language, key, newString) {
@@ -147,15 +193,31 @@ export default class JGIDigiTiki extends Component {
 
   async _loadCustomData(fileName, fieldName) {
     const filePath = RNFS.ExternalStorageDirectoryPath + '/Download/' + fileName;
-    if (await RNFS.exists(filePath)) {
-      console.log("custom data file for " + fieldName + " exists");
-      let customData = await RNFS.readFile(filePath);
-      customData = JSON.parse(customData);
 
-      let newState = {};
-      newState[fieldName] = customData;
-      this.setState(newState);
-    }
+    RNFS.exists(filePath)
+      .then((exists) => {
+        if(exists) {
+          console.log("File exists ", filePath);
+          var content = RNFS.readFile(filePath).then((contents) => {
+            customData = JSON.parse(contents);
+            console.log(customData);
+
+            let newState = {};
+            newState[fieldName] = customData;
+            this.setState(newState);
+          })
+          .catch((err) => {
+            console.log(err.message, err.code);
+          });
+          return RNFS.readFile(filePath)
+        }
+        else {
+          throw "file not found";
+        }
+      })
+      .catch((err) => {
+        console.log(err.message, err.code);
+      });
   }
 
   _unpackChimps(chimps) {
@@ -201,7 +263,7 @@ const Navstack = StackNavigator({
   SummaryScreen: { screen: SummaryScreen },
     SettingsScreen: { screen: SettingsScreen, navigationOptions: {
       headerLeft: null
-    } 
+    }
   },
   GPSTestScreen: { screen: GPSTestScreen },
 }, {
